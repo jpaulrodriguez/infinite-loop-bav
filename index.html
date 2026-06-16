@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infinite Loop · BAV Brand Equity · Colombia 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#EEF0F9;
+    --primary:#4F46E5;
+    --text:#0F172A;
+    --muted:#64748B;
+    --glass:rgba(255,255,255,0.65);
+    --glass-b:rgba(255,255,255,0.78);
+    --sh:0 6px 24px rgba(15,23,42,.09),0 1px 3px rgba(15,23,42,.05),inset 0 1px 0 rgba(255,255,255,.90);
+    --sh-lg:0 18px 54px rgba(15,23,42,.14),0 4px 12px rgba(15,23,42,.07),inset 0 1px 0 rgba(255,255,255,.95);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+  body::before{
+    content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(ellipse 900px 700px at 0%   0%,  rgba(79,70,229,.13) 0%,transparent 60%),
+      radial-gradient(ellipse 600px 500px at 100% 0%,  rgba(139,92,246,.10) 0%,transparent 60%),
+      radial-gradient(ellipse 700px 500px at 80%  100%,rgba(59,130,246,.09) 0%,transparent 60%),
+      radial-gradient(ellipse 500px 400px at 10%  100%,rgba(99,102,241,.08) 0%,transparent 60%);
+  }
+  body>*{position:relative;z-index:1;}
+
+  /* NAV */
+  nav{
+    position:fixed;top:0;left:0;right:0;z-index:100;height:56px;
+    background:rgba(238,240,249,0.70);
+    backdrop-filter:blur(36px) saturate(2.2);-webkit-backdrop-filter:blur(36px) saturate(2.2);
+    border-bottom:1px solid rgba(255,255,255,.68);
+    display:flex;align-items:center;justify-content:space-between;padding:0 28px;
+    box-shadow:0 1px 0 rgba(255,255,255,.55),0 2px 16px rgba(15,23,42,.05);
+  }
+  .nl{display:flex;align-items:center;gap:12px;}
+  .nl-logo{font-size:14px;font-weight:900;letter-spacing:.02em;}
+  .nl-sep{width:1px;height:16px;background:rgba(0,0,0,.10);}
+  .nl-prod{font-size:11px;color:var(--muted);font-weight:500;letter-spacing:.06em;text-transform:uppercase;}
+  .chip{
+    display:flex;align-items:center;gap:8px;
+    background:var(--glass);border:1px solid var(--glass-b);border-radius:24px;padding:5px 14px 5px 7px;
+    box-shadow:var(--sh);backdrop-filter:blur(24px) saturate(2);-webkit-backdrop-filter:blur(24px) saturate(2);
+    font-size:13px;font-weight:600;cursor:pointer;position:relative;user-select:none;transition:box-shadow .2s;
+  }
+  .chip:hover{box-shadow:var(--sh-lg);}
+  .av{width:26px;height:26px;border-radius:50%;background:rgba(79,70,229,.12);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;}
+  .dd{
+    position:absolute;top:calc(100% + 10px);right:0;
+    background:rgba(255,255,255,.88);
+    backdrop-filter:blur(44px) saturate(2.4);-webkit-backdrop-filter:blur(44px) saturate(2.4);
+    border:1px solid rgba(255,255,255,.90);border-radius:20px;padding:8px;
+    box-shadow:0 24px 64px rgba(15,23,42,.18),0 4px 12px rgba(15,23,42,.07),inset 0 1px 0 rgba(255,255,255,.98);
+    min-width:220px;display:grid;grid-template-columns:1fr 1fr;gap:4px;
+    opacity:0;pointer-events:none;transform:translateY(-8px) scale(.96);
+    transition:opacity .22s,transform .26s cubic-bezier(.22,1,.36,1);z-index:200;
+  }
+  .dd.open{opacity:1;pointer-events:all;transform:none;}
+  .ddi{padding:8px 12px;border-radius:10px;font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;transition:background .14s,color .14s;white-space:nowrap;}
+  .ddi:hover{background:rgba(79,70,229,.07);color:var(--text);}
+  .ddi.active{background:var(--primary);color:#fff;font-weight:700;}
+
+  /* HERO */
+  .hero{text-align:center;padding:28px 28px 0;}
+  .hero h1{font-size:clamp(22px,3.8vw,40px);font-weight:900;letter-spacing:-.03em;line-height:1.08;}
+  .hero-sub{margin-top:8px;font-size:13px;color:var(--muted);}
+  .hero-badge{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
+  .hdot{width:7px;height:7px;border-radius:50%;}
+
+  /* KPI ROW */
+  .kpi-row{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;padding:20px 28px 0;max-width:1100px;margin:0 auto;}
+  .kc{
+    flex:1;min-width:144px;max-width:200px;
+    background:var(--glass);backdrop-filter:blur(32px) saturate(2.2);-webkit-backdrop-filter:blur(32px) saturate(2.2);
+    border:1px solid var(--glass-b);border-radius:20px;padding:16px 18px 14px;
+    box-shadow:var(--sh);cursor:pointer;transition:transform .24s cubic-bezier(.22,1,.36,1),box-shadow .24s;
+    position:relative;overflow:hidden;
+  }
+  .kc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:20px 20px 0 0;transition:height .2s;}
+  .kc:hover{transform:translateY(-3px);box-shadow:var(--sh-lg);}
+  .kc:hover::before{height:5px;}
+  .kc-lb{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+  .kc-v{font-size:28px;font-weight:900;line-height:1;}
+  .kc-p{font-size:10px;color:var(--muted);margin-top:3px;}
+  .kc-s{display:inline-block;font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px;margin-top:7px;letter-spacing:.06em;}
+
+  /* OVERALL */
+  .ov-row{display:flex;align-items:center;gap:14px;padding:14px 28px 0;max-width:1100px;margin:0 auto;}
+  .ov-lb{font-size:11px;color:var(--muted);white-space:nowrap;}
+  .ov-track{flex:1;height:5px;background:rgba(15,23,42,.07);border-radius:10px;overflow:hidden;}
+  .ov-fill{height:100%;border-radius:10px;transition:width 1.4s cubic-bezier(.22,1,.36,1);}
+  .ov-sc{font-size:13px;font-weight:700;white-space:nowrap;}
+  .ov-rk{font-size:10px;color:var(--muted);white-space:nowrap;}
+
+  /* LOOP */
+  .loop-wrap{position:relative;max-width:1100px;margin:0 auto;padding:0 28px;height:640px;}
+  .loop-svg{position:absolute;top:40px;left:28px;right:28px;width:calc(100% - 56px);height:520px;overflow:visible!important;}
+
+  /* Loop tube — shadow + white body */
+  .lt-sh{fill:none;stroke:rgba(15,23,42,.07);stroke-width:38;stroke-linecap:butt;}
+  .lt-bd{fill:none;stroke:rgba(255,255,255,.85);stroke-width:28;stroke-linecap:butt;}
+  .lt-glow{fill:none;stroke:rgba(79,70,229,.20);stroke-width:22;stroke-linecap:butt;}
+  .lt-edge{fill:none;stroke:rgba(79,70,229,.28);stroke-width:1.5;stroke-linecap:butt;}
+  .lt-flow{fill:none;stroke:rgba(79,70,229,.28);stroke-width:1.5;stroke-linecap:butt;stroke-dasharray:7 7;animation:dashflow 3.2s linear infinite;}
+  @keyframes dashflow{to{stroke-dashoffset:-160;}}
+
+
+  /* LAYER 1 — DIAGNÓSTICO C-LEVEL */
+  .layer1{max-width:1100px;margin:0 auto;padding:8px 28px 64px;}
+  .l1-head{text-align:center;margin-bottom:24px;}
+  .l1-tag{font-size:10px;font-weight:800;letter-spacing:.16em;color:var(--primary);text-transform:uppercase;}
+  .l1-head h2{font-size:clamp(20px,2.6vw,28px);font-weight:900;letter-spacing:-.02em;margin-top:6px;}
+  .l1-head p{font-size:13px;color:var(--muted);margin-top:6px;max-width:560px;margin-left:auto;margin-right:auto;}
+
+  .l1-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .card{
+    background:var(--glass);backdrop-filter:blur(32px) saturate(2.2);-webkit-backdrop-filter:blur(32px) saturate(2.2);
+    border:1px solid var(--glass-b);border-radius:22px;padding:22px 24px;box-shadow:var(--sh);
+  }
+  .card-lb{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
+  .bavscore{grid-column:1/2;}
+  .semaphore{grid-column:2/3;}
+  .rankcard{grid-column:1/3;}
+  .narrcard{grid-column:1/2;}
+  .recocard{grid-column:2/3;}
+
+  /* BAV Score card */
+  .bavscore-v{font-size:48px;font-weight:900;line-height:1;color:var(--primary);}
+  .bavscore-rk{font-size:11px;color:var(--muted);margin-top:4px;margin-bottom:18px;}
+  .cap-rows{display:flex;flex-direction:column;gap:10px;}
+  .cap-row{display:grid;grid-template-columns:120px 1fr 40px;align-items:center;gap:10px;}
+  .cap-nm{font-size:11px;color:var(--muted);font-weight:600;}
+  .cap-track{height:6px;background:rgba(15,23,42,.07);border-radius:10px;overflow:hidden;}
+  .cap-fill{height:100%;width:0;border-radius:10px;transition:width 1.2s cubic-bezier(.22,1,.36,1);}
+  .cap-v{font-size:12px;font-weight:800;text-align:right;}
+
+  /* Semaphore */
+  .sem-grid{display:flex;flex-direction:column;gap:9px;}
+  .sem-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;cursor:pointer;transition:background .15s;}
+  .sem-item:hover{background:rgba(79,70,229,.06);}
+  .sem-dot{width:9px;height:9px;border-radius:50%;flex:none;box-shadow:0 0 0 3px rgba(0,0,0,.03);}
+  .sem-nm{font-size:12px;font-weight:600;flex:1;}
+  .sem-st{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;}
+
+  /* Ranking */
+  .rank-list{display:flex;flex-direction:column;gap:6px;max-height:340px;overflow-y:auto;padding-right:4px;}
+  .rank-row{display:grid;grid-template-columns:28px 110px 1fr 44px;align-items:center;gap:10px;padding:6px 8px;border-radius:10px;cursor:pointer;transition:background .15s;}
+  .rank-row:hover{background:rgba(79,70,229,.06);}
+  .rank-row.cur{background:rgba(79,70,229,.10);}
+  .rank-pos{font-size:11px;color:var(--muted);font-weight:700;}
+  .rank-nm{font-size:12px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .rank-row.cur .rank-nm{color:var(--primary);}
+  .rank-track{height:7px;background:rgba(15,23,42,.06);border-radius:10px;overflow:hidden;}
+  .rank-fill{height:100%;border-radius:10px;transition:width 1s ease;}
+  .rank-v{font-size:11px;font-weight:800;text-align:right;}
+
+  /* Narrative / Recommendation */
+  .narr-txt,.reco-txt{font-size:13px;color:#374151;line-height:1.75;}
+  .reco-dim{font-size:15px;font-weight:800;margin-bottom:8px;}
+
+  @media(max-width:760px){
+    .l1-grid{grid-template-columns:1fr;}
+    .bavscore,.semaphore,.rankcard,.narrcard,.recocard{grid-column:1/-1;}
+  }
+
+  /* LOGIN GATE */
+  .login-gate{
+    position:fixed;inset:0;z-index:999;background:var(--bg);
+    display:flex;align-items:center;justify-content:center;padding:20px;
+    transition:opacity .4s ease,visibility .4s;
+  }
+  .login-gate.hide{opacity:0;visibility:hidden;pointer-events:none;}
+  .login-card{
+    background:var(--glass);backdrop-filter:blur(44px) saturate(2.4);-webkit-backdrop-filter:blur(44px) saturate(2.4);
+    border:1.5px solid var(--glass-b);border-radius:26px;padding:40px 38px;width:100%;max-width:380px;
+    box-shadow:var(--sh-lg);text-align:center;
+  }
+  .login-logo{width:48px;height:48px;border-radius:12px;background:#0F172A;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;}
+  .login-card h1{font-size:18px;font-weight:900;letter-spacing:-.01em;}
+  .login-sub{font-size:12px;color:var(--muted);margin-top:6px;margin-bottom:26px;}
+  .login-input{
+    width:100%;padding:13px 16px;border-radius:14px;border:1.5px solid rgba(15,23,42,.10);
+    background:rgba(255,255,255,.75);font-size:14px;font-family:inherit;outline:none;
+    transition:border-color .2s,box-shadow .2s;text-align:center;
+  }
+  .login-input:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(79,70,229,.12);}
+  .login-btn{
+    width:100%;margin-top:12px;padding:13px 16px;border-radius:14px;border:none;
+    background:var(--primary);color:#fff;font-size:14px;font-weight:700;font-family:inherit;
+    cursor:pointer;transition:background .2s,transform .15s;
+  }
+  .login-btn:hover{background:#4338CA;}
+  .login-btn:active{transform:scale(.98);}
+  .login-err{font-size:11.5px;color:#DC2626;margin-top:12px;font-weight:600;min-height:14px;}
+
+  /* MODAL */
+  .overlay{
+    position:fixed;inset:0;z-index:200;
+    background:rgba(205,210,235,.40);
+    backdrop-filter:blur(36px) saturate(1.8);-webkit-backdrop-filter:blur(36px) saturate(1.8);
+    display:flex;align-items:center;justify-content:center;
+    opacity:0;pointer-events:none;transition:opacity .3s;
+  }
+  .overlay.open{opacity:1;pointer-events:all;}
+  .modal{
+    background:rgba(255,255,255,.82);
+    backdrop-filter:blur(52px) saturate(2.6);-webkit-backdrop-filter:blur(52px) saturate(2.6);
+    border:1.5px solid rgba(255,255,255,.90);border-radius:28px;
+    padding:36px 38px;max-width:500px;width:90%;
+    box-shadow:0 40px 100px rgba(15,23,42,.20),0 8px 28px rgba(15,23,42,.09),inset 0 1px 0 rgba(255,255,255,.98);
+    transform:scale(.95) translateY(10px);transition:transform .32s cubic-bezier(.22,1,.36,1);
+    position:relative;max-height:88vh;overflow-y:auto;
+  }
+  .overlay.open .modal{transform:none;}
+  .mcls{position:absolute;top:20px;right:20px;width:30px;height:30px;border-radius:50%;background:rgba(15,23,42,.05);border:none;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;}
+  .mcls:hover{background:rgba(15,23,42,.10);}
+  .mtag{font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;margin-bottom:5px;}
+  .mtitle{font-size:24px;font-weight:900;margin-bottom:3px;}
+  .mpilar{font-size:12px;color:var(--muted);margin-bottom:14px;}
+  .mbig{font-size:56px;font-weight:900;line-height:1;margin-bottom:6px;}
+  .mtrack{height:6px;background:rgba(15,23,42,.07);border-radius:10px;overflow:hidden;margin-bottom:18px;}
+  .mfill{height:100%;border-radius:10px;transition:width 1s ease;}
+  .mrank{font-size:12px;color:var(--muted);padding:8px 12px;background:rgba(79,70,229,.05);border-radius:10px;margin-bottom:16px;}
+  .mrank strong{color:var(--text);}
+  .mdesc{font-size:13px;color:#374151;line-height:1.75;margin-bottom:18px;}
+  .mdims{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .dim{background:rgba(79,70,229,.04);border-radius:12px;padding:12px 14px;}
+  .diml{font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;}
+  .dimb{height:4px;background:rgba(15,23,42,.07);border-radius:4px;overflow:hidden;}
+  .dimf{height:100%;border-radius:4px;transition:width 1s ease;}
+  .dimv{font-size:14px;font-weight:800;margin-top:5px;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN GATE -->
+<div class="login-gate" id="loginGate">
+  <div class="login-card">
+    <div class="login-logo">
+      <svg width="22" height="22" viewBox="0 0 26 26" fill="none"><path d="M6 18V8l7 5.5L20 8v10" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <h1>VML Asset Platform</h1>
+    <p class="login-sub">Acceso restringido · BAV Brand Equity Intelligence</p>
+    <input type="password" class="login-input" id="loginPw" placeholder="Contraseña de acceso" autocomplete="off">
+    <button class="login-btn" onclick="tryLogin()">Ingresar</button>
+    <div class="login-err" id="loginErr"></div>
+  </div>
+</div>
+
+<nav>
+  <div class="nl">
+    <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><rect width="26" height="26" rx="6" fill="#0F172A"/><path d="M6 18V8l7 5.5L20 8v10" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span class="nl-logo">VML</span>
+    <div class="nl-sep"></div>
+    <span class="nl-prod">Asset Platform</span>
+  </div>
+  <div class="chip" id="navChip" onclick="toggleDD()">
+    <div class="av" id="nav-av">M</div>
+    <span id="nav-nm">Makro</span>
+    <span style="color:var(--muted);font-size:11px;margin-left:2px">▾</span>
+    <div class="dd" id="brandDD"></div>
+  </div>
+</nav>
+
+<main style="padding-top:56px">
+
+  <div class="hero">
+    <h1>Diagnóstico de Madurez<br>Empresarial</h1>
+    <p class="hero-sub">BAV Brand Equity Intelligence · Supermercados Colombia 2026</p>
+    <div class="hero-badge">
+      <div class="hdot" id="pat-dot"></div>
+      <span id="pat-txt">Selecciona una marca</span>
+    </div>
+  </div>
+
+  <!-- KPI ROW — color per dimension -->
+  <div class="kpi-row">
+    <div class="kc" style="--acc:#F59E0B" onclick="openM('brandconomics')">
+      <div class="kc-lb">Brandconomics</div>
+      <div class="kc-v" id="kv-brandconomics" style="color:#F59E0B">—</div>
+      <div class="kc-p">Estima · CO</div>
+      <div class="kc-s" id="ks-brandconomics"></div>
+    </div>
+    <div class="kc" style="--acc:#10B981" onclick="openM('bavpulse')">
+      <div class="kc-lb">BAV Pulse</div>
+      <div class="kc-v" id="kv-bavpulse" style="color:#10B981">—</div>
+      <div class="kc-p">Índice global</div>
+      <div class="kc-s" id="ks-bavpulse"></div>
+    </div>
+    <div class="kc" style="--acc:#3B82F6" onclick="openM('totalsearch')">
+      <div class="kc-lb">Total Search</div>
+      <div class="kc-v" id="kv-totalsearch" style="color:#3B82F6">—</div>
+      <div class="kc-p">Relevancia · BX</div>
+      <div class="kc-s" id="ks-totalsearch"></div>
+    </div>
+    <div class="kc" style="--acc:#EF4444" onclick="openM('tensity')">
+      <div class="kc-lb">Tensity</div>
+      <div class="kc-v" id="kv-tensity" style="color:#EF4444">—</div>
+      <div class="kc-p">Diferenciación · BX</div>
+      <div class="kc-s" id="ks-tensity"></div>
+    </div>
+    <div class="kc" style="--acc:#8B5CF6" onclick="openM('growth')">
+      <div class="kc-lb">Growth Strategy</div>
+      <div class="kc-v" id="kv-growth" style="color:#8B5CF6">—</div>
+      <div class="kc-p">Estima relacional · CX</div>
+      <div class="kc-s" id="ks-growth"></div>
+    </div>
+    <div class="kc" style="--acc:#B45309" onclick="openM('loyalty')">
+      <div class="kc-lb">Loyalty Strategy</div>
+      <div class="kc-v" id="kv-loyalty" style="color:#B45309">—</div>
+      <div class="kc-p">Conocimiento · CX</div>
+      <div class="kc-s" id="ks-loyalty"></div>
+    </div>
+  </div>
+
+  <style>
+    .kc::before{background:var(--acc,var(--primary));}
+    .ptr-fill-brandconomics{background:#F59E0B;}
+    .ptr-fill-bavpulse{background:#10B981;}
+    .ptr-fill-totalsearch{background:#3B82F6;}
+    .ptr-fill-tensity{background:#EF4444;}
+    .ptr-fill-growth{background:#8B5CF6;}
+    .ptr-fill-loyalty{background:#B45309;}
+  </style>
+
+  <!-- OVERALL as small subtitle now -->
+  <div class="ov-row">
+    <span class="ov-lb">Promedio global</span>
+    <div class="ov-track"><div class="ov-fill" id="ov-fill" style="width:0%;background:var(--primary)"></div></div>
+    <span class="ov-sc" id="ov-sc" style="color:var(--primary)">—</span>
+    <span class="ov-rk" id="ov-rk"></span>
+  </div>
+
+  <!-- LOOP -->
+  <div class="loop-wrap">
+    <svg class="loop-svg" viewBox="0 0 900 420" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="5" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="glow2" x="-80%" y="-80%" width="260%" height="260%">
+          <feGaussianBlur stdDeviation="8" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+
+      <!-- ── LOOP TUBE ── -->
+      <!-- Shadow -->
+      <path class="lt-sh" d="M 72,210 C 72,100 208,84 284,106 C 360,128 428,202 450,210"/>
+      <path class="lt-sh" d="M 450,210 C 428,218 360,292 284,314 C 208,336 72,320 72,210"/>
+      <path class="lt-sh" d="M 450,210 C 472,202 540,128 616,106 C 692,84 828,100 828,210"/>
+      <path class="lt-sh" d="M 828,210 C 828,320 692,336 616,314 C 540,292 472,218 450,210"/>
+      <!-- White body -->
+      <path class="lt-bd" d="M 72,210 C 72,100 208,84 284,106 C 360,128 428,202 450,210"/>
+      <path class="lt-bd" d="M 450,210 C 428,218 360,292 284,314 C 208,336 72,320 72,210"/>
+      <path class="lt-bd" d="M 450,210 C 472,202 540,128 616,106 C 692,84 828,100 828,210"/>
+      <path class="lt-bd" d="M 828,210 C 828,320 692,336 616,314 C 540,292 472,218 450,210"/>
+      <!-- Inner glow tint -->
+      <path class="lt-glow" d="M 72,210 C 72,100 208,84 284,106 C 360,128 428,202 450,210"/>
+      <path class="lt-glow" d="M 450,210 C 428,218 360,292 284,314 C 208,336 72,320 72,210"/>
+      <path class="lt-glow" d="M 450,210 C 472,202 540,128 616,106 C 692,84 828,100 828,210"/>
+      <path class="lt-glow" d="M 828,210 C 828,320 692,336 616,314 C 540,292 472,218 450,210"/>
+      <!-- Edge line -->
+      <path class="lt-edge" d="M 72,210 C 72,100 208,84 284,106 C 360,128 428,202 450,210"/>
+      <path class="lt-edge" d="M 450,210 C 428,218 360,292 284,314 C 208,336 72,320 72,210"/>
+      <path class="lt-edge" d="M 450,210 C 472,202 540,128 616,106 C 692,84 828,100 828,210"/>
+      <path class="lt-edge" d="M 828,210 C 828,320 692,336 616,314 C 540,292 472,218 450,210"/>
+      <!-- Flow -->
+      <path class="lt-flow" d="M 72,210 C 72,100 208,84 284,106 C 360,128 428,202 450,210"/>
+      <path class="lt-flow" style="animation-direction:reverse" d="M 450,210 C 428,218 360,292 284,314 C 208,336 72,320 72,210"/>
+      <path class="lt-flow" style="animation-direction:reverse" d="M 450,210 C 472,202 540,128 616,106 C 692,84 828,100 828,210"/>
+      <path class="lt-flow" d="M 828,210 C 828,320 692,336 616,314 C 540,292 472,218 450,210"/>
+      <!-- End dots -->
+      <circle cx="72"  cy="210" r="9" fill="white" stroke="rgba(79,70,229,.25)" stroke-width="2" filter="url(#glow)"/>
+      <circle cx="828" cy="210" r="9" fill="white" stroke="rgba(79,70,229,.25)" stroke-width="2" filter="url(#glow)"/>
+
+      <!-- ── BX / CO / CX GHOST LABELS ── -->
+      <text x="210" y="198" text-anchor="middle" font-family="Inter,sans-serif" font-size="78" font-weight="900"
+        letter-spacing="-2" fill="rgba(15,23,42,.07)" pointer-events="none">BX</text>
+      <text x="210" y="230" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="700"
+        letter-spacing="3.5" fill="rgba(15,23,42,.16)" pointer-events="none">CAPITAL CULTURAL</text>
+
+      <text x="690" y="198" text-anchor="middle" font-family="Inter,sans-serif" font-size="78" font-weight="900"
+        letter-spacing="-2" fill="rgba(15,23,42,.07)" pointer-events="none">CX</text>
+      <text x="690" y="230" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="700"
+        letter-spacing="3.5" fill="rgba(15,23,42,.16)" pointer-events="none">CAPITAL RELACIONAL</text>
+
+      <!-- ── CONCENTRIC GAUGE RINGS @ CENTER (450,210) ── -->
+
+      <!-- Glass disc stage -->
+      <circle cx="450" cy="210" r="156" fill="rgba(255,255,255,.28)" stroke="rgba(255,255,255,.50)" stroke-width="1.5"/>
+
+      <!-- CO label — behind rings -->
+      <text x="450" y="192" text-anchor="middle" font-family="Inter,sans-serif" font-size="42" font-weight="900"
+        letter-spacing="-1" fill="rgba(79,70,229,.08)" pointer-events="none">CO</text>
+      <text x="450" y="210" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" font-weight="700"
+        letter-spacing="2" fill="rgba(79,70,229,.14)" pointer-events="none">CAPITAL TRANSACCIONAL</text>
+
+      <!-- Ring 6 · Brandconomics · r=142 · #F59E0B -->
+      <circle cx="450" cy="210" r="142" fill="none" stroke="rgba(245,158,11,.12)" stroke-width="5"/>
+      <circle id="ring-brandconomics" cx="450" cy="210" r="142" fill="none"
+        stroke="#F59E0B" stroke-width="5" stroke-linecap="round"
+        stroke-dasharray="0 893" transform="rotate(-90 450 210)" opacity=".80"/>
+      <text x="450" y="58" text-anchor="middle" font-family="Inter,sans-serif"
+        font-size="9" font-weight="800" letter-spacing=".12em" fill="#92400E" pointer-events="none">BRANDCONOMICS</text>
+
+      <!-- Ring 5 · BAV Pulse · r=120 · #10B981 -->
+      <circle cx="450" cy="210" r="120" fill="none" stroke="rgba(16,185,129,.12)" stroke-width="5"/>
+      <circle id="ring-bavpulse" cx="450" cy="210" r="120" fill="none"
+        stroke="#10B981" stroke-width="5" stroke-linecap="round"
+        stroke-dasharray="0 754" transform="rotate(-90 450 210)" opacity=".80"/>
+      <text x="450" y="80" text-anchor="middle" font-family="Inter,sans-serif"
+        font-size="9" font-weight="800" letter-spacing=".12em" fill="#065F46" pointer-events="none">BAV PULSE</text>
+
+      <!-- Ring 4 · Total Search · r=98 · #3B82F6 -->
+      <circle cx="450" cy="210" r="98" fill="none" stroke="rgba(59,130,246,.12)" stroke-width="5"/>
+      <circle id="ring-totalsearch" cx="450" cy="210" r="98" fill="none"
+        stroke="#3B82F6" stroke-width="5" stroke-linecap="round"
+        stroke-dasharray="0 616" transform="rotate(-90 450 210)" opacity=".80"/>
+      <text x="450" y="102" text-anchor="middle" font-family="Inter,sans-serif"
+        font-size="9" font-weight="800" letter-spacing=".12em" fill="#1E3A8A" pointer-events="none">TOTAL SEARCH</text>
+
+      <!-- Ring 3 · Tensity · r=76 · #EF4444 -->
+      <circle cx="450" cy="210" r="76" fill="none" stroke="rgba(239,68,68,.12)" stroke-width="5"/>
+      <circle id="ring-tensity" cx="450" cy="210" r="76" fill="none"
+        stroke="#EF4444" stroke-width="5" stroke-linecap="round"
+        stroke-dasharray="0 478" transform="rotate(-90 450 210)" opacity=".80"/>
+      <text x="450" y="124" text-anchor="middle" font-family="Inter,sans-serif"
+        font-size="9" font-weight="800" letter-spacing=".12em" fill="#7F1D1D" pointer-events="none">TENSITY</text>
+
+      <!-- Ring 2 · Growth Strategy · r=54 · #8B5CF6 -->
+      <circle cx="450" cy="210" r="54" fill="none" stroke="rgba(139,92,246,.12)" stroke-width="5"/>
+      <circle id="ring-growth" cx="450" cy="210" r="54" fill="none"
+        stroke="#8B5CF6" stroke-width="5" stroke-linecap="round"
+        stroke-dasharray="0 339" transform="rotate(-90 450 210)" opacity=".80"/>
+      <text x="450" y="146" text-anchor="middle" font-family="Inter,sans-serif"
+        font-size="9" font-weight="800" letter-spacing=".12em" fill="#4C1D95" pointer-events="none">GROWTH STRATEGY</text>
+
+      <!-- Ring 1 · Loyalty Strategy · r=32 · #B45309 -->
+      <circle cx="450" cy="210" r="32" fill="none" stroke="rgba(180,83,9,.12)" stroke-width="5"/>
+      <circle id="ring-loyalty" cx="450" cy="210" r="32" fill="none"
+        stroke="#B45309" stroke-width="5" stroke-linecap="round"
+        stroke-dasharray="0 201" transform="rotate(-90 450 210)" opacity=".80"/>
+      <text x="450" y="168" text-anchor="middle" font-family="Inter,sans-serif"
+        font-size="9" font-weight="800" letter-spacing=".12em" fill="#78350F" pointer-events="none">LOYALTY STRATEGY</text>
+
+      <!-- ── TRAVELING BALL ── -->
+      <circle r="16" fill="rgba(79,70,229,.12)" filter="url(#glow2)">
+        <animateMotion dur="7s" repeatCount="indefinite" rotate="none"><mpath href="#lp"/></animateMotion>
+      </circle>
+      <circle r="7" fill="white" stroke="#4F46E5" stroke-width="2.5" filter="url(#glow)">
+        <animateMotion dur="7s" repeatCount="indefinite" rotate="none"><mpath href="#lp"/></animateMotion>
+      </circle>
+      <circle r="3" fill="#4F46E5">
+        <animateMotion dur="7s" repeatCount="indefinite" rotate="none"><mpath href="#lp"/></animateMotion>
+      </circle>
+
+      <path id="lp" fill="none" stroke="none"
+        d="M 72,210 C 72,100 208,84 284,106 C 360,128 428,202 450,210
+           C 472,202 540,128 616,106 C 692,84 828,100 828,210
+           C 828,320 692,336 616,314 C 540,292 472,218 450,210
+           C 428,218 360,292 284,314 C 208,336 72,320 72,210 Z"/>
+    </svg>
+  </div><!-- /loop-wrap -->
+
+  <!-- ───────────────── CAPA 1 · DIAGNÓSTICO DE MADUREZ EMPRESARIAL (C-LEVEL) ───────────────── -->
+  <section class="layer1">
+    <div class="l1-head">
+      <span class="l1-tag">Capa 1 · C-Level</span>
+      <h2>Diagnóstico de Madurez Empresarial</h2>
+      <p>¿Cómo está la marca hoy frente al mercado, y hacia dónde debe apostar capital el próximo ciclo?</p>
+    </div>
+
+    <div class="l1-grid">
+      <!-- BAV Score anchor -->
+      <div class="card bavscore">
+        <div class="card-lb">BAV Score · Colombia 2026</div>
+        <div class="bavscore-v" id="bav-score">—</div>
+        <div class="bavscore-rk" id="bav-rk"></div>
+        <div class="cap-rows">
+          <div class="cap-row">
+            <span class="cap-nm">BX · Cultural</span>
+            <div class="cap-track"><div class="cap-fill" id="cap-bx" style="background:#EF4444"></div></div>
+            <span class="cap-v" id="cap-bx-v" style="color:#EF4444">—</span>
+          </div>
+          <div class="cap-row">
+            <span class="cap-nm">CO · Transaccional</span>
+            <div class="cap-track"><div class="cap-fill" id="cap-co" style="background:#F59E0B"></div></div>
+            <span class="cap-v" id="cap-co-v" style="color:#F59E0B">—</span>
+          </div>
+          <div class="cap-row">
+            <span class="cap-nm">CX · Relacional</span>
+            <div class="cap-track"><div class="cap-fill" id="cap-cx" style="background:#B45309"></div></div>
+            <span class="cap-v" id="cap-cx-v" style="color:#B45309">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Semáforo -->
+      <div class="card semaphore">
+        <div class="card-lb">Semáforo por dimensión</div>
+        <div class="sem-grid" id="sem-grid"></div>
+      </div>
+
+      <!-- Posicionamiento competitivo -->
+      <div class="card rankcard">
+        <div class="card-lb">Posicionamiento competitivo · BAV Pulse vs. categoría (16 marcas)</div>
+        <div class="rank-list" id="rank-list"></div>
+      </div>
+
+      <!-- Narrativa -->
+      <div class="card narrcard">
+        <div class="card-lb">Estado de salud de marca</div>
+        <p class="narr-txt" id="narr-txt"></p>
+      </div>
+
+      <!-- Recomendación -->
+      <div class="card recocard">
+        <div class="card-lb">Recomendación estratégica · próximo ciclo</div>
+        <div class="reco-dim" id="reco-dim"></div>
+        <p class="reco-txt" id="reco-txt"></p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- MODAL -->
+<div class="overlay" id="overlay" onclick="if(event.target===this)closeM()">
+  <div class="modal">
+    <button class="mcls" onclick="closeM()">✕</button>
+    <div class="mtag" id="m-tag"></div>
+    <div class="mtitle" id="m-title"></div>
+    <div class="mpilar" id="m-pilar"></div>
+    <div class="mbig" id="m-big">0</div>
+    <div class="mtrack"><div class="mfill" id="m-fill"></div></div>
+    <div class="mrank" id="m-rank"></div>
+    <div class="mdesc" id="m-desc"></div>
+    <div class="mdims" id="m-dims"></div>
+  </div>
+</div>
+
+<script>
+const RAW=[
+  {n:'Ara',         D:90.77,R:92.79,E:77.66,K:92.79},
+  {n:'D1',          D:77.40,R:99.03,E:79.95,K:99.30},
+  {n:'Jumbo',       D:70.80,R:88.30,E:85.14,K:92.00},
+  {n:'Alkosto',     D:61.92,R:87.51,E:84.52,K:91.82},
+  {n:'Éxito',       D:47.49,R:85.40,E:86.19,K:97.98},
+  {n:'OXXO',        D:79.77,R:62.80,E:34.56,K:67.11},
+  {n:'Olímpica',    D:41.60,R:83.99,E:73.88,K:89.71},
+  {n:'Cafam',       D:47.85,R:68.69,E:85.84,K:71.50},
+  {n:'Colsubsidio', D:32.98,R:70.80,E:78.54,K:82.85},
+  {n:'Carulla',     D:13.28,R:75.20,E:67.28,K:80.30},
+  {n:'Makro',       D:28.06,R:74.32,E:47.32,K:73.18},
+  {n:'Metro',       D:43.10,R:69.13,E:70.80,K:66.49},
+  {n:'Cencosud',    D:21.11,R:41.42,E:41.34,K:51.36},
+  {n:'T. Isimo',    D:25.95,R:50.40,E:11.96,K:41.95},
+  {n:'Surtifruver', D:16.27,R:68.87,E:38.87,K:33.69},
+  {n:'Zapatoca',    D:46.79,R:31.66,E:38.96,K:15.48},
+];
+const BRANDS=RAW.map(b=>({
+  ...b,
+  CX:+((b.E+b.K)/2).toFixed(2),
+  loop:+((b.D+b.R+b.E+((b.E+b.K)/2)+b.K)/5).toFixed(1),
+  str:+((b.D+b.R)/2).toFixed(1),
+  sta:+((b.E+b.K)/2).toFixed(1),
+}));
+const RANKED=[...BRANDS].sort((a,b)=>b.loop-a.loop);
+const get=n=>BRANDS.find(x=>x.n===n);
+
+// Ring config: outermost → innermost
+const RINGS=[
+  {k:'brandconomics',r:142,sc:b=>b.E,   c:'#F59E0B'},
+  {k:'bavpulse',     r:120,sc:b=>b.loop, c:'#10B981'},
+  {k:'totalsearch',  r:98, sc:b=>b.R,    c:'#3B82F6'},
+  {k:'tensity',      r:76, sc:b=>b.D,    c:'#EF4444'},
+  {k:'growth',       r:54, sc:b=>b.CX,   c:'#8B5CF6'},
+  {k:'loyalty',      r:32, sc:b=>b.K,    c:'#B45309'},
+];
+
+function sLabel(s){
+  if(s>74)return{t:'Óptimo',bg:'#D1FAE5',c:'#065F46'};
+  if(s>55)return{t:'Medio', bg:'#DBEAFE',c:'#1E40AF'};
+  if(s>35)return{t:'Débil', bg:'#FEF3C7',c:'#92400E'};
+  return      {t:'Crítico',bg:'#FEE2E2',c:'#991B1B'};
+}
+function pattern(b){
+  if(b.D>70&&b.R>80&&b.E>70&&b.K>85)return{t:'Líder integral',       c:'#10B981'};
+  if(b.D<35&&b.R>65&&b.K>65)         return{t:'Erosión activa',       c:'#EF4444'};
+  if(b.D>65&&b.E<50)                  return{t:'Fuerza sin entrega',   c:'#F59E0B'};
+  if(b.str>55&&b.sta<55)              return{t:'Potencial no realizado',c:'#4F46E5'};
+  if(b.str<45&&b.sta>60)              return{t:'Vive del pasado',      c:'#8B5CF6'};
+  if(b.loop<40)                        return{t:'Loop roto',            c:'#EF4444'};
+  return{t:'Posición mixta',c:'#64748B'};
+}
+
+function countUp(el,val,dec=1){
+  if(!el)return;let s=null;const dur=900;
+  const f=ts=>{if(!s)s=ts;const p=Math.min((ts-s)/dur,1);const e=1-Math.pow(1-p,3);el.textContent=(e*val).toFixed(dec);if(p<1)requestAnimationFrame(f);};
+  requestAnimationFrame(f);
+}
+function setRing(id,val,r){
+  const el=document.getElementById(id);if(!el)return;
+  const c=2*Math.PI*r;
+  el.setAttribute('stroke-dasharray',`0 ${c.toFixed(1)}`);
+  setTimeout(()=>{
+    el.style.transition='stroke-dasharray 1.2s cubic-bezier(.22,1,.36,1)';
+    el.setAttribute('stroke-dasharray',`${((val/100)*c).toFixed(1)} ${c.toFixed(1)}`);
+  },260);
+}
+
+let current='Makro';
+function paint(name){
+  const b=get(name);if(!b)return;
+
+  // KPI cards
+  RINGS.forEach(({k,sc})=>{
+    const v=sc(b),sl=sLabel(v);
+    countUp(document.getElementById('kv-'+k),v);
+    const ks=document.getElementById('ks-'+k);
+    if(ks){ks.textContent=sl.t;ks.style.background=sl.bg;ks.style.color=sl.c;}
+  });
+
+  // Overall
+  setTimeout(()=>{document.getElementById('ov-fill').style.width=b.loop+'%';},100);
+  countUp(document.getElementById('ov-sc'),b.loop);
+  const rk=RANKED.findIndex(x=>x.n===name)+1;
+  document.getElementById('ov-rk').textContent=`#${rk} de ${BRANDS.length}`;
+
+  // Pattern
+  const pt=pattern(b);
+  document.getElementById('pat-dot').style.background=pt.c;
+  document.getElementById('pat-txt').textContent=name+' · '+pt.t;
+
+  // Nav
+  document.getElementById('nav-nm').textContent=name;
+  document.getElementById('nav-av').textContent=name[0].toUpperCase();
+
+  // Concentric rings
+  RINGS.forEach(({k,r,sc})=>setRing('ring-'+k, sc(b), r));
+
+  layer1(b);
+}
+
+const NAME_MAP={brandconomics:'Brandconomics',bavpulse:'BAV Pulse',totalsearch:'Total Search',tensity:'Tensity',growth:'Growth Strategy',loyalty:'Loyalty Strategy'};
+
+function layer1(b){
+  const rk=RANKED.findIndex(x=>x.n===b.n)+1;
+
+  // BAV Score anchor
+  countUp(document.getElementById('bav-score'), b.loop);
+  document.getElementById('bav-rk').textContent=`#${rk} de ${BRANDS.length} · Categoría Supermercados Colombia`;
+
+  // Capital breakdown — BX=Diferenciación(cultural) · CO=Estima(transaccional) · CX=Conocimiento(relacional)
+  const caps=[{id:'bx',v:b.D},{id:'co',v:b.E},{id:'cx',v:b.K}];
+  caps.forEach(c=>{
+    setTimeout(()=>{document.getElementById('cap-'+c.id).style.width=c.v+'%';},150);
+    countUp(document.getElementById('cap-'+c.id+'-v'), c.v);
+  });
+
+  // Semáforo
+  const sg=document.getElementById('sem-grid');
+  sg.innerHTML=RINGS.map(({k,sc})=>{
+    const v=sc(b),sl=sLabel(v);
+    return `<div class="sem-item" onclick="openM('${k}')">
+      <span class="sem-dot" style="background:${sl.c}"></span>
+      <span class="sem-nm">${NAME_MAP[k]}</span>
+      <span class="sem-st" style="color:${sl.c}">${sl.t}</span>
+    </div>`;
+  }).join('');
+
+  // Posicionamiento competitivo
+  const rl=document.getElementById('rank-list');
+  const max=RANKED[0].loop;
+  rl.innerHTML=RANKED.map((x,i)=>{
+    const isCur=x.n===b.n;
+    return `<div class="rank-row ${isCur?'cur':''}" onclick="select('${x.n}')">
+      <span class="rank-pos">#${i+1}</span>
+      <span class="rank-nm">${x.n}</span>
+      <div class="rank-track"><div class="rank-fill" style="width:${(x.loop/max*100).toFixed(1)}%;background:${isCur?'#4F46E5':'rgba(79,70,229,.30)'}"></div></div>
+      <span class="rank-v">${x.loop.toFixed(1)}</span>
+    </div>`;
+  }).join('');
+
+  // Narrativa de diagnóstico
+  const capNames={bx:'Capital Cultural (BX)',co:'Capital Transaccional (CO)',cx:'Capital Relacional (CX)'};
+  const sortedCaps=[...caps].sort((a,z)=>a.v-z.v);
+  const weakest=sortedCaps[0], strongest=sortedCaps[2];
+  const riskTxt=weakest.v<35
+    ?'Esta brecha es crítica: el capital débil drena el resto del ciclo y expone a la marca a pérdida de pricing power y vulnerabilidad frente a competidores.'
+    :weakest.v<55
+    ?'La brecha es moderada — limita el crecimiento compuesto del equity, pero no compromete todavía la base actual del negocio.'
+    :'El perfil es relativamente equilibrado entre capitales: hay margen para optimizar antes que para corregir.';
+  document.getElementById('narr-txt').textContent=
+    `${b.n} sostiene su equity principalmente en ${capNames[strongest.id]} (${strongest.v.toFixed(1)} pts), mientras que ${capNames[weakest.id]} es el eslabón más débil del loop (${weakest.v.toFixed(1)} pts). ${riskTxt} BAV Score global: ${b.loop.toFixed(1)} pts — posición #${rk} de ${BRANDS.length} en la categoría.`;
+
+  // Recomendación estratégica
+  const recoMap={
+    bx:{dim:'Tensity · Diferenciación',c:'#EF4444',action:'invertir en innovación percibida, energía de marca y propuestas distintivas que rompan la percepción de commodity.'},
+    co:{dim:'Brandconomics · Estima',c:'#F59E0B',action:'cerrar la brecha entre promesa y entrega — mejorar CES, calidad percibida y consistencia transaccional en todos los canales.'},
+    cx:{dim:'Loyalty Strategy · Conocimiento',c:'#B45309',action:'profundizar familiaridad y hábito de marca mediante programas de fidelización, frecuencia de exposición y CLV.'},
+  };
+  const reco=recoMap[weakest.id];
+  const rd=document.getElementById('reco-dim');
+  rd.textContent=reco.dim;rd.style.color=reco.c;
+  document.getElementById('reco-txt').textContent=
+    `Para el próximo ciclo, la prioridad de inversión debe moverse hacia ${reco.dim}: ${reco.action} Es el capital con la mayor brecha relativa hoy y, por la mecánica del loop BAV, su mejora retroalimenta positivamente a los demás pilares.`;
+}
+
+function buildBrands(){
+  const dd=document.getElementById('brandDD');
+  RANKED.forEach(b=>{
+    const div=document.createElement('div');
+    div.className='ddi';div.textContent=b.n;div.dataset.brand=b.n;
+    div.addEventListener('click',e=>{e.stopPropagation();select(b.n);closeDD();});
+    dd.appendChild(div);
+  });
+}
+function toggleDD(){document.getElementById('brandDD').classList.toggle('open');}
+function closeDD(){document.getElementById('brandDD').classList.remove('open');}
+document.addEventListener('click',e=>{if(!document.getElementById('navChip').contains(e.target))closeDD();});
+function select(name){
+  current=name;
+  document.querySelectorAll('.ddi').forEach(p=>p.classList.toggle('active',p.dataset.brand===name));
+  paint(name);
+}
+
+// SPECS for modal
+const SC={
+  brandconomics:{title:'Brandconomics',c:'#F59E0B',pilar:'Estima — BAV Pilar 3 · Capital Transaccional',
+    desc:b=>`Con Estima de ${b.E.toFixed(1)} pts, ${b.E>75?'la marca cumple su promesa en todos los canales — la transacción refuerza el equity':b.E>50?'estima funcional sin diferenciación experiencial':'la transacción destruye equity — brecha crítica entre promesa y entrega'}. CES y ticket medio son los KPIs operativos.`,
+    dims:b=>[{l:'Estima BAV',v:b.E},{l:'Brand Stature',v:b.sta}],sc:b=>b.E},
+  bavpulse:{title:'BAV Pulse',c:'#10B981',pilar:'Índice global de salud de marca',
+    desc:b=>`BAV Pulse es el pulso integral del loop: promedio ponderado de los cinco pilares BAV. Con ${b.loop.toFixed(1)} pts, ${b.loop>74?'la marca mantiene un ciclo virtuoso — equity que se retroalimenta positivamente':b.loop>55?'el ciclo funciona pero con fricciones que limitan el crecimiento':'el loop está fragmentado — hay pilares que drenan los avances de los demás'}.`,
+    dims:b=>[{l:'Brand Strength',v:b.str},{l:'Brand Stature',v:b.sta}],sc:b=>b.loop},
+  totalsearch:{title:'Total Search',c:'#3B82F6',pilar:'Relevancia — BAV Pilar 2 · BX→CO',
+    desc:b=>`Total Search mide la amplitud del atractivo y la visibilidad intencional. Con ${b.R.toFixed(1)} pts, ${b.R>75?'la marca domina el conjunto evocado — alta penetración y share of search':b.R>50?'relevancia moderada — considerada pero sin dominar la búsqueda activa':'fuera del radar de compra mayoritario'}. E-E-A-T y presencia en LLMs son los indicadores líderes.`,
+    dims:b=>[{l:'Relevancia BAV',v:b.R},{l:'Brand Strength',v:b.str}],sc:b=>b.R},
+  tensity:{title:'Tensity',c:'#EF4444',pilar:'Diferenciación — BAV Pilar 1 · Capital Cultural',
+    desc:b=>`Tensity refleja la energía diferencial de la marca. Con ${b.D.toFixed(1)} pts, ${b.D>60?'alta tensión creativa — la marca se percibe genuinamente única y tiene pricing power':b.D>35?'tensión media — diferenciación parcial, vulnerable a ofertas competidoras':'tensión crítica — opera como commodity sin unicidad percibida'}. Es el motor que inicia el loop.`,
+    dims:b=>[{l:'Diferenciación BAV',v:b.D},{l:'Brand Strength',v:b.str}],sc:b=>b.D},
+  growth:{title:'Growth Strategy',c:'#8B5CF6',pilar:'Estima relacional — CO→CX',
+    desc:b=>`Growth Strategy mide la capacidad de convertir transacciones en relaciones. Con ${b.CX.toFixed(1)} pts, ${b.CX>70?'las interacciones profundizan el vínculo — hay capital relacional consolidado':b.CX>50?'relación media — las interacciones no generan el apego para lealtad real':'las experiencias post-transaccionales erosionan el vínculo'}. NPS relacional y cohortes son los indicadores clave.`,
+    dims:b=>[{l:'CX Score',v:b.CX},{l:'Brand Stature',v:b.sta}],sc:b=>b.CX},
+  loyalty:{title:'Loyalty Strategy',c:'#B45309',pilar:'Conocimiento — BAV Pilar 4 · Capital Relacional',
+    desc:b=>`Loyalty Strategy refleja la profundidad del conocimiento de marca. Con ${b.K.toFixed(1)} pts, ${b.K>80?'familiaridad íntima consolidada — el hábito es robusto y la elección trasciende el precio':b.K>55?'conocimiento moderado — familiaridad sin profundidad relacional':b.K>30?'conocimiento bajo — la marca no ha calado en la mente del consumidor':'conocimiento crítico — prácticamente desconocida'}. CLV y cohortes son las métricas operativas.`,
+    dims:b=>[{l:'Conocimiento BAV',v:b.K},{l:'Brand Stature',v:b.sta}],sc:b=>b.K},
+};
+function rankOf(b,k){
+  const s=SC[k];return [...BRANDS].sort((a,z)=>s.sc(z)-s.sc(a)).findIndex(x=>x.n===b.n)+1;
+}
+function openM(k){
+  const b=get(current),sp=SC[k];if(!sp||!b)return;
+  const v=sp.sc(b);
+  document.getElementById('m-tag').textContent=sp.title+' · '+current;
+  document.getElementById('m-tag').style.color=sp.c;
+  document.getElementById('m-title').textContent=sp.title;
+  document.getElementById('m-title').style.color=sp.c;
+  document.getElementById('m-pilar').textContent=sp.pilar;
+  const mb=document.getElementById('m-big');mb.style.color=sp.c;mb.textContent='0';
+  setTimeout(()=>countUp(mb,v),50);
+  const mf=document.getElementById('m-fill');mf.style.background=sp.c;mf.style.width='0%';
+  setTimeout(()=>{mf.style.transition='width 1s ease';mf.style.width=v+'%';},60);
+  document.getElementById('m-rank').innerHTML=`Ranking en categoría: <strong>#${rankOf(b,k)} de ${BRANDS.length}</strong> marcas`;
+  document.getElementById('m-desc').textContent=sp.desc(b);
+  document.getElementById('m-dims').innerHTML=sp.dims(b).map(d=>`
+    <div class="dim">
+      <div class="diml">${d.l}</div>
+      <div class="dimb"><div class="dimf" style="background:${sp.c};width:${d.v}%"></div></div>
+      <div class="dimv" style="color:${sp.c}">${d.v.toFixed(1)}</div>
+    </div>`).join('');
+  document.getElementById('overlay').classList.add('open');
+}
+function closeM(){document.getElementById('overlay').classList.remove('open');}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeM();});
+
+buildBrands();
+select('Makro');
+
+// ── LOGIN GATE ──
+const ACCESS_CODE='VML2026';
+function tryLogin(){
+  const v=document.getElementById('loginPw').value;
+  if(v===ACCESS_CODE){
+    sessionStorage.setItem('vmlAuth','1');
+    document.getElementById('loginGate').classList.add('hide');
+  }else{
+    document.getElementById('loginErr').textContent='Contraseña incorrecta';
+    document.getElementById('loginPw').value='';
+    document.getElementById('loginPw').focus();
+  }
+}
+document.getElementById('loginPw').addEventListener('keydown',e=>{if(e.key==='Enter')tryLogin();});
+if(sessionStorage.getItem('vmlAuth')==='1'){document.getElementById('loginGate').classList.add('hide');}
+else{document.getElementById('loginPw').focus();}
+</script>
+</body>
+</html>
