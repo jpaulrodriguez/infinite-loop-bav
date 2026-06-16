@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brandconomics® · Capital Intangible · Colombia 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0C0D12;
+    --surface:rgba(255,255,255,0.04);
+    --surface-b:rgba(255,255,255,0.08);
+    --gold:#D97706;
+    --gold-lt:#F59E0B;
+    --primary:#4F46E5;
+    --text:#F1F5F9;
+    --muted:#64748B;
+    --muted2:#94A3B8;
+    --glass:rgba(255,255,255,0.05);
+    --glass-b:rgba(255,255,255,0.10);
+    --sh:0 8px 32px rgba(0,0,0,.40),0 1px 3px rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.06);
+    --sh-lg:0 24px 64px rgba(0,0,0,.60),0 4px 16px rgba(0,0,0,.40),inset 0 1px 0 rgba(255,255,255,.08);
+    --gold-glow:0 0 40px rgba(217,119,6,0.25);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+  body::before{
+    content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(ellipse 900px 700px at 0% 0%,   rgba(217,119,6,.07) 0%,transparent 60%),
+      radial-gradient(ellipse 600px 500px at 100% 0%,  rgba(79,70,229,.10) 0%,transparent 60%),
+      radial-gradient(ellipse 700px 500px at 80% 100%, rgba(79,70,229,.07) 0%,transparent 60%),
+      radial-gradient(ellipse 500px 400px at 10% 100%, rgba(217,119,6,.05) 0%,transparent 60%);
+  }
+  body>*{position:relative;z-index:1;}
+
+  /* ─── NAV ─── */
+  nav{
+    position:fixed;top:0;left:0;right:0;z-index:100;height:56px;
+    background:rgba(12,13,18,0.80);
+    backdrop-filter:blur(36px) saturate(1.8);-webkit-backdrop-filter:blur(36px) saturate(1.8);
+    border-bottom:1px solid rgba(255,255,255,.07);
+    display:flex;align-items:center;justify-content:space-between;padding:0 28px;
+    box-shadow:0 1px 0 rgba(255,255,255,.04),0 2px 16px rgba(0,0,0,.30);
+  }
+  .nl{display:flex;align-items:center;gap:12px;}
+  .nl-logo{font-size:14px;font-weight:900;letter-spacing:.02em;color:var(--text);}
+  .nl-sep{width:1px;height:16px;background:rgba(255,255,255,.12);}
+  .nl-prod{font-size:11px;color:var(--gold);font-weight:700;letter-spacing:.08em;text-transform:uppercase;}
+  .nl-nav{display:flex;align-items:center;gap:4px;}
+  .nl-link{
+    font-size:12px;font-weight:500;color:var(--muted2);padding:5px 12px;border-radius:8px;
+    cursor:pointer;transition:background .15s,color .15s;text-decoration:none;
+  }
+  .nl-link:hover{background:rgba(255,255,255,.06);color:var(--text);}
+  .nl-link.active{color:var(--gold);font-weight:600;}
+  .chip{
+    display:flex;align-items:center;gap:8px;
+    background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);
+    border-radius:24px;padding:5px 14px 5px 7px;
+    box-shadow:var(--sh);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+    font-size:13px;font-weight:600;cursor:pointer;position:relative;user-select:none;
+    transition:box-shadow .2s,border-color .2s;color:var(--text);
+  }
+  .chip:hover{box-shadow:var(--sh-lg);border-color:rgba(255,255,255,.18);}
+  .av{width:26px;height:26px;border-radius:50%;background:rgba(217,119,6,.18);color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;}
+  .dd{
+    position:absolute;top:calc(100% + 10px);right:0;
+    background:rgba(18,20,28,.95);
+    backdrop-filter:blur(44px) saturate(1.8);-webkit-backdrop-filter:blur(44px) saturate(1.8);
+    border:1px solid rgba(255,255,255,.10);border-radius:20px;padding:8px;
+    box-shadow:0 24px 64px rgba(0,0,0,.60),0 4px 12px rgba(0,0,0,.40);
+    min-width:240px;display:grid;grid-template-columns:1fr 1fr;gap:4px;
+    opacity:0;pointer-events:none;transform:translateY(-8px) scale(.96);
+    transition:opacity .22s,transform .26s cubic-bezier(.22,1,.36,1);z-index:200;
+  }
+  .dd.open{opacity:1;pointer-events:all;transform:none;}
+  .ddi{padding:8px 12px;border-radius:10px;font-size:12px;font-weight:500;color:var(--muted2);cursor:pointer;transition:background .14s,color .14s;white-space:nowrap;}
+  .ddi:hover{background:rgba(217,119,6,.10);color:var(--text);}
+  .ddi.active{background:var(--gold);color:#fff;font-weight:700;}
+
+  main{padding-top:56px;}
+
+  /* ─── SECTION 1: EL PROBLEMA ─── */
+  .problema{
+    display:grid;grid-template-columns:1fr 1fr;gap:0;
+    min-height:calc(100vh - 56px);
+    max-width:1200px;margin:0 auto;padding:60px 40px;
+    align-items:center;
+  }
+  .prob-left{padding-right:60px;}
+  .prob-label{
+    display:inline-block;font-size:11px;font-weight:700;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--gold);margin-bottom:24px;
+  }
+  .prob-h1{
+    font-size:clamp(32px,4vw,56px);font-weight:900;line-height:1.05;
+    letter-spacing:-.03em;color:#fff;margin-bottom:28px;
+  }
+  .prob-h1 .gold{color:var(--gold);}
+  .prob-divider{width:44px;height:4px;background:var(--gold);border-radius:2px;margin-bottom:24px;}
+  .prob-text{font-size:15px;line-height:1.7;color:var(--muted2);margin-bottom:14px;}
+  .prob-text strong{color:var(--text);font-weight:600;}
+  .prob-right{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:rgba(217,119,6,.04);border:1px solid rgba(217,119,6,.12);
+    border-radius:32px;padding:52px 40px;
+    box-shadow:var(--gold-glow);
+    text-align:center;
+  }
+  .pct-big{
+    font-size:clamp(100px,14vw,160px);font-weight:900;line-height:1;
+    color:var(--gold);letter-spacing:-.04em;
+    text-shadow:0 0 80px rgba(217,119,6,.4);
+  }
+  .pct-sub{font-size:11px;font-weight:700;letter-spacing:.10em;color:var(--muted);text-transform:uppercase;margin:12px 0 36px;}
+  .prob-stats{display:grid;grid-template-columns:1fr 1fr;gap:16px;width:100%;}
+  .prob-stat{
+    background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+    border-radius:16px;padding:20px 18px;
+  }
+  .prob-stat-v{font-size:24px;font-weight:900;color:var(--gold);letter-spacing:-.02em;}
+  .prob-stat-v.white{color:#fff;}
+  .prob-stat-l{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:4px;}
+
+  /* ─── SECTION 2: CAPITAL INTANGIBLE ─── */
+  .cap-section{
+    background:rgba(255,255,255,.02);border-top:1px solid rgba(255,255,255,.05);
+    border-bottom:1px solid rgba(255,255,255,.05);
+    padding:80px 40px;
+  }
+  .cap-label{
+    text-align:center;font-size:11px;font-weight:700;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--primary);margin-bottom:60px;
+    display:flex;align-items:center;justify-content:center;gap:12px;
+  }
+  .cap-label::before,.cap-label::after{content:'';flex:1;max-width:200px;height:1px;background:rgba(255,255,255,.08);}
+  .cap-inner{
+    display:grid;grid-template-columns:200px 1fr 320px;gap:40px;
+    max-width:1100px;margin:0 auto;align-items:center;
+  }
+  /* Left metrics */
+  .cap-metrics{display:flex;flex-direction:column;gap:12px;}
+  .cap-metric{
+    background:var(--glass);border:1px solid var(--glass-b);
+    border-radius:16px;padding:16px 18px;
+  }
+  .cap-metric.gold-b{border-color:rgba(217,119,6,.25);background:rgba(217,119,6,.05);}
+  .cap-metric-lb{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+  .cap-metric-v{font-size:18px;font-weight:900;color:var(--text);}
+  .cap-metric-v.gold{color:var(--gold);}
+  .cap-metric-pct{font-size:11px;color:var(--muted2);margin-top:3px;}
+
+  /* Center: Bottle */
+  .bottle-wrap{
+    display:flex;flex-direction:column;align-items:center;
+    position:relative;
+  }
+  .bottle-svg{width:220px;height:480px;filter:drop-shadow(0 20px 60px rgba(217,119,6,0.20));}
+
+  /* Right: description */
+  .cap-right{display:flex;flex-direction:column;gap:20px;}
+  .cap-headline{font-size:22px;font-weight:800;line-height:1.3;letter-spacing:-.02em;}
+  .cap-headline .gold{color:var(--gold);}
+  .cap-quote{
+    border-left:3px solid var(--gold);padding-left:18px;
+    font-size:14px;line-height:1.75;color:var(--muted2);font-style:italic;
+  }
+  .cap-attr{font-size:13px;font-weight:700;color:var(--text);margin-top:8px;}
+  .cap-pib{
+    background:rgba(217,119,6,.06);border:1px solid rgba(217,119,6,.15);
+    border-radius:14px;padding:16px 18px;
+  }
+  .cap-pib-lb{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
+  .cap-pib-row{display:flex;align-items:center;gap:10px;}
+  .cap-pib-flag{font-size:22px;}
+  .cap-pib-name{font-size:15px;font-weight:700;}
+  .cap-pib-sub{font-size:11px;color:var(--muted2);margin-top:3px;}
+
+  /* ─── SECTION 3: UNA MARCA NO ES UN GASTO ─── */
+  .economia{padding:80px 40px;max-width:1200px;margin:0 auto;}
+  .eco-header{display:grid;grid-template-columns:1fr auto;gap:40px;align-items:start;margin-bottom:52px;}
+  .eco-h1{font-size:clamp(28px,4vw,48px);font-weight:900;line-height:1.1;letter-spacing:-.03em;}
+  .eco-h1 .gold{color:var(--gold);}
+  .eco-sub{font-size:12px;color:var(--muted);line-height:1.7;max-width:280px;text-align:right;}
+  .eco-sub strong{color:var(--gold);}
+
+  /* Brand selector for dynamic row */
+  .eco-selector{
+    display:flex;align-items:center;gap:10px;
+    background:var(--glass);border:1px solid var(--glass-b);
+    border-radius:12px;padding:8px 14px;margin-bottom:32px;
+    width:fit-content;
+  }
+  .eco-selector label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
+  .eco-selector select{
+    background:transparent;border:none;color:var(--text);font-family:'Inter',sans-serif;
+    font-size:13px;font-weight:600;cursor:pointer;outline:none;
+    padding-right:8px;
+  }
+  .eco-selector select option{background:#1a1b24;color:#fff;}
+
+  /* Table */
+  .eco-table{width:100%;border-collapse:collapse;}
+  .eco-table thead tr th{
+    font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);padding:0 16px 14px;text-align:left;
+    border-bottom:1px solid rgba(255,255,255,.06);
+  }
+  .eco-table thead tr th:not(:first-child){text-align:right;}
+  .eco-table tbody tr{
+    border-bottom:1px solid rgba(255,255,255,.04);
+    transition:background .15s;
+  }
+  .eco-table tbody tr:hover{background:rgba(255,255,255,.03);}
+  .eco-table tbody tr.dynamic-row{
+    background:rgba(217,119,6,.06);border:1px solid rgba(217,119,6,.15);
+    border-radius:12px;
+  }
+  .eco-table tbody tr.dynamic-row td:first-child{border-radius:12px 0 0 12px;}
+  .eco-table tbody tr.dynamic-row td:last-child{border-radius:0 12px 12px 0;}
+  .eco-table td{padding:16px 16px;vertical-align:middle;}
+
+  .td-marca{font-size:15px;font-weight:800;color:#fff;}
+  .td-sector{font-size:10px;color:var(--muted);margin-top:2px;}
+
+  .td-iv{text-align:right;}
+  .td-iv-val{font-size:16px;font-weight:900;color:var(--gold);letter-spacing:-.01em;}
+  .td-iv-bar{margin-top:6px;height:4px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden;width:100%;min-width:120px;}
+  .td-iv-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--gold-lt),var(--gold));transition:width 1s cubic-bezier(.22,1,.36,1);}
+
+  .td-pais{text-align:right;}
+  .td-pais-name{font-size:13px;font-weight:600;color:var(--text);}
+  .td-pais-pib{font-size:10px;color:var(--muted2);margin-top:2px;}
+
+  .td-pct{text-align:right;font-size:14px;font-weight:700;color:var(--muted2);}
+  .td-pct.high{color:#10B981;}
+
+  .td-diff{text-align:right;}
+  .td-diff-pill{
+    display:inline-block;padding:3px 10px;border-radius:20px;
+    font-size:11px;font-weight:700;letter-spacing:.04em;
+  }
+  .td-diff-pill.pos{background:rgba(16,185,129,.12);color:#34D399;}
+  .td-diff-pill.neg{background:rgba(100,116,139,.10);color:#94A3B8;}
+  .td-diff-pill.gold-pill{background:rgba(217,119,6,.18);color:var(--gold-lt);}
+
+  /* Dynamic row label */
+  .dynamic-tag{
+    display:inline-flex;align-items:center;gap:4px;
+    background:var(--gold);color:#000;font-size:8px;font-weight:800;
+    letter-spacing:.08em;text-transform:uppercase;
+    padding:2px 7px;border-radius:6px;margin-left:8px;vertical-align:middle;
+  }
+
+  /* Footer */
+  footer{
+    text-align:center;padding:40px 28px 60px;
+    font-size:11px;color:var(--muted);letter-spacing:.04em;
+    border-top:1px solid rgba(255,255,255,.05);
+  }
+  footer a{color:var(--gold);text-decoration:none;}
+  footer a:hover{text-decoration:underline;}
+
+  /* Scrollbar */
+  ::-webkit-scrollbar{width:6px;background:transparent;}
+  ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.10);border-radius:3px;}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nl">
+    <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><rect width="26" height="26" rx="6" fill="#0F172A"/><path d="M6 18V8l7 5.5L20 8v10" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span class="nl-logo">VML</span>
+    <div class="nl-sep"></div>
+    <span class="nl-prod">Brandconomics®</span>
+  </div>
+  <div class="nl-nav">
+    <a class="nl-link" href="index.html">Infinite Loop</a>
+    <a class="nl-link active" href="brandconomics.html">Brandconomics</a>
+  </div>
+  <div class="chip" id="navChip" onclick="toggleDD()">
+    <div class="av" id="nav-av">D</div>
+    <span id="nav-nm">D1</span>
+    <span style="color:var(--muted);font-size:11px;margin-left:2px">▾</span>
+    <div class="dd" id="brandDD"></div>
+  </div>
+</nav>
+
+<main>
+
+  <!-- ─── SECCIÓN 1: EL PROBLEMA ─── -->
+  <section class="problema">
+    <div class="prob-left">
+      <span class="prob-label">El Problema</span>
+      <h1 class="prob-h1">El <span class="gold">90%</span> del valor de muchas marcas no aparece en ningún estado financiero</h1>
+      <div class="prob-divider"></div>
+      <p class="prob-text"><strong>USD $306B en valor de marca.</strong> Invisible para la contabilidad.</p>
+      <p class="prob-text">Pero el mercado ya lo sabe — y lo paga.</p>
+      <p class="prob-text">El capital intangible no se deprecia, no se roba y no figura en el balance. Sin embargo, es el activo que determina el precio al que una empresa cotiza.</p>
+    </div>
+    <div class="prob-right">
+      <div class="pct-big">90%</div>
+      <p class="pct-sub">Del valor total de Coca-Cola es capital intangible</p>
+      <div class="prob-stats">
+        <div class="prob-stat">
+          <div class="prob-stat-v">USD $306B</div>
+          <div class="prob-stat-l">Valor Intangible</div>
+        </div>
+        <div class="prob-stat">
+          <div class="prob-stat-v white">USD $34B</div>
+          <div class="prob-stat-l">Patrimonio Contable</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── SECCIÓN 2: CAPITAL INTANGIBLE ─── -->
+  <section class="cap-section">
+    <div class="cap-label">Capital Intangible</div>
+    <div class="cap-inner">
+
+      <!-- Métricas izquierda -->
+      <div class="cap-metrics">
+        <div class="cap-metric">
+          <div class="cap-metric-lb">Total Enterprise Value</div>
+          <div class="cap-metric-v">$336 Billion USD</div>
+          <div class="cap-metric-pct">100%</div>
+        </div>
+        <div class="cap-metric gold-b">
+          <div class="cap-metric-lb">Intangible Value</div>
+          <div class="cap-metric-v gold">$302 Billion USD</div>
+          <div class="cap-metric-pct">90%</div>
+        </div>
+        <div class="cap-metric">
+          <div class="cap-metric-lb">Financial Value</div>
+          <div class="cap-metric-v">$34 Billion USD</div>
+          <div class="cap-metric-pct">10% · Balance Sheets</div>
+        </div>
+      </div>
+
+      <!-- Botella Coca-Cola imagen -->
+      <div class="bottle-wrap" style="position:relative;">
+        <img src="coca.png" alt="Coca-Cola bottle"
+          style="width:200px;height:auto;filter:drop-shadow(0 20px 60px rgba(217,119,6,0.25));display:block;margin:0 auto;"/>
+        <!-- Indicadores superpuestos -->
+        <div style="position:absolute;right:-60px;top:8%;display:flex;align-items:center;gap:6px;">
+          <div style="width:40px;height:1px;background:rgba(217,119,6,0.5);"></div>
+          <div>
+            <div style="font-size:10px;font-weight:800;color:var(--gold);letter-spacing:.08em;">90%</div>
+            <div style="font-size:8px;color:rgba(217,119,6,0.6);letter-spacing:.05em;">INTANGIBLE</div>
+          </div>
+        </div>
+        <div style="position:absolute;right:-64px;bottom:4%;display:flex;align-items:center;gap:6px;">
+          <div style="width:40px;height:1px;background:rgba(148,163,184,0.35);"></div>
+          <div>
+            <div style="font-size:10px;font-weight:800;color:var(--muted2);letter-spacing:.08em;">10%</div>
+            <div style="font-size:8px;color:var(--muted);letter-spacing:.05em;">FINANCIERO</div>
+          </div>
+        </div>
+        <!-- Línea divisoria 90%/10% -->
+        <div style="position:absolute;bottom:10%;left:5%;right:5%;height:1px;background:rgba(217,119,6,0.4);border-top:1px dashed rgba(217,119,6,0.5);"></div>
+      </div>
+
+      <!-- Descripción derecha -->
+      <div class="cap-right">
+        <div class="cap-headline">
+          El 90% del Valor de Coca-Cola es <span class="gold">intangible</span>
+        </div>
+        <div>
+          <blockquote class="cap-quote">
+            "Si mañana se quemaran todas nuestras fábricas, el valor de Coca-Cola seguiría casi intacto. Lo que realmente vale es la marca en la mente de las personas."
+          </blockquote>
+          <p class="cap-attr">— Roberto Goizueta</p>
+        </div>
+        <div class="cap-pib">
+          <div class="cap-pib-lb">Equivalente en PIB</div>
+          <div class="cap-pib-row">
+            <span class="cap-pib-flag">🇵🇪</span>
+            <div>
+              <div class="cap-pib-name">Perú</div>
+              <div class="cap-pib-sub">El IV de Coca-Cola ($302B) equivale al PIB completo de Perú ($289B)</div>
+            </div>
+          </div>
+        </div>
+        <p style="font-size:12px;color:var(--muted);line-height:1.7;">
+          El capital intangible no se deprecia, no se roba y no figura en el balance. Es el activo que determina el precio al que una empresa cotiza en bolsa.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ─── SECCIÓN 3: UNA MARCA NO ES UN GASTO ─── -->
+  <section class="economia">
+    <div class="eco-header">
+      <div>
+        <h2 class="eco-h1">Una marca no es un gasto.<br><span class="gold">Es una economía entera.</span></h2>
+      </div>
+      <div class="eco-sub">
+        El valor intangible de las marcas más poderosas del mundo supera el PIB de países soberanos enteros.<br>
+        <strong>Brandconomics® lo mide. En dólares.</strong>
+      </div>
+    </div>
+
+    <!-- Selector de marca colombiana -->
+    <div class="eco-selector">
+      <label>Marca Colombia →</label>
+      <select id="brandSelect" onchange="updateDynRow()">
+      </select>
+    </div>
+
+    <table class="eco-table">
+      <thead>
+        <tr>
+          <th>Marca</th>
+          <th style="text-align:right">Valor Intangible</th>
+          <th style="text-align:right">País equivalente en PIB</th>
+          <th style="text-align:right">% Intangible</th>
+          <th style="text-align:right">Diferencia</th>
+        </tr>
+      </thead>
+      <tbody id="globalRows">
+        <!-- Filas estáticas globales -->
+        <tr>
+          <td><div class="td-marca">Apple</div><div class="td-sector">Technology</div></td>
+          <td class="td-iv">
+            <div class="td-iv-val">USD $3,144B</div>
+            <div class="td-iv-bar"><div class="td-iv-fill" style="width:100%"></div></div>
+          </td>
+          <td class="td-pais"><div class="td-pais-name">🇫🇷 Francia</div><div class="td-pais-pib">PIB 2024: USD $3,130B</div></td>
+          <td class="td-pct high">98.2%</td>
+          <td class="td-diff"><span class="td-diff-pill neg">-0.4%</span></td>
+        </tr>
+        <tr>
+          <td><div class="td-marca">Microsoft</div><div class="td-sector">Technology</div></td>
+          <td class="td-iv">
+            <div class="td-iv-val">USD $2,531B</div>
+            <div class="td-iv-bar"><div class="td-iv-fill" style="width:80.5%"></div></div>
+          </td>
+          <td class="td-pais"><div class="td-pais-name">🇮🇹 Italia</div><div class="td-pais-pib">PIB 2024: USD $2,333B</div></td>
+          <td class="td-pct high">90.4%</td>
+          <td class="td-diff"><span class="td-diff-pill neg">-8%</span></td>
+        </tr>
+        <tr>
+          <td><div class="td-marca">Amazon</div><div class="td-sector">E-commerce</div></td>
+          <td class="td-iv">
+            <div class="td-iv-val">USD $1,768B</div>
+            <div class="td-iv-bar"><div class="td-iv-fill" style="width:56.2%"></div></div>
+          </td>
+          <td class="td-pais"><div class="td-pais-name">🇦🇺 Australia</div><div class="td-pais-pib">PIB 2024: USD $1,723B</div></td>
+          <td class="td-pct high">86.2%</td>
+          <td class="td-diff"><span class="td-diff-pill neg">-3%</span></td>
+        </tr>
+        <tr>
+          <td><div class="td-marca">Meta</div><div class="td-sector">Social Media</div></td>
+          <td class="td-iv">
+            <div class="td-iv-val">USD $1,194B</div>
+            <div class="td-iv-bar"><div class="td-iv-fill" style="width:38%"></div></div>
+          </td>
+          <td class="td-pais"><div class="td-pais-name">🇳🇱 Países Bajos</div><div class="td-pais-pib">PIB 2024: USD $1,118B</div></td>
+          <td class="td-pct high">85.3%</td>
+          <td class="td-diff"><span class="td-diff-pill neg">-6%</span></td>
+        </tr>
+        <tr>
+          <td><div class="td-marca">Tesla</div><div class="td-sector">Automotive</div></td>
+          <td class="td-iv">
+            <div class="td-iv-val">USD $730B</div>
+            <div class="td-iv-bar"><div class="td-iv-fill" style="width:23.2%"></div></div>
+          </td>
+          <td class="td-pais"><div class="td-pais-name">🇦🇷 Argentina</div><div class="td-pais-pib">PIB 2024: USD $647B</div></td>
+          <td class="td-pct high">91.2%</td>
+          <td class="td-diff"><span class="td-diff-pill neg">-11%</span></td>
+        </tr>
+        <tr>
+          <td><div class="td-marca">Samsung</div><div class="td-sector">Electronics</div></td>
+          <td class="td-iv">
+            <div class="td-iv-val">USD $457B</div>
+            <div class="td-iv-bar"><div class="td-iv-fill" style="width:14.5%"></div></div>
+          </td>
+          <td class="td-pais"><div class="td-pais-name">🇸🇬 Singapur</div><div class="td-pais-pib">PIB 2024: USD $497B</div></td>
+          <td class="td-pct">53.1%</td>
+          <td class="td-diff"><span class="td-diff-pill pos">+9%</span></td>
+        </tr>
+        <tr>
+          <td><div class="td-marca">LVMH</div><div class="td-sector">Luxury</div></td>
+          <td class="td-iv">
+            <div class="td-iv-val">USD $199B</div>
+            <div class="td-iv-bar"><div class="td-iv-fill" style="width:6.3%"></div></div>
+          </td>
+          <td class="td-pais"><div class="td-pais-name">🇭🇺 Hungría</div><div class="td-pais-pib">PIB 2024: USD $212B</div></td>
+          <td class="td-pct">69.6%</td>
+          <td class="td-diff"><span class="td-diff-pill pos">+7%</span></td>
+        </tr>
+        <tr>
+          <td><div class="td-marca">Coca-Cola</div><div class="td-sector">Bebidas</div></td>
+          <td class="td-iv">
+            <div class="td-iv-val">USD $302B</div>
+            <div class="td-iv-bar"><div class="td-iv-fill" style="width:9.6%"></div></div>
+          </td>
+          <td class="td-pais"><div class="td-pais-name">🇵🇪 Perú</div><div class="td-pais-pib">PIB 2024: USD $289B</div></td>
+          <td class="td-pct high">89.4%</td>
+          <td class="td-diff"><span class="td-diff-pill pos">+0.3%</span></td>
+        </tr>
+        <!-- FILA DINÁMICA -->
+        <tr class="dynamic-row" id="dynRow">
+          <td>
+            <div class="td-marca" id="dyn-marca">—</div>
+            <div class="td-sector" id="dyn-sector">—</div>
+            <span class="dynamic-tag">Colombia 2026</span>
+          </td>
+          <td class="td-iv">
+            <div class="td-iv-val" id="dyn-iv">—</div>
+            <div class="td-iv-bar"><div class="td-iv-fill" id="dyn-bar" style="width:0%"></div></div>
+          </td>
+          <td class="td-pais">
+            <div class="td-pais-name" id="dyn-pais">—</div>
+            <div class="td-pais-pib" id="dyn-pib">—</div>
+          </td>
+          <td class="td-pct" id="dyn-pct">—</td>
+          <td class="td-diff">
+            <span class="td-diff-pill gold-pill" id="dyn-diff">—</span>
+            <div id="dyn-diff-sub" style="font-size:9px;color:var(--muted);margin-top:4px;text-align:right;letter-spacing:.03em;"></div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Leyenda IV/Revenue -->
+    <div style="margin-top:28px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:18px 22px;">
+      <div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;">Lectura del múltiplo IV / Ingresos anuales</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">
+        <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.15);border-radius:10px;padding:12px 14px;">
+          <div style="font-size:15px;font-weight:900;color:#EF4444;">&lt; 1x</div>
+          <div style="font-size:10px;font-weight:700;color:#EF4444;margin-top:3px;">Destruye equity</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:4px;line-height:1.5;">El intangible vale menos que los ingresos. Sin prima de marca.</div>
+        </div>
+        <div style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.15);border-radius:10px;padding:12px 14px;">
+          <div style="font-size:15px;font-weight:900;color:var(--gold-lt);">1x – 1.5x</div>
+          <div style="font-size:10px;font-weight:700;color:var(--gold-lt);margin-top:3px;">Marca funcional</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:4px;line-height:1.5;">Prima moderada. Cumple pero no diferencia con fuerza.</div>
+        </div>
+        <div style="background:rgba(79,70,229,0.08);border:1px solid rgba(79,70,229,0.18);border-radius:10px;padding:12px 14px;">
+          <div style="font-size:15px;font-weight:900;color:#818CF8;">1.5x – 2x</div>
+          <div style="font-size:10px;font-weight:700;color:#818CF8;margin-top:3px;">Prima sólida</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:4px;line-height:1.5;">Diferenciación percibida. El mercado paga sobre los ingresos.</div>
+        </div>
+        <div style="background:rgba(16,185,129,0.07);border:1px solid rgba(16,185,129,0.18);border-radius:10px;padding:12px 14px;">
+          <div style="font-size:15px;font-weight:900;color:#34D399;">&gt; 2x</div>
+          <div style="font-size:10px;font-weight:700;color:#34D399;margin-top:3px;">Alta diferenciación</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:4px;line-height:1.5;">Pricing power real. Marca con ventaja intangible sostenible.</div>
+        </div>
+      </div>
+    </div>
+
+    <p style="font-size:10px;color:var(--muted);margin-top:20px;line-height:1.7;">
+      Fuente: IV global = Market Cap – (Activos – Pasivos) · Market Cap y balances: Yahoo Finance / companiesmarketcap.com · PIB: FMI World Economic Outlook 2024<br>
+      IV Colombia = Modelo M2 Brandconomics® (R²=53.9%, n=106) aplicado a datos BAV Colombia 2026 + estados financieros auditados · TRM 2024: $4,200 COP/USD
+    </p>
+  </section>
+
+</main>
+
+<footer>
+  <p>Brandconomics® · VML Colombia · 2026 &nbsp;·&nbsp; <a href="mailto:brandconomics@cscvml.com">brandconomics@cscvml.com</a></p>
+  <p style="margin-top:8px;">Asset Platform &nbsp;·&nbsp; <a href="index.html">← Infinite Loop BAV</a></p>
+</footer>
+
+<script>
+const BRANDS = [{"n":"D1","sector":"Supermercados","patron":"Líder integral","iv":5.8805,"mult":1.27,"pct_int":99.1,"gdp_pais":"Barbados","gdp_flag":"🇧🇧","gdp_b":5.7},{"n":"Ara","sector":"Supermercados","patron":"Líder integral","iv":5.4096,"mult":1.64,"pct_int":99.8,"gdp_pais":"Islas Feroe","gdp_flag":"🇫🇴","gdp_b":4.1},{"n":"Exito","sector":"Supermercados","patron":"Medio","iv":2.944,"mult":0.77,"pct_int":64.9,"gdp_pais":"Andorra","gdp_flag":"🇦🇩","gdp_b":3.7},{"n":"Olímpica","sector":"Supermercados","patron":"Medio","iv":1.428,"mult":0.84,"pct_int":72.7,"gdp_pais":"Cabo Verde","gdp_flag":"🇨🇻","gdp_b":2.3},{"n":"OXXO","sector":"Supermercados","patron":"Fuerza sin entrega","iv":0.5477,"mult":2.25,"pct_int":97.2,"gdp_pais":"Nauru","gdp_flag":"🇳🇷","gdp_b":0.14},{"n":"Makro","sector":"Supermercados","patron":"Erosión activa","iv":0.4105,"mult":0.98,"pct_int":66.4,"gdp_pais":"Palau","gdp_flag":"🇵🇼","gdp_b":0.3},{"n":"Cencosud","sector":"Supermercados","patron":"Débil","iv":1.1426,"mult":1.14,"pct_int":56.6,"gdp_pais":"Comoros","gdp_flag":"🇰🇲","gdp_b":1.3},{"n":"Falabella","sector":"Retail Moda","patron":"Líder integral","iv":0.7895,"mult":1.44,"pct_int":90.6,"gdp_pais":"Tonga","gdp_flag":"🇹🇴","gdp_b":0.5},{"n":"Movistar","sector":"Telecomunicaciones","patron":"Débil","iv":1.1587,"mult":0.73,"pct_int":58.0,"gdp_pais":"Comoros","gdp_flag":"🇰🇲","gdp_b":1.3},{"n":"Avianca","sector":"Aerolíneas","patron":"Débil","iv":2.4849,"mult":0.69,"pct_int":null,"gdp_pais":"Belize","gdp_flag":"🇧🇿","gdp_b":2.5},{"n":"Arturo Calle","sector":"Retail Moda","patron":"Medio","iv":0.197,"mult":1.3,"pct_int":81.1,"gdp_pais":"Nauru","gdp_flag":"🇳🇷","gdp_b":0.14},{"n":"Postobón","sector":"Bebidas","patron":"Medio","iv":0.7201,"mult":1.06,"pct_int":66.1,"gdp_pais":"Tonga","gdp_flag":"🇹🇴","gdp_b":0.5},{"n":"Aguila","sector":"Cervezas","patron":"Medio","iv":0.4326,"mult":1.19,"pct_int":69.1,"gdp_pais":"Palau","gdp_flag":"🇵🇼","gdp_b":0.3},{"n":"Renault","sector":"Automóviles","patron":"Medio","iv":0.5862,"mult":1.01,"pct_int":93.5,"gdp_pais":"Palau","gdp_flag":"🇵🇼","gdp_b":0.3},{"n":"Hyundai","sector":"Automóviles","patron":"Medio","iv":0.2116,"mult":1.4,"pct_int":91.0,"gdp_pais":"Nauru","gdp_flag":"🇳🇷","gdp_b":0.14},{"n":"Toyota","sector":"Automóviles","patron":"Líder integral","iv":1.4265,"mult":1.49,"pct_int":94.4,"gdp_pais":"Comoros","gdp_flag":"🇰🇲","gdp_b":1.3},{"n":"Mazda","sector":"Automóviles","patron":"Medio","iv":0.6887,"mult":1.55,"pct_int":89.8,"gdp_pais":"Palau","gdp_flag":"🇵🇼","gdp_b":0.3},{"n":"Chevrolet","sector":"Automóviles","patron":"Erosión activa","iv":0.1577,"mult":0.55,"pct_int":null,"gdp_pais":"Nauru","gdp_flag":"🇳🇷","gdp_b":0.14},{"n":"Rappi","sector":"E-commerce","patron":"Medio","iv":0.2784,"mult":1.66,"pct_int":85.9,"gdp_pais":"Nauru","gdp_flag":"🇳🇷","gdp_b":0.14},{"n":"Sura","sector":"Seguros","patron":"Medio","iv":0.2865,"mult":0.97,"pct_int":null,"gdp_pais":"Nauru","gdp_flag":"🇳🇷","gdp_b":0.14},{"n":"Seguros Bolivar","sector":"Seguros","patron":"Débil","iv":0.2269,"mult":0.6,"pct_int":null,"gdp_pais":"Nauru","gdp_flag":"🇳🇷","gdp_b":0.14},{"n":"Terpel","sector":"Combustibles","patron":"Medio","iv":5.8496,"mult":0.99,"pct_int":88.0,"gdp_pais":"Barbados","gdp_flag":"🇧🇧","gdp_b":5.7},{"n":"Primax","sector":"Combustibles","patron":"Débil","iv":2.3206,"mult":0.93,"pct_int":94.6,"gdp_pais":"Andorra","gdp_flag":"🇦🇩","gdp_b":3.7},{"n":"Biomax","sector":"Combustibles","patron":"Crítico","iv":1.4311,"mult":1.33,"pct_int":91.3,"gdp_pais":"Comoros","gdp_flag":"🇰🇲","gdp_b":1.3},{"n":"Farmatodo","sector":"Farmacias","patron":"Medio","iv":0.3239,"mult":0.87,"pct_int":89.5,"gdp_pais":"Nauru","gdp_flag":"🇳🇷","gdp_b":0.14},{"n":"Cruz Verde","sector":"Farmacias","patron":"Medio","iv":1.1682,"mult":0.89,"pct_int":87.5,"gdp_pais":"Comoros","gdp_flag":"🇰🇲","gdp_b":1.3},{"n":"Frisby","sector":"Restaurantes QSR","patron":"Líder integral","iv":0.3104,"mult":1.34,"pct_int":88.3,"gdp_pais":"Nauru","gdp_flag":"🇳🇷","gdp_b":0.14},{"n":"Decameron","sector":"Hoteles","patron":"Medio","iv":0.2064,"mult":1.67,"pct_int":53.8,"gdp_pais":"Nauru","gdp_flag":"🇳🇷","gdp_b":0.14},{"n":"H&M","sector":"Retail Moda","patron":"Fuerza sin entrega","iv":0.5563,"mult":2.86,"pct_int":85.9,"gdp_pais":"Palau","gdp_flag":"🇵🇼","gdp_b":0.3},{"n":"Tigo","sector":"Telecomunicaciones","patron":"Débil","iv":0.532,"mult":0.76,"pct_int":84.9,"gdp_pais":"Palau","gdp_flag":"🇵🇼","gdp_b":0.3},{"n":"Tigo UNE","sector":"Telecomunicaciones","patron":"Débil","iv":0.5726,"mult":0.91,"pct_int":85.7,"gdp_pais":"Palau","gdp_flag":"🇵🇼","gdp_b":0.3},{"n":"WOM","sector":"Telecomunicaciones","patron":"Crítico","iv":0.2964,"mult":1.43,"pct_int":null,"gdp_pais":"Nauru","gdp_flag":"🇳🇷","gdp_b":0.14},{"n":"McDonald's","sector":"Restaurantes QSR","patron":"Medio","iv":0.2109,"mult":1.17,"pct_int":87.8,"gdp_pais":"Nauru","gdp_flag":"🇳🇷","gdp_b":0.14},{"n":"Coca-Cola","sector":"Bebidas","patron":"Medio","iv":0.1502,"mult":1.17,"pct_int":91.7,"gdp_pais":"Palau","gdp_flag":"🇵🇼","gdp_b":0.3},{"n":"Poker (beer)","sector":"Cervezas","patron":"Débil","iv":1.7463,"mult":0.85,"pct_int":63.9,"gdp_pais":"Cabo Verde","gdp_flag":"🇨🇻","gdp_b":2.3},{"n":"Club Colombia","sector":"Cervezas","patron":"Medio","iv":2.9456,"mult":1.44,"pct_int":74.9,"gdp_pais":"Andorra","gdp_flag":"🇦🇩","gdp_b":3.7},{"n":"Corona (beer)","sector":"Cervezas","patron":"Medio","iv":3.3911,"mult":1.65,"pct_int":77.5,"gdp_pais":"Andorra","gdp_flag":"🇦🇩","gdp_b":3.7},{"n":"Tennis (clothing)","sector":"Retail Moda","patron":"Fuerza sin entrega","iv":0.1519,"mult":2.04,"pct_int":78.3,"gdp_pais":"Nauru","gdp_flag":"🇳🇷","gdp_b":0.14},{"n":"Mercado Zapatoca","sector":"Supermercados","patron":"Débil","iv":0.4881,"mult":2.47,"pct_int":95.9,"gdp_pais":"Nauru","gdp_flag":"🇳🇷","gdp_b":0.14},{"n":"Nissan","sector":"Automóviles","patron":"Medio","iv":0.6991,"mult":1.72,"pct_int":83.7,"gdp_pais":"Palau","gdp_flag":"🇵🇼","gdp_b":0.3},{"n":"Grupo Aval","sector":"Bancos","patron":"Débil","iv":0.2344,"mult":0.72,"pct_int":null,"gdp_pais":"Nauru","gdp_flag":"🇳🇷","gdp_b":0.14},{"n":"Petrobras","sector":"Combustibles","patron":"Crítico","iv":0.3513,"mult":1.15,"pct_int":92.6,"gdp_pais":"Nauru","gdp_flag":"🇳🇷","gdp_b":0.14},{"n":"Suzuki","sector":"Automóviles","patron":"Medio","iv":0.4569,"mult":1.62,"pct_int":71.3,"gdp_pais":"Palau","gdp_flag":"🇵🇼","gdp_b":0.3},{"n":"Colpatria","sector":"Bancos","patron":"Débil","iv":0.108,"mult":0.63,"pct_int":null,"gdp_pais":"Nauru","gdp_flag":"🇳🇷","gdp_b":0.14},{"n":"American Airlines","sector":"Aerolíneas","patron":"Débil","iv":0.0986,"mult":0.78,"pct_int":97.9,"gdp_pais":"Nauru","gdp_flag":"🇳🇷","gdp_b":0.14},{"n":"United Airlines","sector":"Aerolíneas","patron":"Débil","iv":0.1313,"mult":1.71,"pct_int":100.0,"gdp_pais":"Nauru","gdp_flag":"🇳🇷","gdp_b":0.14}];
+
+const MAX_IV_GLOBAL = 3144; // Apple en $B para escalar barras globales
+
+function init(){
+  const sel = document.getElementById('brandSelect');
+  const dd  = document.getElementById('brandDD');
+  BRANDS.sort((a,b)=>b.iv-a.iv).forEach(b=>{
+    // Select
+    const o = document.createElement('option');
+    o.value = b.n; o.textContent = b.n;
+    sel.appendChild(o);
+    // Nav dropdown
+    const d = document.createElement('div');
+    d.className = 'ddi';
+    d.textContent = b.n;
+    d.dataset.brand = b.n;
+    d.onclick = e => { e.stopPropagation(); setNavBrand(b.n); toggleDD(); };
+    dd.appendChild(d);
+  });
+  updateDynRow();
+}
+
+function updateDynRow(){
+  const name = document.getElementById('brandSelect').value;
+  const b = BRANDS.find(x=>x.n===name);
+  if(!b) return;
+  document.getElementById('dyn-marca').textContent  = b.n;
+  document.getElementById('dyn-sector').textContent = b.sector + ' · ' + b.patron;
+  document.getElementById('dyn-iv').textContent     = 'USD $' + b.iv.toFixed(1) + 'B';
+  // Bar: scale relative to Apple ($3,144B global) but boost vis: use sqrt scale
+  const pct = Math.min(100, Math.sqrt(b.iv / MAX_IV_GLOBAL) * 100 * 4);
+  document.getElementById('dyn-bar').style.width = pct.toFixed(1) + '%';
+  const diff = b.gdp_diff;
+  const sign = diff >= 0 ? '+' : '';
+  document.getElementById('dyn-pais').textContent = b.gdp_flag + ' ' + b.gdp_pais;
+  document.getElementById('dyn-pib').textContent  = 'PIB ref.: USD $' + b.gdp_b + 'B';
+  const pctEl = document.getElementById('dyn-pct');
+  if (b.pct_int !== null && b.pct_int !== undefined) {
+    pctEl.innerHTML = b.pct_int.toFixed(1) + '%<div style="font-size:9px;color:var(--muted);margin-top:3px;font-weight:400">IV / (IV + Patrimonio)</div>';
+  } else {
+    pctEl.innerHTML = '—<div style="font-size:9px;color:var(--muted);margin-top:3px;font-weight:400">holding / sin dato</div>';
+  }
+  document.getElementById('dyn-diff').textContent = b.mult.toFixed(1) + 'x';
+  document.getElementById('dyn-diff-sub').textContent = 'IV / Ingresos anuales';
+  // Sync nav chip
+  setNavBrand(name);
+}
+
+function setNavBrand(name){
+  document.getElementById('nav-nm').textContent = name;
+  document.getElementById('nav-av').textContent = name[0];
+  document.getElementById('brandSelect').value  = name;
+  document.querySelectorAll('.ddi').forEach(d=>d.classList.toggle('active',d.dataset.brand===name));
+}
+
+function toggleDD(){
+  document.getElementById('brandDD').classList.toggle('open');
+}
+document.addEventListener('click', e=>{
+  if(!e.target.closest('#navChip')) document.getElementById('brandDD').classList.remove('open');
+});
+
+init();
+</script>
+</body>
+</html>
