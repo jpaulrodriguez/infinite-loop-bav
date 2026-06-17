@@ -592,64 +592,61 @@
 <script>
 const BRANDS = [{"n":"D1","sector":"Supermercados","patron":"Líder integral","iv":5.8805,"mult":1.27,"pct_int":99.1,"gdp_pais":"Barbados","gdp_flag":"🇧🇧","gdp_b":5.7},{"n":"Ara","sector":"Supermercados","patron":"Líder integral","iv":5.4096,"mult":1.64,"pct_int":99.8,"gdp_pais":"Islas Feroe","gdp_flag":"🇫🇴","gdp_b":4.1},{"n":"Exito","sector":"Supermercados","patron":"Medio","iv":2.944,"mult":0.77,"pct_int":64.9,"gdp_pais":"Andorra","gdp_flag":"🇦🇩","gdp_b":3.7},{"n":"Olímpica","sector":"Supermercados","patron":"Medio","iv":1.428,"mult":0.84,"pct_int":72.7,"gdp_pais":"Cabo Verde","gdp_flag":"🇨🇻","gdp_b":2.3},{"n":"OXXO","sector":"Supermercados","patron":"Fuerza sin entrega","iv":0.5477,"mult":2.25,"pct_int":97.2,"gdp_pais":"Nauru","gdp_flag":"🇳🇷","gdp_b":0.14},{"n":"Makro","sector":"Supermercados","patron":"Erosión activa","iv":0.4105,"mult":0.98,"pct_int":66.4,"gdp_pais":"Palau","gdp_flag":"🇵🇼","gdp_b":0.3},{"n":"Cencosud","sector":"Supermercados","patron":"Débil","iv":1.1426,"mult":1.14,"pct_int":56.6,"gdp_pais":"Comoros","gdp_flag":"🇰🇲","gdp_b":1.3},{"n":"Falabella","sector":"Retail Moda","patron":"Líder integral","iv":0.7895,"mult":1.44,"pct_int":90.6,"gdp_pais":"Tonga","gdp_flag":"🇹🇴","gdp_b":0.5},{"n":"Movistar","sector":"Telecomunicaciones","patron":"Débil","iv":1.1587,"mult":0.73,"pct_int":58.0,"gdp_pais":"Comoros","gdp_flag":"🇰🇲","gdp_b":1.3},{"n":"Avianca","sector":"Aerolíneas","patron":"Débil","iv":2.4849,"mult":0.69,"pct_int":null,"gdp_pais":"Belize","gdp_flag":"🇧🇿","gdp_b":2.5},{"n":"Arturo Calle","sector":"Retail Moda","patron":"Medio","iv":0.197,"mult":1.3,"pct_int":81.1,"gdp_pais":"Nauru","gdp_flag":"🇳🇷","gdp_b":0.14},{"n":"Postobón","sector":"Bebidas","patron":"Medio","iv":0.7201,"mult":1.06,"pct_int":66.1,"gdp_pais":"Tonga","gdp_flag":"🇹🇴","gdp_b":0.5},{"n":"Aguila","sector":"Cervezas","patron":"Medio","iv":0.4326,"mult":1.19,"pct_int":69.1,"gdp_pais":"Palau","gdp_flag":"🇵🇼","gdp_b":0.3},{"n":"Renault","sector":"Automóviles","patron":"Medio","iv":0.5862,"mult":1.01,"pct_int":93.5,"gdp_pais":"Palau","gdp_flag":"🇵🇼","gdp_b":0.3},{"n":"Hyundai","sector":"Automóviles","patron":"Medio","iv":0.2116,"mult":1.4,"pct_int":91.0,"gdp_pais":"Nauru","gdp_flag":"🇳🇷","gdp_b":0.14},{"n":"Toyota","sector":"Automóviles","patron":"Líder integral","iv":1.4265,"mult":1.49,"pct_int":94.4,"gdp_pais":"Comoros","gdp_flag":"🇰🇲","gdp_b":1.3},{"n":"Mazda","sector":"Automóviles","patron":"Medio","iv":0.6887,"mult":1.55,"pct_int":89.8,"gdp_pais":"Palau","gdp_flag":"🇵🇼","gdp_b":0.3},{"n":"Chevrolet","sector":"Automóviles","patron":"Erosión activa","iv":0.1577,"mult":0.55,"pct_int":null,"gdp_pais":"Nauru","gdp_flag":"🇳🇷","gdp_b":0.14},{"n":"Rappi","sector":"E-commerce","patron":"Medio","iv":0.2784,"mult":1.66,"pct_int":85.9,"gdp_pais":"Nauru","gdp_flag":"🇳🇷","gdp_b":0.14},{"n":"Sura","sector":"Seguros","patron":"Medio","iv":0.2865,"mult":0.97,"pct_int":null,"gdp_pais":"Nauru","gdp_flag":"🇳🇷","gdp_b":0.14},{"n":"Seguros Bolivar","sector":"Seguros","patron":"Débil","iv":0.2269,"mult":0.6,"pct_int":null,"gdp_pais":"Nauru","gdp_flag":"🇳🇷","gdp_b":0.14},{"n":"Terpel","sector":"Combustibles","patron":"Medio","iv":5.8496,"mult":0.99,"pct_int":88.0,"gdp_pais":"Barbados","gdp_flag":"🇧🇧","gdp_b":5.7},{"n":"Primax","sector":"Combustibles","patron":"Débil","iv":2.3206,"mult":0.93,"pct_int":94.6,"gdp_pais":"Andorra","gdp_flag":"🇦🇩","gdp_b":3.7},{"n":"Biomax","sector":"Combustibles","patron":"Crítico","iv":1.4311,"mult":1.33,"pct_int":91.3,"gdp_pais":"Comoros","gdp_flag":"🇰🇲","gdp_b":1.3},{"n":"Farmatodo","sector":"Farmacias","patron":"Medio","iv":0.3239,"mult":0.87,"pct_int":89.5,"gdp_pais":"Nauru","gdp_flag":"🇳🇷","gdp_b":0.14},{"n":"Cruz Verde","sector":"Farmacias","patron":"Medio","iv":1.1682,"mult":0.89,"pct_int":87.5,"gdp_pais":"Comoros","gdp_flag":"🇰🇲","gdp_b":1.3},{"n":"Frisby","sector":"Restaurantes QSR","patron":"Líder integral","iv":0.3104,"mult":1.34,"pct_int":88.3,"gdp_pais":"Nauru","gdp_flag":"🇳🇷","gdp_b":0.14},{"n":"Decameron","sector":"Hoteles","patron":"Medio","iv":0.2064,"mult":1.67,"pct_int":53.8,"gdp_pais":"Nauru","gdp_flag":"🇳🇷","gdp_b":0.14},{"n":"H&M","sector":"Retail Moda","patron":"Fuerza sin entrega","iv":0.5563,"mult":2.86,"pct_int":85.9,"gdp_pais":"Palau","gdp_flag":"🇵🇼","gdp_b":0.3},{"n":"Tigo","sector":"Telecomunicaciones","patron":"Débil","iv":0.532,"mult":0.76,"pct_int":84.9,"gdp_pais":"Palau","gdp_flag":"🇵🇼","gdp_b":0.3},{"n":"Tigo UNE","sector":"Telecomunicaciones","patron":"Débil","iv":0.5726,"mult":0.91,"pct_int":85.7,"gdp_pais":"Palau","gdp_flag":"🇵🇼","gdp_b":0.3},{"n":"WOM","sector":"Telecomunicaciones","patron":"Crítico","iv":0.2964,"mult":1.43,"pct_int":null,"gdp_pais":"Nauru","gdp_flag":"🇳🇷","gdp_b":0.14},{"n":"McDonald's","sector":"Restaurantes QSR","patron":"Medio","iv":0.2109,"mult":1.17,"pct_int":87.8,"gdp_pais":"Nauru","gdp_flag":"🇳🇷","gdp_b":0.14},{"n":"Coca-Cola","sector":"Bebidas","patron":"Medio","iv":0.1502,"mult":1.17,"pct_int":91.7,"gdp_pais":"Palau","gdp_flag":"🇵🇼","gdp_b":0.3},{"n":"Poker (beer)","sector":"Cervezas","patron":"Débil","iv":1.7463,"mult":0.85,"pct_int":63.9,"gdp_pais":"Cabo Verde","gdp_flag":"🇨🇻","gdp_b":2.3},{"n":"Club Colombia","sector":"Cervezas","patron":"Medio","iv":2.9456,"mult":1.44,"pct_int":74.9,"gdp_pais":"Andorra","gdp_flag":"🇦🇩","gdp_b":3.7},{"n":"Corona (beer)","sector":"Cervezas","patron":"Medio","iv":3.3911,"mult":1.65,"pct_int":77.5,"gdp_pais":"Andorra","gdp_flag":"🇦🇩","gdp_b":3.7},{"n":"Tennis (clothing)","sector":"Retail Moda","patron":"Fuerza sin entrega","iv":0.1519,"mult":2.04,"pct_int":78.3,"gdp_pais":"Nauru","gdp_flag":"🇳🇷","gdp_b":0.14},{"n":"Mercado Zapatoca","sector":"Supermercados","patron":"Débil","iv":0.4881,"mult":2.47,"pct_int":95.9,"gdp_pais":"Nauru","gdp_flag":"🇳🇷","gdp_b":0.14},{"n":"Nissan","sector":"Automóviles","patron":"Medio","iv":0.6991,"mult":1.72,"pct_int":83.7,"gdp_pais":"Palau","gdp_flag":"🇵🇼","gdp_b":0.3},{"n":"Grupo Aval","sector":"Bancos","patron":"Débil","iv":0.2344,"mult":0.72,"pct_int":null,"gdp_pais":"Nauru","gdp_flag":"🇳🇷","gdp_b":0.14},{"n":"Petrobras","sector":"Combustibles","patron":"Crítico","iv":0.3513,"mult":1.15,"pct_int":92.6,"gdp_pais":"Nauru","gdp_flag":"🇳🇷","gdp_b":0.14},{"n":"Suzuki","sector":"Automóviles","patron":"Medio","iv":0.4569,"mult":1.62,"pct_int":71.3,"gdp_pais":"Palau","gdp_flag":"🇵🇼","gdp_b":0.3},{"n":"Colpatria","sector":"Bancos","patron":"Débil","iv":0.108,"mult":0.63,"pct_int":null,"gdp_pais":"Nauru","gdp_flag":"🇳🇷","gdp_b":0.14},{"n":"American Airlines","sector":"Aerolíneas","patron":"Débil","iv":0.0986,"mult":0.78,"pct_int":97.9,"gdp_pais":"Nauru","gdp_flag":"🇳🇷","gdp_b":0.14},{"n":"United Airlines","sector":"Aerolíneas","patron":"Débil","iv":0.1313,"mult":1.71,"pct_int":100.0,"gdp_pais":"Nauru","gdp_flag":"🇳🇷","gdp_b":0.14}];
 
-const MAX_IV_GLOBAL = 3144; // Apple en $B para escalar barras globales
+const MAX_IV_GLOBAL = 3144;
 
-function init(){
-  const sel = document.getElementById('brandSelect');
-  const dd  = document.getElementById('brandDD');
-  BRANDS.sort((a,b)=>b.iv-a.iv).forEach(b=>{
-    // Select
-    const o = document.createElement('option');
-    o.value = b.n; o.textContent = b.n;
-    sel.appendChild(o);
-    // Nav dropdown
-    const d = document.createElement('div');
-    d.className = 'ddi';
-    d.textContent = b.n;
-    d.dataset.brand = b.n;
-    d.onclick = e => { e.stopPropagation(); setNavBrand(b.n); updateDynRow(); toggleDD(); };
-    dd.appendChild(d);
-  });
-  updateDynRow();
-}
+// ── Fuente única de verdad para la marca activa ──────────────────────────────
+let currentBrand = null;
 
-function updateDynRow(){
-  const name = document.getElementById('brandSelect').value;
-  const b = BRANDS.find(x=>x.n===name);
+function selectBrand(name){
+  const b = BRANDS.find(x => x.n === name);
   if(!b) return;
+  currentBrand = b;
+  // Sync select
+  document.getElementById('brandSelect').value = name;
+  // Sync nav chip
+  document.getElementById('nav-nm').textContent = name;
+  document.getElementById('nav-av').textContent = name[0];
+  document.querySelectorAll('.ddi').forEach(d => d.classList.toggle('active', d.dataset.brand === name));
+  // Update dynamic row
   document.getElementById('dyn-marca').textContent  = b.n;
   document.getElementById('dyn-sector').textContent = b.sector + ' · ' + b.patron;
   document.getElementById('dyn-iv').textContent     = 'USD $' + b.iv.toFixed(1) + 'B';
-  // Bar: scale relative to Apple ($3,144B global) but boost vis: use sqrt scale
   const pct = Math.min(100, Math.sqrt(b.iv / MAX_IV_GLOBAL) * 100 * 4);
   document.getElementById('dyn-bar').style.width = pct.toFixed(1) + '%';
-  const diff = b.gdp_diff;
-  const sign = diff >= 0 ? '+' : '';
   document.getElementById('dyn-pais').textContent = b.gdp_flag + ' ' + b.gdp_pais;
   document.getElementById('dyn-pib').textContent  = 'PIB ref.: USD $' + b.gdp_b + 'B';
   const pctEl = document.getElementById('dyn-pct');
-  if (b.pct_int !== null && b.pct_int !== undefined) {
+  if(b.pct_int !== null && b.pct_int !== undefined){
     pctEl.innerHTML = b.pct_int.toFixed(1) + '%<div style="font-size:9px;color:var(--muted);margin-top:3px;font-weight:400">IV / (IV + Patrimonio)</div>';
   } else {
     pctEl.innerHTML = '—<div style="font-size:9px;color:var(--muted);margin-top:3px;font-weight:400">holding / sin dato</div>';
   }
-  document.getElementById('dyn-diff').textContent = b.mult.toFixed(1) + 'x';
+  document.getElementById('dyn-diff').textContent    = b.mult.toFixed(1) + 'x';
   document.getElementById('dyn-diff-sub').textContent = 'IV / Ingresos anuales';
-  // Sync nav chip
-  setNavBrand(name);
 }
 
-function setNavBrand(name){
-  document.getElementById('nav-nm').textContent = name;
-  document.getElementById('nav-av').textContent = name[0];
-  document.getElementById('brandSelect').value  = name;
-  document.querySelectorAll('.ddi').forEach(d=>d.classList.toggle('active',d.dataset.brand===name));
+function init(){
+  const sel = document.getElementById('brandSelect');
+  const dd  = document.getElementById('brandDD');
+  BRANDS.sort((a,b) => b.iv - a.iv).forEach(b => {
+    const o = document.createElement('option');
+    o.value = b.n; o.textContent = b.n;
+    sel.appendChild(o);
+    const d = document.createElement('div');
+    d.className = 'ddi'; d.textContent = b.n; d.dataset.brand = b.n;
+    d.onclick = e => { e.stopPropagation(); selectBrand(b.n); toggleDD(); };
+    dd.appendChild(d);
+  });
+  selectBrand(BRANDS[0].n);
 }
+
+// Alias para el onchange del <select> en el HTML
+function updateDynRow(){ selectBrand(document.getElementById('brandSelect').value); }
 
 function toggleDD(){
   document.getElementById('brandDD').classList.toggle('open');
 }
-document.addEventListener('click', e=>{
+document.addEventListener('click', e => {
   if(!e.target.closest('#navChip')) document.getElementById('brandDD').classList.remove('open');
 });
 
@@ -661,9 +658,9 @@ BRANDS.forEach(b => Object.assign(b, FIN[b.n] || {}));
 
 // ─── GENERATE PPT ─────────────────────────────────────────────────────────
 async function generatePPT(){
-  const name = document.getElementById('brandSelect').value;
-  const b = BRANDS.find(x=>x.n===name);
+  const b = currentBrand;
   if(!b) return;
+  const name = b.n;
   const btn = document.getElementById('dlBtn');
   btn.textContent = '⏳ Generando…';
   btn.disabled = true;
