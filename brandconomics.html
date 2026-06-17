@@ -1128,7 +1128,7 @@ async function generatePPT(){
     ];
     capitalDef.forEach((cap,i)=>{
       const cx=0.4+i*4.3;
-      box(s11,cx,0.78,4.12,5.52,SURF,cadim(p.color,0.35));
+      box(s11,cx,0.78,4.12,5.52,SURF,dim(p.color,0.35));
       s11.addShape(pptx.ShapeType.rect,{x:cx,y:0.78,w:4.12,h:0.052,fill:{color:cap.color},line:{color:cap.color}});
       s11.addText(cap.pct+'%',{x:cx+0.14,y:0.92,w:2.1,h:0.8,fontSize:48,bold:true,color:cap.color,fontFace:'Calibri'});
       s11.addText('≈ USD $'+cap.iv.toFixed(2)+'B',{x:cx+0.14,y:1.78,w:3.84,h:0.3,fontSize:11,bold:true,color:cap.color});
