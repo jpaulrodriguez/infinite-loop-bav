@@ -310,15 +310,19 @@
 
     <!-- HEADLINE centrado -->
     <div style="text-align:center;margin-bottom:56px;">
-      <h2 class="eco-headline" style="margin-bottom:12px;">Tres fuerzas.<br>Un solo <span class="blue">score de visibilidad</span>.</h2>
-      <p class="eco-sub" style="max-width:500px;margin:0 auto;">La visibilidad no vive en un canal. Es la intersección de demanda real, conversación activa y capital de marca.</p>
+      <h2 class="eco-headline" style="margin-bottom:12px;">Cuatro señales.<br>Un solo <span class="blue">score E-E-A-T</span>.</h2>
+      <p class="eco-sub" style="max-width:520px;margin:0 auto;">La visibilidad no vive en un canal. Es la intersección de experiencia real, autoridad editorial, reconocimiento y confianza de marca.</p>
     </div>
 
-    <!-- DIAGRAMA 3D TRIÁNGULO DE FUERZAS -->
+    <!-- DIAGRAMA ROMBO EEAT -->
     <div style="display:flex;justify-content:center;margin-bottom:64px;">
       <div style="width:min(640px,92vw);">
-        <svg id="tsSvg" viewBox="0 0 640 540" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
+        <svg id="tsSvg" viewBox="0 0 640 560" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
           <defs>
+            <radialGradient id="glowOrange" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#F97316" stop-opacity="0.55"/>
+              <stop offset="100%" stop-color="#F97316" stop-opacity="0"/>
+            </radialGradient>
             <radialGradient id="glowBlue" cx="50%" cy="50%" r="50%">
               <stop offset="0%" stop-color="#3B82F6" stop-opacity="0.5"/>
               <stop offset="100%" stop-color="#3B82F6" stop-opacity="0"/>
@@ -327,9 +331,9 @@
               <stop offset="0%" stop-color="#A78BFA" stop-opacity="0.5"/>
               <stop offset="100%" stop-color="#A78BFA" stop-opacity="0"/>
             </radialGradient>
-            <radialGradient id="glowTeal" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stop-color="#06B6D4" stop-opacity="0.5"/>
-              <stop offset="100%" stop-color="#06B6D4" stop-opacity="0"/>
+            <radialGradient id="glowGreen" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#10B981" stop-opacity="0.5"/>
+              <stop offset="100%" stop-color="#10B981" stop-opacity="0"/>
             </radialGradient>
             <radialGradient id="glowCenter" cx="50%" cy="50%" r="50%">
               <stop offset="0%" stop-color="#60A5FA" stop-opacity="0.7"/>
@@ -338,136 +342,136 @@
             <filter id="blur8"><feGaussianBlur stdDeviation="8"/></filter>
             <filter id="blur4"><feGaussianBlur stdDeviation="4"/></filter>
             <filter id="blur16"><feGaussianBlur stdDeviation="16"/></filter>
-            <!-- Animated dash for edges -->
             <style>
-              @keyframes dash {from{stroke-dashoffset:300}to{stroke-dashoffset:0}}
-              @keyframes dashR {from{stroke-dashoffset:0}to{stroke-dashoffset:300}}
-              @keyframes pulse {0%,100%{opacity:.5;r:62}50%{opacity:1;r:66}}
-              @keyframes pulseCenter {0%,100%{opacity:.6;r:52}50%{opacity:1;r:56}}
-              @keyframes nodeGlow {0%,100%{opacity:.3}50%{opacity:.7}}
-              .edge-anim-1{stroke-dasharray:12 10;animation:dash 3s linear infinite}
-              .edge-anim-2{stroke-dasharray:12 10;animation:dash 3.5s linear infinite 0.5s}
-              .edge-anim-3{stroke-dasharray:12 10;animation:dashR 4s linear infinite 1s}
-              .node-pulse-1{animation:nodeGlow 2.5s ease-in-out infinite}
-              .node-pulse-2{animation:nodeGlow 2.8s ease-in-out infinite 0.6s}
-              .node-pulse-3{animation:nodeGlow 3.1s ease-in-out infinite 1.2s}
-              .center-pulse{animation:nodeGlow 2s ease-in-out infinite}
+              @keyframes dash  {from{stroke-dashoffset:320}to{stroke-dashoffset:0}}
+              @keyframes dashR {from{stroke-dashoffset:0}to{stroke-dashoffset:320}}
+              @keyframes nodeGlow{0%,100%{opacity:.3}50%{opacity:.7}}
+              .ea1{stroke-dasharray:12 9;animation:dash  3.0s linear infinite}
+              .ea2{stroke-dasharray:12 9;animation:dashR 3.4s linear infinite .4s}
+              .ea3{stroke-dasharray:12 9;animation:dash  3.8s linear infinite .8s}
+              .ea4{stroke-dasharray:12 9;animation:dashR 3.2s linear infinite 1.2s}
+              .np1{animation:nodeGlow 2.5s ease-in-out infinite}
+              .np2{animation:nodeGlow 2.8s ease-in-out infinite .6s}
+              .np3{animation:nodeGlow 3.1s ease-in-out infinite 1.2s}
+              .np4{animation:nodeGlow 2.6s ease-in-out infinite .9s}
+              .cp {animation:nodeGlow 2.0s ease-in-out infinite}
             </style>
           </defs>
 
-          <!-- ── BG ambient glow ── -->
-          <ellipse cx="320" cy="300" rx="240" ry="200" fill="rgba(59,130,246,0.04)" filter="url(#blur16)"/>
+          <!-- BG glow -->
+          <ellipse cx="320" cy="285" rx="220" ry="200" fill="rgba(59,130,246,0.04)" filter="url(#blur16)"/>
 
-          <!-- ── TRIANGLE FACE (subtle fill) ── -->
-          <!-- Vértices: TOP=Capital de Marca(320,58), BL=Demanda Activa(82,440), BR=Conversación Social(558,440) -->
-          <polygon points="320,80 88,440 552,440"
-            fill="rgba(59,130,246,0.04)"
-            stroke="none"/>
+          <!-- Diamond face -->
+          <polygon points="320,72 568,282 320,492 72,282"
+            fill="rgba(59,130,246,0.03)" stroke="none"/>
 
-          <!-- ── EDGES (glow layer + animated dash) ── -->
-          <!-- Edge 1: Top → BL (blue→purple) -->
-          <line x1="320" y1="80" x2="88" y2="440" stroke="rgba(139,92,246,0.25)" stroke-width="2.5" filter="url(#blur4)"/>
-          <line x1="320" y1="80" x2="88" y2="440" stroke="rgba(167,139,250,0.5)" stroke-width="1.5" class="edge-anim-1"/>
+          <!-- ── EDGES (perimeter of diamond) ── -->
+          <!-- Top→Right (orange→blue) -->
+          <line x1="320" y1="72" x2="568" y2="282" stroke="rgba(249,115,22,0.22)" stroke-width="2.5" filter="url(#blur4)"/>
+          <line x1="320" y1="72" x2="568" y2="282" stroke="rgba(249,115,22,0.50)" stroke-width="1.5" class="ea1"/>
+          <!-- Right→Bottom (blue→purple) -->
+          <line x1="568" y1="282" x2="320" y2="492" stroke="rgba(167,139,250,0.22)" stroke-width="2.5" filter="url(#blur4)"/>
+          <line x1="568" y1="282" x2="320" y2="492" stroke="rgba(167,139,250,0.50)" stroke-width="1.5" class="ea2"/>
+          <!-- Bottom→Left (purple→green) -->
+          <line x1="320" y1="492" x2="72" y2="282" stroke="rgba(16,185,129,0.22)" stroke-width="2.5" filter="url(#blur4)"/>
+          <line x1="320" y1="492" x2="72" y2="282" stroke="rgba(16,185,129,0.50)" stroke-width="1.5" class="ea3"/>
+          <!-- Left→Top (green→orange) -->
+          <line x1="72" y1="282" x2="320" y2="72" stroke="rgba(249,115,22,0.22)" stroke-width="2.5" filter="url(#blur4)"/>
+          <line x1="72" y1="282" x2="320" y2="72" stroke="rgba(249,115,22,0.40)" stroke-width="1.5" class="ea4"/>
 
-          <!-- Edge 2: Top → BR (blue→teal) -->
-          <line x1="320" y1="80" x2="552" y2="440" stroke="rgba(6,182,212,0.25)" stroke-width="2.5" filter="url(#blur4)"/>
-          <line x1="320" y1="80" x2="552" y2="440" stroke="rgba(6,182,212,0.5)" stroke-width="1.5" class="edge-anim-2"/>
+          <!-- Center dashed spokes -->
+          <line x1="320" y1="72"  x2="320" y2="258" stroke="rgba(249,115,22,0.18)"  stroke-width="1" stroke-dasharray="4 6"/>
+          <line x1="568" y1="282" x2="348" y2="282" stroke="rgba(59,130,246,0.18)"  stroke-width="1" stroke-dasharray="4 6"/>
+          <line x1="320" y1="492" x2="320" y2="308" stroke="rgba(167,139,250,0.18)" stroke-width="1" stroke-dasharray="4 6"/>
+          <line x1="72"  y1="282" x2="292" y2="282" stroke="rgba(16,185,129,0.18)"  stroke-width="1" stroke-dasharray="4 6"/>
 
-          <!-- Edge 3: BL → BR (bottom) -->
-          <line x1="88" y1="440" x2="552" y2="440" stroke="rgba(59,130,246,0.25)" stroke-width="2.5" filter="url(#blur4)"/>
-          <line x1="88" y1="440" x2="552" y2="440" stroke="rgba(96,165,250,0.5)" stroke-width="1.5" class="edge-anim-3"/>
+          <!-- ══ NODE 1: Experience (TOP, orange) ══ -->
+          <circle cx="320" cy="72" r="80" fill="url(#glowOrange)" filter="url(#blur8)" class="np1"/>
+          <circle cx="320" cy="72" r="62" fill="rgba(15,23,42,0.92)" stroke="rgba(249,115,22,0.55)" stroke-width="1.5"/>
+          <circle cx="320" cy="72" r="57" fill="none" stroke="rgba(249,115,22,0.18)" stroke-width="1"/>
+          <text x="320" y="55" text-anchor="middle" fill="#FED7AA" font-size="9" font-weight="800" letter-spacing="1.2" font-family="Inter,sans-serif">E</text>
+          <text x="320" y="70" text-anchor="middle" fill="#F97316" font-size="11" font-weight="900" letter-spacing=".6" font-family="Inter,sans-serif">EXPERIENCE</text>
+          <text x="320" y="85" text-anchor="middle" fill="rgba(249,115,22,0.55)" font-size="8" font-family="Inter,sans-serif">GT · Social</text>
+          <rect x="290" y="94" width="60" height="17" rx="8.5" fill="rgba(249,115,22,0.25)" stroke="rgba(249,115,22,0.50)" stroke-width="1"/>
+          <text x="320" y="106" text-anchor="middle" fill="#FDBA74" font-size="10" font-weight="700" letter-spacing=".5" font-family="Inter,sans-serif">35%</text>
 
-          <!-- ── EDGES TO CENTER (320,290) ── -->
-          <line x1="320" y1="80" x2="320" y2="270" stroke="rgba(167,139,250,0.20)" stroke-width="1" stroke-dasharray="4 6"/>
-          <line x1="88" y1="440" x2="300" y2="295" stroke="rgba(96,165,250,0.20)" stroke-width="1" stroke-dasharray="4 6"/>
-          <line x1="552" y1="440" x2="340" y2="295" stroke="rgba(6,182,212,0.20)" stroke-width="1" stroke-dasharray="4 6"/>
+          <!-- ══ NODE 2: Authoritativeness (RIGHT, blue) ══ -->
+          <circle cx="568" cy="282" r="80" fill="url(#glowBlue)" filter="url(#blur8)" class="np2"/>
+          <circle cx="568" cy="282" r="62" fill="rgba(15,23,42,0.92)" stroke="rgba(96,165,250,0.55)" stroke-width="1.5"/>
+          <circle cx="568" cy="282" r="57" fill="none" stroke="rgba(96,165,250,0.18)" stroke-width="1"/>
+          <text x="568" y="264" text-anchor="middle" fill="#BFDBFE" font-size="9" font-weight="800" letter-spacing="1.2" font-family="Inter,sans-serif">A</text>
+          <text x="568" y="279" text-anchor="middle" fill="#60A5FA" font-size="10" font-weight="900" letter-spacing=".5" font-family="Inter,sans-serif">AUTHORITY</text>
+          <text x="568" y="294" text-anchor="middle" fill="rgba(96,165,250,0.55)" font-size="8" font-family="Inter,sans-serif">BAV R · BAV E</text>
+          <rect x="537" y="303" width="62" height="17" rx="8.5" fill="rgba(59,130,246,0.22)" stroke="rgba(96,165,250,0.50)" stroke-width="1"/>
+          <text x="568" y="315" text-anchor="middle" fill="#93C5FD" font-size="10" font-weight="700" letter-spacing=".5" font-family="Inter,sans-serif">25%</text>
 
-          <!-- ══ NODE 1: Capital de Marca (TOP, purple) ══ -->
-          <circle cx="320" cy="80" r="80" fill="url(#glowPurple)" filter="url(#blur8)" class="node-pulse-1"/>
-          <circle cx="320" cy="80" r="62" fill="rgba(15,23,42,0.90)" stroke="rgba(167,139,250,0.55)" stroke-width="1.5"/>
-          <circle cx="320" cy="80" r="58" fill="none" stroke="rgba(167,139,250,0.20)" stroke-width="1"/>
-          <text x="320" y="62" text-anchor="middle" fill="#E9D5FF" font-size="11" font-weight="800" letter-spacing=".8" font-family="Inter,sans-serif">CAPITAL</text>
-          <text x="320" y="77" text-anchor="middle" fill="#A78BFA" font-size="11" font-weight="800" letter-spacing=".8" font-family="Inter,sans-serif">DE MARCA</text>
-          <text x="320" y="92" text-anchor="middle" fill="rgba(167,139,250,0.55)" font-size="8.5" font-family="Inter,sans-serif">BAV D + R</text>
-          <rect x="295" y="101" width="50" height="18" rx="9" fill="rgba(139,92,246,0.30)" stroke="rgba(167,139,250,0.50)" stroke-width="1"/>
-          <text x="320" y="114" text-anchor="middle" fill="#C4B5FD" font-size="10" font-weight="700" letter-spacing=".5" font-family="Inter,sans-serif">20%</text>
+          <!-- ══ NODE 3: Expertise (BOTTOM, purple) ══ -->
+          <circle cx="320" cy="492" r="80" fill="url(#glowPurple)" filter="url(#blur8)" class="np3"/>
+          <circle cx="320" cy="492" r="62" fill="rgba(15,23,42,0.92)" stroke="rgba(167,139,250,0.55)" stroke-width="1.5"/>
+          <circle cx="320" cy="492" r="57" fill="none" stroke="rgba(167,139,250,0.18)" stroke-width="1"/>
+          <text x="320" y="473" text-anchor="middle" fill="#EDE9FE" font-size="9" font-weight="800" letter-spacing="1.2" font-family="Inter,sans-serif">E</text>
+          <text x="320" y="489" text-anchor="middle" fill="#A78BFA" font-size="11" font-weight="900" letter-spacing=".6" font-family="Inter,sans-serif">EXPERTISE</text>
+          <text x="320" y="504" text-anchor="middle" fill="rgba(167,139,250,0.55)" font-size="8" font-family="Inter,sans-serif">Wiki · BAV K</text>
+          <rect x="290" y="513" width="60" height="17" rx="8.5" fill="rgba(139,92,246,0.25)" stroke="rgba(167,139,250,0.50)" stroke-width="1"/>
+          <text x="320" y="525" text-anchor="middle" fill="#C4B5FD" font-size="10" font-weight="700" letter-spacing=".5" font-family="Inter,sans-serif">15%</text>
 
-          <!-- ══ NODE 2: Demanda Activa (BOTTOM-LEFT, blue) ══ -->
-          <circle cx="88" cy="440" r="80" fill="url(#glowBlue)" filter="url(#blur8)" class="node-pulse-2"/>
-          <circle cx="88" cy="440" r="62" fill="rgba(15,23,42,0.90)" stroke="rgba(96,165,250,0.55)" stroke-width="1.5"/>
-          <circle cx="88" cy="440" r="58" fill="none" stroke="rgba(96,165,250,0.20)" stroke-width="1"/>
-          <text x="88" y="422" text-anchor="middle" fill="#DBEAFE" font-size="11" font-weight="800" letter-spacing=".8" font-family="Inter,sans-serif">DEMANDA</text>
-          <text x="88" y="437" text-anchor="middle" fill="#60A5FA" font-size="11" font-weight="800" letter-spacing=".8" font-family="Inter,sans-serif">ACTIVA</text>
-          <text x="88" y="452" text-anchor="middle" fill="rgba(96,165,250,0.55)" font-size="8.5" font-family="Inter,sans-serif">Trends · Wiki</text>
-          <rect x="46" y="461" width="84" height="18" rx="9" fill="rgba(59,130,246,0.25)" stroke="rgba(96,165,250,0.50)" stroke-width="1"/>
-          <text x="88" y="474" text-anchor="middle" fill="#93C5FD" font-size="10" font-weight="700" letter-spacing=".5" font-family="Inter,sans-serif">35% + 15%</text>
+          <!-- ══ NODE 4: Trustworthiness (LEFT, green) ══ -->
+          <circle cx="72" cy="282" r="80" fill="url(#glowGreen)" filter="url(#blur8)" class="np4"/>
+          <circle cx="72" cy="282" r="62" fill="rgba(15,23,42,0.92)" stroke="rgba(16,185,129,0.55)" stroke-width="1.5"/>
+          <circle cx="72" cy="282" r="57" fill="none" stroke="rgba(16,185,129,0.18)" stroke-width="1"/>
+          <text x="72" y="264" text-anchor="middle" fill="#A7F3D0" font-size="9" font-weight="800" letter-spacing="1.2" font-family="Inter,sans-serif">T</text>
+          <text x="72" y="279" text-anchor="middle" fill="#10B981" font-size="10" font-weight="900" letter-spacing=".4" font-family="Inter,sans-serif">TRUST</text>
+          <text x="72" y="294" text-anchor="middle" fill="rgba(16,185,129,0.55)" font-size="8" font-family="Inter,sans-serif">BAV D · CX</text>
+          <rect x="41" y="303" width="62" height="17" rx="8.5" fill="rgba(16,185,129,0.20)" stroke="rgba(16,185,129,0.50)" stroke-width="1"/>
+          <text x="72" y="315" text-anchor="middle" fill="#6EE7B7" font-size="10" font-weight="700" letter-spacing=".5" font-family="Inter,sans-serif">25%</text>
 
-          <!-- ══ NODE 3: Conversación Social (BOTTOM-RIGHT, teal) ══ -->
-          <circle cx="552" cy="440" r="80" fill="url(#glowTeal)" filter="url(#blur8)" class="node-pulse-3"/>
-          <circle cx="552" cy="440" r="62" fill="rgba(15,23,42,0.90)" stroke="rgba(6,182,212,0.55)" stroke-width="1.5"/>
-          <circle cx="552" cy="440" r="58" fill="none" stroke="rgba(6,182,212,0.20)" stroke-width="1"/>
-          <text x="552" y="422" text-anchor="middle" fill="#CFFAFE" font-size="11" font-weight="800" letter-spacing=".8" font-family="Inter,sans-serif">CONV.</text>
-          <text x="552" y="437" text-anchor="middle" fill="#06B6D4" font-size="11" font-weight="800" letter-spacing=".8" font-family="Inter,sans-serif">SOCIAL</text>
-          <text x="552" y="452" text-anchor="middle" fill="rgba(6,182,212,0.55)" font-size="8.5" font-family="Inter,sans-serif">YT · TikTok · Reddit</text>
-          <rect x="527" y="461" width="50" height="18" rx="9" fill="rgba(6,182,212,0.18)" stroke="rgba(6,182,212,0.50)" stroke-width="1"/>
-          <text x="552" y="474" text-anchor="middle" fill="#67E8F9" font-size="10" font-weight="700" letter-spacing=".5" font-family="Inter,sans-serif">30%</text>
-
-          <!-- ══ CENTER: Total Search Score ══ -->
-          <circle cx="320" cy="290" r="72" fill="url(#glowCenter)" filter="url(#blur8)" class="center-pulse"/>
-          <circle cx="320" cy="290" r="56" fill="rgba(10,18,40,0.95)" stroke="rgba(96,165,250,0.70)" stroke-width="2"/>
-          <circle cx="320" cy="290" r="51" fill="none" stroke="rgba(59,130,246,0.25)" stroke-width="1"/>
-          <text x="320" y="277" text-anchor="middle" fill="#fff" font-size="11" font-weight="900" letter-spacing="1.5" font-family="Inter,sans-serif">TOTAL</text>
-          <text x="320" y="293" text-anchor="middle" fill="#60A5FA" font-size="11" font-weight="900" letter-spacing="1.5" font-family="Inter,sans-serif">SEARCH</text>
-          <!-- divider -->
-          <line x1="288" y1="300" x2="352" y2="300" stroke="rgba(244,63,94,0.40)" stroke-width="1"/>
-          <text x="320" y="316" text-anchor="middle" fill="#FB7185" font-size="9.5" font-weight="700" letter-spacing=".8" font-family="Inter,sans-serif">SEARCH GAP</text>
-          <text x="320" y="330" text-anchor="middle" fill="rgba(251,113,133,0.60)" font-size="8.5" font-family="Inter,sans-serif">= R − D</text>
-      </svg>
+          <!-- ══ CENTER: Total Search EEAT ══ -->
+          <circle cx="320" cy="282" r="70" fill="url(#glowCenter)" filter="url(#blur8)" class="cp"/>
+          <circle cx="320" cy="282" r="54" fill="rgba(10,18,40,0.96)" stroke="rgba(96,165,250,0.72)" stroke-width="2"/>
+          <circle cx="320" cy="282" r="49" fill="none" stroke="rgba(59,130,246,0.22)" stroke-width="1"/>
+          <text x="320" y="268" text-anchor="middle" fill="#fff" font-size="10.5" font-weight="900" letter-spacing="1.4" font-family="Inter,sans-serif">TOTAL</text>
+          <text x="320" y="283" text-anchor="middle" fill="#60A5FA" font-size="10.5" font-weight="900" letter-spacing="1.4" font-family="Inter,sans-serif">SEARCH</text>
+          <line x1="290" y1="290" x2="350" y2="290" stroke="rgba(244,63,94,0.38)" stroke-width="1"/>
+          <text x="320" y="305" text-anchor="middle" fill="#FB7185" font-size="9" font-weight="700" letter-spacing=".7" font-family="Inter,sans-serif">E·E·A·T</text>
+        </svg>
       </div>
     </div>
 
-    <!-- INDICADORES — fila compacta 5+1 -->
-    <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:48px;">
-      <div class="ch" style="padding:16px 12px;">
-        <span class="ch-weight" style="font-size:17px;">35%</span>
+    <!-- INDICADORES EEAT — 4 señales + Search Gap -->
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:48px;">
+      <div class="ch" style="padding:16px 12px;border-color:rgba(249,115,22,0.22);">
+        <span class="ch-weight" style="font-size:17px;color:#F97316;">35%</span>
         <div class="ch-icon" style="font-size:18px;margin:6px 0 4px;">🔥</div>
-        <div class="ch-name" style="font-size:10px;">Demanda Activa</div>
-        <div style="margin-top:5px;font-size:9px;color:#94A3B8;line-height:1.4;">Lo que el mercado<br>ya está buscando.</div>
-        <div style="margin-top:6px;font-size:7.5px;color:var(--muted);letter-spacing:.05em">ref · Google Trends</div>
+        <div class="ch-name" style="font-size:10px;color:#F97316;">Experience</div>
+        <div style="margin-top:5px;font-size:9px;color:#94A3B8;line-height:1.4;">Lo que el mercado<br>ya vivió y comparte.</div>
+        <div style="margin-top:6px;font-size:7.5px;color:var(--muted);letter-spacing:.05em">GT · YT · TikTok · Reddit</div>
       </div>
-      <div class="ch" style="padding:16px 12px;">
-        <span class="ch-weight" style="font-size:17px;">15%</span>
+      <div class="ch" style="padding:16px 12px;border-color:rgba(167,139,250,0.22);">
+        <span class="ch-weight" style="font-size:17px;color:#A78BFA;">15%</span>
         <div class="ch-icon" style="font-size:18px;margin:6px 0 4px;">🏛</div>
-        <div class="ch-name" style="font-size:10px;">Autoridad Digital</div>
-        <div style="margin-top:5px;font-size:9px;color:#94A3B8;line-height:1.4;">Existes para la IA<br>o no existes.</div>
-        <div style="margin-top:6px;font-size:7.5px;color:var(--muted);letter-spacing:.05em">ref · Wikipedia</div>
+        <div class="ch-name" style="font-size:10px;color:#A78BFA;">Expertise</div>
+        <div style="margin-top:5px;font-size:9px;color:#94A3B8;line-height:1.4;">El conocimiento<br>que la IA cita.</div>
+        <div style="margin-top:6px;font-size:7.5px;color:var(--muted);letter-spacing:.05em">Wikipedia · BAV Conocimiento</div>
       </div>
-      <div class="ch" style="padding:16px 12px;">
-        <span class="ch-weight" style="font-size:17px;">30%</span>
-        <div class="ch-icon" style="font-size:18px;margin:6px 0 4px;">⚡</div>
-        <div class="ch-name" style="font-size:10px;">Conv. Social</div>
-        <div style="margin-top:5px;font-size:9px;color:#94A3B8;line-height:1.4;">Donde Gen Z busca<br>sin Google.</div>
-        <div style="margin-top:6px;font-size:7.5px;color:var(--muted);letter-spacing:.05em">ref · YT · TikTok · Reddit</div>
+      <div class="ch" style="padding:16px 12px;border-color:rgba(96,165,250,0.22);">
+        <span class="ch-weight" style="font-size:17px;color:#60A5FA;">25%</span>
+        <div class="ch-icon" style="font-size:18px;margin:6px 0 4px;">⭐</div>
+        <div class="ch-name" style="font-size:10px;color:#60A5FA;">Authoritativeness</div>
+        <div style="margin-top:5px;font-size:9px;color:#94A3B8;line-height:1.4;">El peso que tienes<br>cuando te comparan.</div>
+        <div style="margin-top:6px;font-size:7.5px;color:var(--muted);letter-spacing:.05em">BAV Relevancia · BAV Estima</div>
       </div>
-      <div class="ch" style="padding:16px 12px;">
-        <span class="ch-weight" style="font-size:17px;">10%</span>
-        <div class="ch-icon" style="font-size:18px;margin:6px 0 4px;">📡</div>
-        <div class="ch-name" style="font-size:10px;">Demanda de Marca</div>
-        <div style="margin-top:5px;font-size:9px;color:#94A3B8;line-height:1.4;">Cuánto te quieren<br>antes de buscarte.</div>
-        <div style="margin-top:6px;font-size:7.5px;color:var(--muted);letter-spacing:.05em">ref · BAV Relevancia</div>
-      </div>
-      <div class="ch" style="padding:16px 12px;">
-        <span class="ch-weight" style="font-size:17px;">10%</span>
+      <div class="ch" style="padding:16px 12px;border-color:rgba(16,185,129,0.22);">
+        <span class="ch-weight" style="font-size:17px;color:#10B981;">25%</span>
         <div class="ch-icon" style="font-size:18px;margin:6px 0 4px;">💎</div>
-        <div class="ch-name" style="font-size:10px;">Distintividad</div>
-        <div style="margin-top:5px;font-size:9px;color:#94A3B8;line-height:1.4;">Lo que te hace<br>imposible de ignorar.</div>
-        <div style="margin-top:6px;font-size:7.5px;color:var(--muted);letter-spacing:.05em">ref · BAV Diferenciación</div>
+        <div class="ch-name" style="font-size:10px;color:#10B981;">Trustworthiness</div>
+        <div style="margin-top:5px;font-size:9px;color:#94A3B8;line-height:1.4;">Por qué te eligen<br>sobre las demás.</div>
+        <div style="margin-top:6px;font-size:7.5px;color:var(--muted);letter-spacing:.05em">BAV Diferenciación · CX</div>
       </div>
       <div class="ch" style="padding:16px 12px;background:rgba(244,63,94,.05);border-color:rgba(244,63,94,.18);">
         <div class="ch-icon" style="font-size:18px;margin:6px 0 4px;">📐</div>
         <div class="ch-name" style="color:#FB7185;font-size:10px;">Search Gap</div>
         <div style="margin-top:5px;font-size:9px;color:#FDA4AF;line-height:1.4;">La brecha entre<br>ser y ser encontrado.</div>
-        <div style="margin-top:6px;font-size:9px;font-weight:700;color:#FB7185;letter-spacing:.04em">= R − D</div>
+        <div style="margin-top:6px;font-size:9px;font-weight:700;color:#FB7185;letter-spacing:.04em">= BAV R − BAV D</div>
       </div>
     </div>
 
@@ -555,7 +559,7 @@
     <div style="background:rgba(15,23,42,0.75);backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);border:1px solid rgba(96,165,250,0.18);border-radius:28px;padding:32px;box-shadow:0 8px 64px rgba(0,0,0,0.55),inset 0 1px 0 rgba(255,255,255,0.07);">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
         <div>
-          <div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-bottom:6px;">Diagrama de área · 3 dimensiones</div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-bottom:6px;">Diagrama de área · E-E-A-T · 4 dimensiones</div>
           <div id="radar-title" style="font-size:16px;font-weight:800;color:#fff;">—</div>
         </div>
         <!-- Legend -->
@@ -578,9 +582,9 @@
         </div>
       </div>
 
-      <!-- SVG RADAR — viewBox más alto para no cortar eje superior -->
+      <!-- SVG RADAR — rombo 4 ejes EEAT -->
       <div style="display:flex;justify-content:center;">
-        <svg id="radar-svg" viewBox="0 0 440 430" style="width:100%;max-width:520px;">
+        <svg id="radar-svg" viewBox="0 0 460 450" style="width:100%;max-width:520px;">
           <defs>
             <filter id="rf-glow"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
             <filter id="rf-glow-sel"><feGaussianBlur stdDeviation="8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
@@ -596,22 +600,27 @@
         </svg>
       </div>
 
-      <!-- Axis legend con frase descriptiva + score marca seleccionada -->
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px;border-top:1px solid rgba(255,255,255,.07);padding-top:20px;">
-        <div style="text-align:center;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.14);border-radius:12px;padding:12px 8px;">
-          <div style="font-size:9px;color:var(--amber);font-weight:700;letter-spacing:.08em;margin-bottom:4px;">DEMANDA ACTIVA</div>
-          <div style="font-size:8px;color:var(--muted);margin-bottom:6px;line-height:1.4;">Lo que el mercado<br>ya está buscando.</div>
-          <div id="dim-da" style="font-size:20px;font-weight:900;color:var(--amber);">—</div>
+      <!-- EEAT dimension cards -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:20px;border-top:1px solid rgba(255,255,255,.07);padding-top:20px;">
+        <div style="text-align:center;background:rgba(249,115,22,0.06);border:1px solid rgba(249,115,22,0.16);border-radius:12px;padding:12px 6px;">
+          <div style="font-size:8.5px;color:#F97316;font-weight:700;letter-spacing:.07em;margin-bottom:3px;">EXPERIENCE</div>
+          <div style="font-size:7.5px;color:var(--muted);margin-bottom:6px;line-height:1.4;">Lo que el mercado<br>vivió y comparte.</div>
+          <div id="dim-da" style="font-size:20px;font-weight:900;color:#F97316;">—</div>
         </div>
-        <div style="text-align:center;background:rgba(6,182,212,0.06);border:1px solid rgba(6,182,212,0.14);border-radius:12px;padding:12px 8px;">
-          <div style="font-size:9px;color:#06B6D4;font-weight:700;letter-spacing:.08em;margin-bottom:4px;">CONV. SOCIAL</div>
-          <div style="font-size:8px;color:var(--muted);margin-bottom:6px;line-height:1.4;">Donde Gen Z busca<br>sin Google.</div>
-          <div id="dim-soc" style="font-size:20px;font-weight:900;color:#06B6D4;">—</div>
+        <div style="text-align:center;background:rgba(167,139,250,0.06);border:1px solid rgba(167,139,250,0.16);border-radius:12px;padding:12px 6px;">
+          <div style="font-size:8.5px;color:#A78BFA;font-weight:700;letter-spacing:.07em;margin-bottom:3px;">EXPERTISE</div>
+          <div style="font-size:7.5px;color:var(--muted);margin-bottom:6px;line-height:1.4;">El conocimiento<br>que la IA cita.</div>
+          <div id="dim-soc" style="font-size:20px;font-weight:900;color:#A78BFA;">—</div>
         </div>
-        <div style="text-align:center;background:rgba(167,139,250,0.06);border:1px solid rgba(167,139,250,0.14);border-radius:12px;padding:12px 8px;">
-          <div style="font-size:9px;color:#A78BFA;font-weight:700;letter-spacing:.08em;margin-bottom:4px;">CAPITAL DE MARCA</div>
-          <div style="font-size:8px;color:var(--muted);margin-bottom:6px;line-height:1.4;">Lo que te hace<br>imposible de ignorar.</div>
-          <div id="dim-cap" style="font-size:20px;font-weight:900;color:#A78BFA;">—</div>
+        <div style="text-align:center;background:rgba(96,165,250,0.06);border:1px solid rgba(96,165,250,0.16);border-radius:12px;padding:12px 6px;">
+          <div style="font-size:8.5px;color:#60A5FA;font-weight:700;letter-spacing:.07em;margin-bottom:3px;">AUTHORITY</div>
+          <div style="font-size:7.5px;color:var(--muted);margin-bottom:6px;line-height:1.4;">El peso cuando<br>te comparan.</div>
+          <div id="dim-cap" style="font-size:20px;font-weight:900;color:#60A5FA;">—</div>
+        </div>
+        <div style="text-align:center;background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.16);border-radius:12px;padding:12px 6px;">
+          <div style="font-size:8.5px;color:#10B981;font-weight:700;letter-spacing:.07em;margin-bottom:3px;">TRUST</div>
+          <div style="font-size:7.5px;color:var(--muted);margin-bottom:6px;line-height:1.4;">Por qué te eligen<br>sobre las demás.</div>
+          <div id="dim-trust" style="font-size:20px;font-weight:900;color:#10B981;">—</div>
         </div>
       </div>
     </div>
@@ -643,21 +652,25 @@
       <div style="background:rgba(15,23,42,0.75);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.09);border-radius:20px;padding:20px 20px;box-shadow:0 8px 40px rgba(0,0,0,0.40),inset 0 1px 0 rgba(255,255,255,0.06);">
         <div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-bottom:14px;">Scores · <span id="scores-brand-name">—</span></div>
         <div style="display:flex;flex-direction:column;gap:10px;">
-          <div style="display:flex;justify-content:space-between;align-items:center;">
-            <span style="font-size:10px;color:var(--muted2);">Total Search</span>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.06);">
+            <span style="font-size:10px;color:var(--muted2);">EEAT Score</span>
             <span id="sc-ts" style="font-size:16px;font-weight:900;color:var(--blue);">—</span>
           </div>
           <div style="display:flex;justify-content:space-between;align-items:center;">
-            <span style="font-size:10px;color:var(--muted2);">Demanda Activa</span>
-            <span id="sc-da" style="font-size:14px;font-weight:700;color:var(--amber);">—</span>
+            <span style="font-size:10px;color:#F97316;">Experience</span>
+            <span id="sc-da" style="font-size:13px;font-weight:700;color:#F97316;">—</span>
           </div>
           <div style="display:flex;justify-content:space-between;align-items:center;">
-            <span style="font-size:10px;color:var(--muted2);">Conv. Social</span>
-            <span id="sc-soc" style="font-size:14px;font-weight:700;color:#06B6D4;">—</span>
+            <span style="font-size:10px;color:#A78BFA;">Expertise</span>
+            <span id="sc-soc" style="font-size:13px;font-weight:700;color:#A78BFA;">—</span>
           </div>
           <div style="display:flex;justify-content:space-between;align-items:center;">
-            <span style="font-size:10px;color:var(--muted2);">Capital de Marca</span>
-            <span id="sc-cap" style="font-size:14px;font-weight:700;color:#A78BFA;">—</span>
+            <span style="font-size:10px;color:#60A5FA;">Authority</span>
+            <span id="sc-cap" style="font-size:13px;font-weight:700;color:#60A5FA;">—</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:10px;color:#10B981;">Trust</span>
+            <span id="sc-trust" style="font-size:13px;font-weight:700;color:#10B981;">—</span>
           </div>
         </div>
       </div>
@@ -683,21 +696,33 @@
 <script>
 const TS_DATA = [{"id": "McDonald's", "ts_score": 80.8, "gt_score": 100, "wiki_score": 95, "social_score": 61.6, "R": 55.2, "D": 75.1, "E": 65.0, "K": 60.0, "CX": 62.5, "loop": 63.6, "search_gap": -19.9, "brand_architecture": 70.0, "paris_syndrome": 87}, {"id": "Rappi", "ts_score": 78.8, "gt_score": 100, "wiki_score": 50, "social_score": 63.6, "R": 78.3, "D": 93.8, "E": 82.0, "K": 80.0, "CX": 81.0, "loop": 83.0, "search_gap": -15.5, "brand_architecture": 87.9, "paris_syndrome": 87}, {"id": "Falabella", "ts_score": 77.8, "gt_score": 100, "wiki_score": 55, "social_score": 55.6, "R": 83.9, "D": 95.1, "E": 85.0, "K": 88.0, "CX": 86.5, "loop": 87.7, "search_gap": -11.2, "brand_architecture": 90.0, "paris_syndrome": 91}, {"id": "Toyota", "ts_score": 76.6, "gt_score": 100, "wiki_score": 90, "social_score": 34.4, "R": 85.3, "D": 92.7, "E": 90.0, "K": 88.0, "CX": 89.0, "loop": 89.0, "search_gap": -7.4, "brand_architecture": 91.3, "paris_syndrome": 96}, {"id": "Renault", "ts_score": 76.3, "gt_score": 100, "wiki_score": 80, "social_score": 48.0, "R": 81.9, "D": 67.0, "E": 75.0, "K": 82.0, "CX": 78.5, "loop": 76.9, "search_gap": 14.9, "brand_architecture": 71.0, "paris_syndrome": 88}, {"id": "H&M", "ts_score": 74.7, "gt_score": 100, "wiki_score": 85, "social_score": 40.0, "R": 67.4, "D": 82.5, "E": 72.0, "K": 68.0, "CX": 70.0, "loop": 72.0, "search_gap": -15.1, "brand_architecture": 77.2, "paris_syndrome": 88}, {"id": "Suzuki", "ts_score": 74.4, "gt_score": 100, "wiki_score": 75, "social_score": 42.0, "R": 71.5, "D": 83.6, "E": 76.0, "K": 72.0, "CX": 74.0, "loop": 75.0, "search_gap": -12.1, "brand_architecture": 79.8, "paris_syndrome": 90}, {"id": "Nissan", "ts_score": 74.3, "gt_score": 100, "wiki_score": 80, "social_score": 38.0, "R": 66.4, "D": 92.8, "E": 75.0, "K": 68.0, "CX": 71.5, "loop": 74.7, "search_gap": -26.4, "brand_architecture": 83.9, "paris_syndrome": 79}, {"id": "Chevrolet", "ts_score": 71.6, "gt_score": 100, "wiki_score": 85, "social_score": 46.0, "R": 75.5, "D": 25.0, "E": 60.0, "K": 78.0, "CX": 69.0, "loop": 61.5, "search_gap": 50.5, "brand_architecture": 42.5, "paris_syndrome": 56}, {"id": "Mazda", "ts_score": 70.9, "gt_score": 100, "wiki_score": 75, "social_score": 30.4, "R": 70.5, "D": 84.9, "E": 78.0, "K": 72.0, "CX": 75.0, "loop": 75.7, "search_gap": -14.4, "brand_architecture": 81.5, "paris_syndrome": 90}, {"id": "Hyundai", "ts_score": 69.7, "gt_score": 100, "wiki_score": 80, "social_score": 32.0, "R": 59.8, "D": 71.1, "E": 65.0, "K": 65.0, "CX": 65.0, "loop": 65.2, "search_gap": -11.3, "brand_architecture": 68.0, "paris_syndrome": 94}, {"id": "Sura", "ts_score": 66.8, "gt_score": 100, "wiki_score": 40, "social_score": 38.0, "R": 83.8, "D": 60.0, "E": 72.0, "K": 80.0, "CX": 76.0, "loop": 74.4, "search_gap": 23.8, "brand_architecture": 66.0, "paris_syndrome": 84}, {"id": "American Airlines", "ts_score": 66.1, "gt_score": 100, "wiki_score": 65, "social_score": 51.6, "R": 36.8, "D": 22.2, "E": 30.0, "K": 40.0, "CX": 35.0, "loop": 32.8, "search_gap": 14.6, "brand_architecture": 26.1, "paris_syndrome": 87}, {"id": "Coca-Cola", "ts_score": 64.0, "gt_score": 61.0, "wiki_score": 100, "social_score": 36.0, "R": 71.9, "D": 96.3, "E": 88.0, "K": 78.0, "CX": 83.0, "loop": 83.4, "search_gap": -24.4, "brand_architecture": 92.2, "paris_syndrome": 87}, {"id": "OXXO", "ts_score": 63.6, "gt_score": 100, "wiki_score": 50, "social_score": 22.8, "R": 62.8, "D": 79.8, "E": 60.0, "K": 72.0, "CX": 66.0, "loop": 68.1, "search_gap": -17.0, "brand_architecture": 69.9, "paris_syndrome": 86}, {"id": "Ara", "ts_score": 62.2, "gt_score": 87.0, "wiki_score": 15, "social_score": 37.2, "R": 92.8, "D": 90.8, "E": 88.0, "K": 90.0, "CX": 89.0, "loop": 90.1, "search_gap": 2.0, "brand_architecture": 89.4, "paris_syndrome": 98}, {"id": "Decameron", "ts_score": 62.1, "gt_score": 100, "wiki_score": 20, "social_score": 33.2, "R": 69.5, "D": 71.5, "E": 70.0, "K": 72.0, "CX": 71.0, "loop": 70.8, "search_gap": -2.0, "brand_architecture": 70.8, "paris_syndrome": 100}, {"id": "Cruz Verde", "ts_score": 60.1, "gt_score": 100, "wiki_score": 15, "social_score": 33.2, "R": 84.1, "D": 44.4, "E": 70.0, "K": 82.0, "CX": 76.0, "loop": 71.3, "search_gap": 39.7, "brand_architecture": 57.2, "paris_syndrome": 68}, {"id": "Terpel", "ts_score": 58.8, "gt_score": 100, "wiki_score": 40, "social_score": 18.8, "R": 70.7, "D": 50.7, "E": 62.0, "K": 72.0, "CX": 67.0, "loop": 64.5, "search_gap": 20.0, "brand_architecture": 56.4, "paris_syndrome": 84}, {"id": "Farmatodo", "ts_score": 57.4, "gt_score": 100, "wiki_score": 20, "social_score": 18.0, "R": 87.2, "D": 53.0, "E": 75.0, "K": 85.0, "CX": 80.0, "loop": 76.0, "search_gap": 34.2, "brand_architecture": 64.0, "paris_syndrome": 73}, {"id": "Poker", "ts_score": 57.3, "gt_score": 100, "wiki_score": 15, "social_score": 46.4, "R": 21.7, "D": 39.5, "E": 32.0, "K": 28.0, "CX": 30.0, "loop": 30.2, "search_gap": -17.8, "brand_architecture": 35.8, "paris_syndrome": 90}, {"id": "Club Colombia", "ts_score": 56.9, "gt_score": 74.1, "wiki_score": 25, "social_score": 38.0, "R": 80.7, "D": 77.0, "E": 78.0, "K": 80.0, "CX": 79.0, "loop": 78.9, "search_gap": 3.7, "brand_architecture": 77.5, "paris_syndrome": 98}, {"id": "Tigo", "ts_score": 56.7, "gt_score": 100, "wiki_score": 40, "social_score": 26.8, "R": 44.3, "D": 32.0, "E": 38.0, "K": 48.0, "CX": 43.0, "loop": 41.1, "search_gap": 12.3, "brand_architecture": 35.0, "paris_syndrome": 89}, {"id": "Tigo UNE", "ts_score": 56.3, "gt_score": 100, "wiki_score": 20, "social_score": 36.0, "R": 37.3, "D": 38.2, "E": 35.0, "K": 42.0, "CX": 38.5, "loop": 38.2, "search_gap": -0.9, "brand_architecture": 36.6, "paris_syndrome": 100}, {"id": "WOM", "ts_score": 54.5, "gt_score": 100, "wiki_score": 20, "social_score": 38.8, "R": 11.5, "D": 37.4, "E": 22.0, "K": 18.0, "CX": 20.0, "loop": 21.8, "search_gap": -25.9, "brand_architecture": 29.7, "paris_syndrome": 83}, {"id": "Seguros Bolivar", "ts_score": 51.3, "gt_score": 100, "wiki_score": 20, "social_score": 23.2, "R": 52.8, "D": 10.5, "E": 40.0, "K": 55.0, "CX": 47.5, "loop": 41.2, "search_gap": 42.3, "brand_architecture": 25.2, "paris_syndrome": 63}, {"id": "Avianca", "ts_score": 50.2, "gt_score": 57.8, "wiki_score": 65, "social_score": 30.8, "R": 70.3, "D": 39.6, "E": 60.0, "K": 75.0, "CX": 67.5, "loop": 62.5, "search_gap": 30.7, "brand_architecture": 49.8, "paris_syndrome": 72}, {"id": "Aguila", "ts_score": 50.0, "gt_score": 52.1, "wiki_score": 25, "social_score": 51.6, "R": 54.6, "D": 70.5, "E": 65.0, "K": 60.0, "CX": 62.5, "loop": 62.5, "search_gap": -15.9, "brand_architecture": 67.8, "paris_syndrome": 92}, {"id": "Cencosud", "ts_score": 48.7, "gt_score": 83.4, "wiki_score": 55, "social_score": 16.8, "R": 41.4, "D": 21.1, "E": 35.0, "K": 45.0, "CX": 40.0, "loop": 36.5, "search_gap": 20.3, "brand_architecture": 28.1, "paris_syndrome": 81}, {"id": "Colpatria", "ts_score": 46.6, "gt_score": 100, "wiki_score": 20, "social_score": 19.2, "R": 24.0, "D": 4.1, "E": 18.0, "K": 26.0, "CX": 22.0, "loop": 18.8, "search_gap": 19.9, "brand_architecture": 11.1, "paris_syndrome": 82}, {"id": "Primax", "ts_score": 45.7, "gt_score": 85.3, "wiki_score": 20, "social_score": 28.0, "R": 37.5, "D": 7.2, "E": 28.0, "K": 40.0, "CX": 34.0, "loop": 29.3, "search_gap": 30.3, "brand_architecture": 17.6, "paris_syndrome": 73}, {"id": "D1", "ts_score": 44.3, "gt_score": 48.4, "wiki_score": 15, "social_score": 24.8, "R": 99.0, "D": 77.4, "E": 89.0, "K": 95.0, "CX": 92.0, "loop": 90.5, "search_gap": 21.6, "brand_architecture": 83.2, "paris_syndrome": 85}, {"id": "Corona", "ts_score": 39.8, "gt_score": 0.9, "wiki_score": 70, "social_score": 42.8, "R": 71.4, "D": 90.4, "E": 80.0, "K": 72.0, "CX": 76.0, "loop": 77.9, "search_gap": -19.0, "brand_architecture": 85.2, "paris_syndrome": 86}, {"id": "United Airlines", "ts_score": 36.5, "gt_score": 35.7, "wiki_score": 60, "social_score": 24.0, "R": 36.9, "D": 41.1, "E": 38.0, "K": 42.0, "CX": 40.0, "loop": 39.6, "search_gap": -4.2, "brand_architecture": 39.5, "paris_syndrome": 99}, {"id": "Exito", "ts_score": 35.7, "gt_score": 3.1, "wiki_score": 35, "social_score": 53.6, "R": 85.4, "D": 47.5, "E": 72.0, "K": 88.0, "CX": 80.0, "loop": 74.6, "search_gap": 37.9, "brand_architecture": 59.8, "paris_syndrome": 68}, {"id": "Makro", "ts_score": 35.7, "gt_score": 29.7, "wiki_score": 50, "social_score": 25.2, "R": 74.3, "D": 28.1, "E": 55.0, "K": 70.0, "CX": 62.5, "loop": 58.0, "search_gap": 46.2, "brand_architecture": 41.5, "paris_syndrome": 66}, {"id": "Frisby", "ts_score": 34.7, "gt_score": 7.6, "wiki_score": 15, "social_score": 35.2, "R": 95.2, "D": 97.3, "E": 92.0, "K": 90.0, "CX": 91.0, "loop": 93.1, "search_gap": -2.1, "brand_architecture": 94.7, "paris_syndrome": 94}, {"id": "Movistar", "ts_score": 33.8, "gt_score": 4.3, "wiki_score": 55, "social_score": 52.8, "R": 51.9, "D": 30.6, "E": 45.0, "K": 55.0, "CX": 50.0, "loop": 46.5, "search_gap": 21.3, "brand_architecture": 37.8, "paris_syndrome": 81}, {"id": "Olímpica", "ts_score": 33.1, "gt_score": 13.8, "wiki_score": 35, "social_score": 34.8, "R": 84.0, "D": 41.6, "E": 68.0, "K": 85.0, "CX": 76.5, "loop": 71.0, "search_gap": 42.4, "brand_architecture": 54.8, "paris_syndrome": 65}, {"id": "Postobón", "ts_score": 29.2, "gt_score": 0.5, "wiki_score": 30, "social_score": 30.4, "R": 76.5, "D": 77.8, "E": 78.0, "K": 80.0, "CX": 79.0, "loop": 78.3, "search_gap": -1.3, "brand_architecture": 77.9, "paris_syndrome": 99}, {"id": "Grupo Aval", "ts_score": 28.5, "gt_score": 28.5, "wiki_score": 45, "social_score": 26.0, "R": 19.1, "D": 21.0, "E": 22.0, "K": 25.0, "CX": 23.5, "loop": 22.1, "search_gap": -1.9, "brand_architecture": 21.5, "paris_syndrome": 98}, {"id": "Arturo Calle", "ts_score": 27.4, "gt_score": 4.5, "wiki_score": 15, "social_score": 25.6, "R": 72.8, "D": 86.5, "E": 80.0, "K": 70.0, "CX": 75.0, "loop": 76.9, "search_gap": -13.7, "brand_architecture": 83.2, "paris_syndrome": 88}, {"id": "Tennis", "ts_score": 22.1, "gt_score": 0.4, "wiki_score": 10, "social_score": 24.0, "R": 58.0, "D": 74.7, "E": 65.0, "K": 60.0, "CX": 62.5, "loop": 64.0, "search_gap": -16.7, "brand_architecture": 69.8, "paris_syndrome": 88}, {"id": "Zapatoca", "ts_score": 20.7, "gt_score": 14.2, "wiki_score": 10, "social_score": 21.2, "R": 31.7, "D": 46.8, "E": 38.0, "K": 35.0, "CX": 36.5, "loop": 37.6, "search_gap": -15.1, "brand_architecture": 42.4, "paris_syndrome": 90}, {"id": "Petrobras", "ts_score": 14.1, "gt_score": 3.6, "wiki_score": 45, "social_score": 10.8, "R": 20.2, "D": 8.4, "E": 15.0, "K": 22.0, "CX": 18.5, "loop": 16.8, "search_gap": 11.8, "brand_architecture": 11.7, "paris_syndrome": 90}, {"id": "Biomax", "ts_score": 12.8, "gt_score": 0.0, "wiki_score": 15, "social_score": 19.2, "R": 32.5, "D": 15.5, "E": 25.0, "K": 35.0, "CX": 30.0, "loop": 27.6, "search_gap": 17.0, "brand_architecture": 20.2, "paris_syndrome": 86}];
 
-// ── helpers ──────────────────────────────────────────────
-function dims(b) {
-  return [
-    b.gt_score * 0.7 + b.wiki_score * 0.3,  // Demanda Activa
-    b.social_score,                            // Conv. Social
-    (b.R + b.D) / 2                           // Capital de Marca
-  ];
+// ── EEAT scoring ──────────────────────────────────────────
+// E (Experience)    = GT×0.60 + Social×0.40   → búsqueda activa + conversación
+// E (Expertise)     = Wiki×0.50 + K×0.50      → autoridad editorial + conocimiento
+// A (Authority)     = R×0.55 + E_bav×0.45     → relevancia + estima de mercado
+// T (Trustworthiness)= D×0.50 + CX×0.50       → diferenciación + experiencia
+// EEAT Score        = Exp×0.35 + Exp2×0.15 + Auth×0.25 + Trust×0.25
+function eeat(b) {
+  const experience = +(b.gt_score * 0.60 + b.social_score * 0.40).toFixed(1);
+  const expertise  = +(b.wiki_score * 0.50 + b.K * 0.50).toFixed(1);
+  const authority  = +(b.R * 0.55 + b.E * 0.45).toFixed(1);
+  const trust      = +(b.D * 0.50 + b.CX * 0.50).toFixed(1);
+  const score      = +(experience*0.35 + expertise*0.15 + authority*0.25 + trust*0.25).toFixed(1);
+  return { experience, expertise, authority, trust, score };
 }
 
-// ── Radar geometry (equilateral triangle, 3 axes) ────────
-// ViewBox 440×430, center shifted down to give space for top label
-const CX = 220, CY = 210, R_MAX = 160;
-const ANGLES = [-Math.PI/2, Math.PI/2 + Math.PI/3, Math.PI/6];
-const AXIS_COLORS = ['#F59E0B','#06B6D4','#A78BFA'];
-const AXIS_LABELS = ['Demanda\nActiva','Conv.\nSocial','Capital\nde Marca'];
+function dims(b) {
+  const e = eeat(b);
+  // 4 axes: Experience, Authority, Expertise, Trust (order matches ANGLES)
+  return [e.experience, e.authority, e.expertise, e.trust];
+}
+
+// ── Radar geometry — 4-axis diamond ──────────────────────
+// ViewBox 460×450, diamond: top=Experience, right=Authority, bottom=Expertise, left=Trust
+const CX = 230, CY = 225, R_MAX = 155;
+const ANGLES      = [-Math.PI/2, 0, Math.PI/2, Math.PI];
+const AXIS_COLORS = ['#F97316', '#3B82F6', '#A78BFA', '#10B981'];
+const AXIS_LABELS = ['EXPERIENCE', 'AUTHORITY', 'EXPERTISE', 'TRUST'];
 
 function radarPt(idx, val) {
   const r = (val / 100) * R_MAX;
@@ -752,26 +777,24 @@ function buildRadar(b1, b2, b3) {
     axG.appendChild(dot);
   });
 
-  // Axis labels (adjusted offsets for larger viewBox)
+  // Axis labels — 4-axis diamond offsets
   const labG = document.getElementById('radar-labels');
   labG.innerHTML = '';
-  const offsets = [[0,-22],[0,22],[34,0]];
+  const offsets  = [[0,-20],[28,0],[0,20],[-28,0]];
+  const anchors  = ['middle','start','middle','end'];
   ANGLES.forEach((ang, i) => {
-    const [ex,ey] = radarPt(i, 115);
-    const lines = AXIS_LABELS[i].split('\n');
-    lines.forEach((ln, li) => {
-      const tx = document.createElementNS('http://www.w3.org/2000/svg','text');
-      tx.setAttribute('x', ex + offsets[i][0]);
-      tx.setAttribute('y', ey + offsets[i][1] + li * 12);
-      tx.setAttribute('fill', AXIS_COLORS[i]);
-      tx.setAttribute('font-size','9');
-      tx.setAttribute('font-weight','700');
-      tx.setAttribute('text-anchor','middle');
-      tx.setAttribute('font-family','Inter,sans-serif');
-      tx.setAttribute('letter-spacing','0.06em');
-      tx.textContent = ln;
-      labG.appendChild(tx);
-    });
+    const [ex,ey] = radarPt(i, 116);
+    const tx = document.createElementNS('http://www.w3.org/2000/svg','text');
+    tx.setAttribute('x', ex + offsets[i][0]);
+    tx.setAttribute('y', ey + offsets[i][1]);
+    tx.setAttribute('fill', AXIS_COLORS[i]);
+    tx.setAttribute('font-size','8.5');
+    tx.setAttribute('font-weight','700');
+    tx.setAttribute('text-anchor', anchors[i]);
+    tx.setAttribute('font-family','Inter,sans-serif');
+    tx.setAttribute('letter-spacing','0.07em');
+    tx.textContent = AXIS_LABELS[i];
+    labG.appendChild(tx);
   });
 
   // Areas
@@ -837,103 +860,139 @@ function buildRadar(b1, b2, b3) {
   });
 }
 
-// ── Insight engine ────────────────────────────────────────
-function generateInsight(b) {
-  const da = b.gt_score * 0.7 + b.wiki_score * 0.3;
-  const soc = b.social_score;
-  const cap = (b.R + b.D) / 2;
-  const gap = b.search_gap;
-  const ts = b.ts_score;
-  const name = b.id;
+// ── QA Validation ─────────────────────────────────────────
+(function qaValidate() {
+  const REQUIRED = ['id','ts_score','gt_score','wiki_score','social_score','R','D','E','K','CX'];
+  const NUMERIC  = ['gt_score','wiki_score','social_score','R','D','E','K','CX'];
+  let issues = 0;
+  TS_DATA.forEach(b => {
+    REQUIRED.forEach(f => {
+      if (b[f] === undefined || b[f] === null) {
+        console.warn(`[QA] ${b.id}: campo faltante "${f}"`); issues++;
+      }
+    });
+    NUMERIC.forEach(f => {
+      const v = b[f];
+      if (typeof v === 'number' && (v < 0 || v > 100)) {
+        console.warn(`[QA] ${b.id}.${f} = ${v} → fuera de [0,100]`); issues++;
+      }
+    });
+    const e = eeat(b);
+    ['experience','expertise','authority','trust','score'].forEach(k => {
+      if (e[k] < 0 || e[k] > 100)
+        console.warn(`[QA] ${b.id}.eeat.${k} = ${e[k]} → fuera de rango`), issues++;
+    });
+  });
+  // Duplicates
+  const ids = TS_DATA.map(b => b.id);
+  ids.filter((id,i) => ids.indexOf(id) !== i)
+     .forEach(id => { console.warn(`[QA] Duplicado: ${id}`); issues++; });
+  // Distribution summary
+  const scores = TS_DATA.map(b => eeat(b).score).sort((a,z) => z-a);
+  const mean   = +(scores.reduce((s,v) => s+v, 0) / scores.length).toFixed(1);
+  const ok = issues === 0 ? '✓' : '⚠';
+  console.log(`[QA EEAT] ${ok} ${TS_DATA.length} marcas · ${issues} problemas`);
+  console.log(`[QA EEAT] Score: max=${scores[0]} · min=${scores[scores.length-1]} · media=${mean}`);
+  console.table(TS_DATA.map(b => {
+    const e = eeat(b);
+    return { marca:b.id, EEAT:e.score, Exp:e.experience, Exp2:e.expertise, Auth:e.authority, Trust:e.trust };
+  }).sort((a,z) => z.EEAT-a.EEAT));
+})();
 
+// ── Sort by EEAT → TOP1 / TOP2 ────────────────────────────
+const SORTED_EEAT = [...TS_DATA].sort((a, b) => eeat(b).score - eeat(a).score);
+const TOP1 = SORTED_EEAT[0];
+const TOP2 = SORTED_EEAT[1];
+
+// ── Insight engine — EEAT aware ───────────────────────────
+function generateInsight(b) {
+  const e   = eeat(b);
+  const gap = b.search_gap;
+  const nm  = b.id;
+  const min4 = Math.min(e.experience, e.expertise, e.authority, e.trust);
+  const weak = e.experience===min4?'Experience':e.expertise===min4?'Expertise':e.trust===min4?'Trust':'Authority';
+
+  if (e.experience < 25 && e.authority > 60)
+    return `<strong>${nm}: alta autoridad, baja experiencia digital.</strong> Authority ${e.authority.toFixed(0)} vs Experience ${e.experience.toFixed(0)} — la marca es reconocida y respetada pero el mercado no la busca activamente ni comparte experiencias. Sin señales de Experience, ChatGPT y TikTok no la amplifican. <strong>Activar GT, TikTok y YouTube: la autoridad ya existe, falta el ruido digital.</strong>`;
+  if (e.expertise < 30 && e.score > 45)
+    return `<strong>${nm}: visible pero con baja autoridad editorial.</strong> Expertise ${e.expertise.toFixed(0)} — Wikipedia y BAV Conocimiento no amplifican la marca lo suficiente para que la IA la cite. Con EEAT ${e.score.toFixed(1)} hay base de presencia, pero los LLMs aún no la incluyen como referencia. <strong>Invertir en Wikipedia, contenido estructurado y GEO para aparecer en respuestas generativas.</strong>`;
+  if (e.trust < 38 && e.authority > 55)
+    return `<strong>${nm}: reconocida pero no diferenciada.</strong> Trust ${e.trust.toFixed(0)} (D+CX) vs Authority ${e.authority.toFixed(0)}. El mercado la conoce pero no tiene razones fuertes para elegirla sobre alternativas. ${gap > 20 ? `Search Gap +${gap.toFixed(0)} confirma que la demanda supera la diferenciación.` : ''} <strong>Construir narrativa de Trust antes que la IA democratice el acceso a competidores.</strong>`;
   if (gap > 30)
-    return `<strong>${name} tiene alta demanda pero baja diferenciación.</strong> El mercado la busca (+${gap.toFixed(0)} pts de gap), pero no encuentra nada que la distinga. En el ecosistema IA, esta combinación es la más vulnerable: ChatGPT citará al líder que SÍ tiene sustancia propia. <strong>Acción urgente: contenido propio + estrategia GEO.</strong>`;
-  if (gap > 15)
-    return `<strong>${name} está en zona de riesgo.</strong> La relevancia supera a la diferenciación por ${gap.toFixed(0)} pts — señal de que la marca depende de volumen y no de identidad. TikTok y la IA priorizan marcas que pueden ser descritas en una frase. <strong>Oportunidad: construir narrativa de diferenciación antes que la competencia lo haga primero.</strong>`;
+    return `<strong>${nm}: alta demanda, baja diferenciación.</strong> Search Gap +${gap.toFixed(0)} — el mercado la busca pero no encuentra sustancia propia. EEAT ${e.score.toFixed(1)}. En ecosistemas IA esta combinación es la más vulnerable: los LLMs citan al líder con Trust y Expertise sólidos. <strong>Prioridad: Trust (D+CX) y Expertise (contenido editorial).</strong>`;
   if (gap < -20)
-    return `<strong>${name} es más distintiva de lo que el mercado sabe.</strong> Tiene ${Math.abs(gap).toFixed(0)} pts más de diferenciación que de relevancia. La marca existe y tiene personalidad, pero el ecosistema digital no la amplifica. ${soc < 35 ? 'La conversación social es débil — este es el canal de activación inmediata.' : 'Invertir en GEO y Wikipedia para que la IA empiece a citarla.'} <strong>Gap negativo = oportunidad sin explotar.</strong>`;
-  if (ts < 30)
-    return `<strong>${name} tiene presencia de marca pero invisibilidad digital.</strong> Con un Total Search Score de ${ts.toFixed(1)}, la marca prácticamente no existe en el ecosistema de búsqueda. ${da < 20 ? 'La demanda activa es casi nula — el mercado no la está buscando activamente.' : ''} <strong>Prioridad absoluta: activar Google Trends, Wikipedia y al menos un canal social con masa crítica.</strong>`;
-  if (soc > 55 && da < 50)
-    return `<strong>${name} lidera en redes pero pierde la búsqueda intencional.</strong> Conversación Social de ${soc.toFixed(0)} vs Demanda Activa de ${da.toFixed(0)} — hay buzz pero poca intención de búsqueda directa. Es la señal de una marca que genera ruido pero no consideración. <strong>Convertir ese awareness social en contenido que capture intención de búsqueda.</strong>`;
-  if (da > 70 && soc < 35)
-    return `<strong>${name} domina la búsqueda pero no la conversación social.</strong> Demanda Activa de ${da.toFixed(0)} con Social Score de ${soc.toFixed(0)}. Tiene el tráfico orgánico pero pierde frente a Gen Z que no busca en Google. <strong>Oportunidad: activar TikTok y YouTube para capturar el 64% de audiencias que busca en redes.</strong>`;
-  if (cap > 75 && ts < 50)
-    return `<strong>${name} tiene un capital de marca sólido (${cap.toFixed(0)}) pero no se traduce en visibilidad digital.</strong> El BAV confirma que la marca es conocida y diferenciada — el gap está en el ecosistema digital. <strong>Hay una oportunidad directa: la marca ya tiene el activo, falta la presencia donde el consumidor busca hoy.</strong>`;
-  return `<strong>${name} tiene un perfil balanceado.</strong> Total Search ${ts.toFixed(1)} con Demanda Activa ${da.toFixed(0)}, Social ${soc.toFixed(0)} y Capital de Marca ${cap.toFixed(0)}. El Search Gap de ${(gap>=0?'+':'')+gap.toFixed(1)} está en zona controlada. <strong>La palanca de crecimiento está en profundizar Autoridad Digital y Conversación Social para alejar la marca de competidores con Gap positivo.</strong>`;
+    return `<strong>${nm}: más distintiva de lo que el mercado sabe.</strong> Trust ${e.trust.toFixed(0)} alto, pero Experience ${e.experience.toFixed(0)} bajo — la marca tiene personalidad pero el ecosistema digital no la amplifica. <strong>Gap negativo = oportunidad sin explotar. Activar búsqueda activa y conversación social.</strong>`;
+  if (e.score < 35)
+    return `<strong>${nm}: EEAT Score crítico (${e.score.toFixed(1)}).</strong> ${e.experience < 20 ? 'Experience casi nula — el mercado no la busca ni la comparte. ' : ''}${e.expertise < 25 ? 'Expertise muy baja — invisible para la IA editorial. ' : ''}${e.trust < 30 ? 'Trust débil — poca diferenciación percibida.' : ''} <strong>Activación urgente en todos los pilares EEAT para salir de la zona invisible.</strong>`;
+  if (e.authority > 75 && e.experience > 70)
+    return `<strong>${nm}: perfil EEAT dominante (${e.score.toFixed(1)}).</strong> Authority ${e.authority.toFixed(0)} + Experience ${e.experience.toFixed(0)} — domina reconocimiento y búsqueda activa. El foco debe estar en mantener Expertise y Trust para seguir siendo citada por los LLMs como referencia de categoría. <strong>Search Gap ${(gap>=0?'+':'')+gap.toFixed(0)}: ${gap>10?'vigilar diferenciación':'posición balanceada'}.</strong>`;
+  return `<strong>${nm}: perfil EEAT balanceado (${e.score.toFixed(1)}).</strong> Experience ${e.experience.toFixed(0)} · Expertise ${e.expertise.toFixed(0)} · Authority ${e.authority.toFixed(0)} · Trust ${e.trust.toFixed(0)}. ${gap > 10 ? `Search Gap +${gap.toFixed(0)}: relevancia supera diferenciación — reforzar Trust antes que la IA decida quién lidera la categoría.` : gap < -10 ? `Gap negativo (${gap.toFixed(0)}): diferenciación sin suficiente amplificación digital.` : 'Gap bajo control.'} <strong>Palanca inmediata: profundizar ${weak}.</strong>`;
 }
 
 // ── Main update ───────────────────────────────────────────
-const TOP1 = TS_DATA[0]; // McDonald's
-const TOP2 = TS_DATA[1]; // Rappi
-
 function updateDashboard(brandId) {
   const b = TS_DATA.find(x => x.id === brandId);
   if (!b) return;
-
-  const da = (b.gt_score * 0.7 + b.wiki_score * 0.3).toFixed(0);
-  const soc = b.social_score.toFixed(1);
-  const cap = ((b.R + b.D) / 2).toFixed(0);
+  const e   = eeat(b);
   const gap = b.search_gap;
 
-  // Radar
   buildRadar(TOP1, TOP2, b);
 
-  // Legend
-  document.getElementById('leg1').textContent = TOP1.id;
-  document.getElementById('leg1-ts').textContent = TOP1.ts_score.toFixed(1);
-  document.getElementById('leg2').textContent = TOP2.id;
-  document.getElementById('leg2-ts').textContent = TOP2.ts_score.toFixed(1);
+  // Legend — EEAT scores
+  document.getElementById('leg1').textContent      = TOP1.id;
+  document.getElementById('leg1-ts').textContent   = eeat(TOP1).score.toFixed(1);
+  document.getElementById('leg2').textContent      = TOP2.id;
+  document.getElementById('leg2-ts').textContent   = eeat(TOP2).score.toFixed(1);
   document.getElementById('leg3-name').textContent = b.id;
-  document.getElementById('leg3-ts').textContent = b.ts_score.toFixed(1);
+  document.getElementById('leg3-ts').textContent   = e.score.toFixed(1);
   document.getElementById('radar-title').textContent = `${b.id} vs ${TOP1.id} & ${TOP2.id}`;
 
   // Gap card
   document.getElementById('gap-brand-name').textContent = b.id;
-  const gapEl = document.getElementById('gap-value');
+  const gapEl   = document.getElementById('gap-value');
   const gapSign = gap >= 0 ? '+' : '';
   gapEl.textContent = gapSign + gap.toFixed(1);
   let gapColor = '#34D399', gapLabelTxt = '✓ Gap equilibrado';
-  if (gap > 20)  { gapColor = '#FB7185'; gapLabelTxt = '⚡ Riesgo — alta demanda, baja D'; }
-  else if (gap > 10) { gapColor = '#F59E0B'; gapLabelTxt = '→ Zona de atención'; }
-  else if (gap < -15){ gapColor = '#60A5FA'; gapLabelTxt = '🎯 Oportunidad — escalar visibilidad'; }
+  if      (gap > 20)  { gapColor = '#FB7185'; gapLabelTxt = '⚡ Riesgo — demanda supera diferenciación'; }
+  else if (gap > 10)  { gapColor = '#F59E0B'; gapLabelTxt = '→ Zona de atención'; }
+  else if (gap < -15) { gapColor = '#60A5FA'; gapLabelTxt = '🎯 Oportunidad — escalar visibilidad'; }
   gapEl.style.color = gapColor;
-  document.getElementById('gap-label').textContent = gapLabelTxt;
-  document.getElementById('gap-label').style.color = gapColor;
+  document.getElementById('gap-label').textContent  = gapLabelTxt;
+  document.getElementById('gap-label').style.color  = gapColor;
 
   // Ref gaps
   document.getElementById('ref1-name').textContent = TOP1.id;
-  document.getElementById('ref1-gap').textContent = (TOP1.search_gap>=0?'+':'')+TOP1.search_gap.toFixed(1);
+  document.getElementById('ref1-gap').textContent  = (TOP1.search_gap>=0?'+':'')+TOP1.search_gap.toFixed(1);
   document.getElementById('ref2-name').textContent = TOP2.id;
-  document.getElementById('ref2-gap').textContent = (TOP2.search_gap>=0?'+':'')+TOP2.search_gap.toFixed(1);
+  document.getElementById('ref2-gap').textContent  = (TOP2.search_gap>=0?'+':'')+TOP2.search_gap.toFixed(1);
 
-  // Scores
+  // Scores panel
   document.getElementById('scores-brand-name').textContent = b.id;
-  document.getElementById('sc-ts').textContent = b.ts_score.toFixed(1);
-  document.getElementById('sc-da').textContent = da;
-  document.getElementById('sc-soc').textContent = soc;
-  document.getElementById('sc-cap').textContent = cap;
+  document.getElementById('sc-ts').textContent    = e.score.toFixed(1);
+  document.getElementById('sc-da').textContent    = e.experience.toFixed(0);
+  document.getElementById('sc-soc').textContent   = e.expertise.toFixed(0);
+  document.getElementById('sc-cap').textContent   = e.authority.toFixed(0);
+  document.getElementById('sc-trust').textContent = e.trust.toFixed(0);
 
-  // Dimension score cards below radar
-  document.getElementById('dim-da').textContent = da;
-  document.getElementById('dim-soc').textContent = soc;
-  document.getElementById('dim-cap').textContent = cap;
+  // Dim cards below radar
+  document.getElementById('dim-da').textContent    = e.experience.toFixed(0);
+  document.getElementById('dim-soc').textContent   = e.expertise.toFixed(0);
+  document.getElementById('dim-cap').textContent   = e.authority.toFixed(0);
+  document.getElementById('dim-trust').textContent = e.trust.toFixed(0);
 
   // Insight
   document.getElementById('insight-brand-name').textContent = b.id;
   document.getElementById('insight-text').innerHTML = generateInsight(b);
 }
 
-// ── Init selector ─────────────────────────────────────────
+// ── Init ──────────────────────────────────────────────────
 const sel = document.getElementById('brand-sel');
-// Exclude top2 from selector so user picks a 3rd brand
-TS_DATA.forEach(b => {
+SORTED_EEAT.forEach(b => {
   const opt = document.createElement('option');
   opt.value = b.id;
-  opt.textContent = `${b.id}  ·  TS ${b.ts_score.toFixed(1)}`;
+  opt.textContent = `${b.id}  ·  EEAT ${eeat(b).score.toFixed(1)}`;
   sel.appendChild(opt);
 });
-// Default: Falabella (#3)
 sel.value = 'Falabella';
 updateDashboard('Falabella');
 </script>
