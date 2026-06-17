@@ -416,7 +416,7 @@
       <!-- ── CONCENTRIC GAUGE RINGS @ CENTER (450,210) ── -->
 
       <!-- Glass disc stage -->
-      <circle cx="450" cy="210" r="180" fill="rgba(255,255,255,.28)" stroke="rgba(255,255,255,.50)" stroke-width="1.5"/>
+      <circle cx="450" cy="210" r="202" fill="rgba(255,255,255,.28)" stroke="rgba(255,255,255,.50)" stroke-width="1.5"/>
 
       <!-- CO label — behind rings -->
       <text x="450" y="192" text-anchor="middle" font-family="Inter,sans-serif" font-size="42" font-weight="900"
@@ -424,28 +424,28 @@
       <text x="450" y="210" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" font-weight="700"
         letter-spacing="2" fill="rgba(79,70,229,.14)" pointer-events="none">CAPITAL TRANSACCIONAL</text>
 
-      <!-- Ring 8 · Brand Architecture · r=164 · #4361EE -->
-      <circle cx="450" cy="210" r="164" fill="none" stroke="rgba(67,97,238,.12)" stroke-width="5"/>
-      <circle id="ring-brandarchitecture" cx="450" cy="210" r="164" fill="none"
+      <!-- Ring 8 · Brand Architecture · r=186 · #4361EE -->
+      <circle cx="450" cy="210" r="186" fill="none" stroke="rgba(67,97,238,.12)" stroke-width="5"/>
+      <circle id="ring-brandarchitecture" cx="450" cy="210" r="186" fill="none"
         stroke="#4361EE" stroke-width="5" stroke-linecap="round"
-        stroke-dasharray="0 1030" transform="rotate(-90 450 210)" opacity=".80"/>
-      <text x="450" y="36" text-anchor="middle" font-family="Inter,sans-serif"
+        stroke-dasharray="0 1168" transform="rotate(-90 450 210)" opacity=".80"/>
+      <text x="450" y="14" text-anchor="middle" font-family="Inter,sans-serif"
         font-size="9" font-weight="800" letter-spacing=".12em" fill="#1E3A8A" pointer-events="none">BRAND ARCHITECTURE</text>
 
-      <!-- Ring 6 · Brandconomics · r=142 · #F59E0B -->
-      <circle cx="450" cy="210" r="142" fill="none" stroke="rgba(245,158,11,.12)" stroke-width="5"/>
-      <circle id="ring-brandconomics" cx="450" cy="210" r="142" fill="none"
+      <!-- Ring 6 · Brandconomics · r=164 · #F59E0B -->
+      <circle cx="450" cy="210" r="164" fill="none" stroke="rgba(245,158,11,.12)" stroke-width="5"/>
+      <circle id="ring-brandconomics" cx="450" cy="210" r="164" fill="none"
         stroke="#F59E0B" stroke-width="5" stroke-linecap="round"
-        stroke-dasharray="0 893" transform="rotate(-90 450 210)" opacity=".80"/>
-      <text x="450" y="58" text-anchor="middle" font-family="Inter,sans-serif"
+        stroke-dasharray="0 1030" transform="rotate(-90 450 210)" opacity=".80"/>
+      <text x="450" y="36" text-anchor="middle" font-family="Inter,sans-serif"
         font-size="9" font-weight="800" letter-spacing=".12em" fill="#92400E" pointer-events="none">BRANDCONOMICS</text>
 
-      <!-- Ring 7 · Paris Syndrome · r=131 · #EC4899 -->
-      <circle cx="450" cy="210" r="131" fill="none" stroke="rgba(236,72,153,.12)" stroke-width="5"/>
-      <circle id="ring-parissyndrome" cx="450" cy="210" r="131" fill="none"
+      <!-- Ring 7 · Paris Syndrome · r=142 · #EC4899 -->
+      <circle cx="450" cy="210" r="142" fill="none" stroke="rgba(236,72,153,.12)" stroke-width="5"/>
+      <circle id="ring-parissyndrome" cx="450" cy="210" r="142" fill="none"
         stroke="#EC4899" stroke-width="5" stroke-linecap="round"
-        stroke-dasharray="0 823" transform="rotate(-90 450 210)" opacity=".80"/>
-      <text x="450" y="69" text-anchor="middle" font-family="Inter,sans-serif"
+        stroke-dasharray="0 893" transform="rotate(-90 450 210)" opacity=".80"/>
+      <text x="450" y="58" text-anchor="middle" font-family="Inter,sans-serif"
         font-size="9" font-weight="800" letter-spacing=".12em" fill="#9D174D" pointer-events="none">PARIS SYNDROME</text>
 
       <!-- Ring 5 · BAV Pulse · r=120 · #10B981 -->
@@ -616,9 +616,9 @@ const get=n=>BRANDS.find(x=>x.n===n);
 
 // Ring config: outermost → innermost
 const RINGS=[
-  {k:'brandarchitecture',r:164,sc:b=>+((b.D+b.E)/2).toFixed(1),                      c:'#4361EE'},
-  {k:'brandconomics',    r:142,sc:b=>b.E,                                              c:'#F59E0B'},
-  {k:'parissyndrome',    r:131,sc:b=>Math.max(0,Math.round(100-Math.abs(b.D-b.CX))), c:'#EC4899'},
+  {k:'brandarchitecture',r:186,sc:b=>+((b.D+b.E)/2).toFixed(1),                      c:'#4361EE'},
+  {k:'brandconomics',    r:164,sc:b=>b.E,                                              c:'#F59E0B'},
+  {k:'parissyndrome',    r:142,sc:b=>Math.max(0,Math.round(100-Math.abs(b.D-b.CX))), c:'#EC4899'},
   {k:'bavpulse',         r:120,sc:b=>b.loop,                                           c:'#10B981'},
   {k:'totalsearch',  r:98, sc:b=>b.R,    c:'#3B82F6'},
   {k:'tensity',      r:76, sc:b=>b.D,    c:'#EF4444'},
