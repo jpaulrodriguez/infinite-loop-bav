@@ -288,6 +288,18 @@
 
   <!-- KPI ROW — color per dimension -->
   <div class="kpi-row">
+    <div class="kc" style="--acc:#4361EE" onclick="openM('brandarchitecture')">
+      <div class="kc-lb">Brand Architecture</div>
+      <div class="kc-v" id="kv-brandarchitecture" style="color:#4361EE">—</div>
+      <div class="kc-p">Coherencia de portfolio · CO</div>
+      <div class="kc-s" id="ks-brandarchitecture"></div>
+    </div>
+    <div class="kc" style="--acc:#EC4899" onclick="openM('parissyndrome')">
+      <div class="kc-lb">Paris Syndrome</div>
+      <div class="kc-v" id="kv-parissyndrome" style="color:#EC4899">—</div>
+      <div class="kc-p">Alineación promesa–entrega · BX→CX</div>
+      <div class="kc-s" id="ks-parissyndrome"></div>
+    </div>
     <div class="kc" style="--acc:#F59E0B" onclick="openM('brandconomics')">
       <div class="kc-lb">Brandconomics</div>
       <div class="kc-v" id="kv-brandconomics" style="color:#F59E0B">—</div>
@@ -328,6 +340,8 @@
 
   <style>
     .kc::before{background:var(--acc,var(--primary));}
+    .ptr-fill-brandarchitecture{background:#4361EE;}
+    .ptr-fill-parissyndrome{background:#EC4899;}
     .ptr-fill-brandconomics{background:#F59E0B;}
     .ptr-fill-bavpulse{background:#10B981;}
     .ptr-fill-totalsearch{background:#3B82F6;}
@@ -402,13 +416,21 @@
       <!-- ── CONCENTRIC GAUGE RINGS @ CENTER (450,210) ── -->
 
       <!-- Glass disc stage -->
-      <circle cx="450" cy="210" r="156" fill="rgba(255,255,255,.28)" stroke="rgba(255,255,255,.50)" stroke-width="1.5"/>
+      <circle cx="450" cy="210" r="180" fill="rgba(255,255,255,.28)" stroke="rgba(255,255,255,.50)" stroke-width="1.5"/>
 
       <!-- CO label — behind rings -->
       <text x="450" y="192" text-anchor="middle" font-family="Inter,sans-serif" font-size="42" font-weight="900"
         letter-spacing="-1" fill="rgba(79,70,229,.08)" pointer-events="none">CO</text>
       <text x="450" y="210" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" font-weight="700"
         letter-spacing="2" fill="rgba(79,70,229,.14)" pointer-events="none">CAPITAL TRANSACCIONAL</text>
+
+      <!-- Ring 8 · Brand Architecture · r=164 · #4361EE -->
+      <circle cx="450" cy="210" r="164" fill="none" stroke="rgba(67,97,238,.12)" stroke-width="5"/>
+      <circle id="ring-brandarchitecture" cx="450" cy="210" r="164" fill="none"
+        stroke="#4361EE" stroke-width="5" stroke-linecap="round"
+        stroke-dasharray="0 1030" transform="rotate(-90 450 210)" opacity=".80"/>
+      <text x="450" y="36" text-anchor="middle" font-family="Inter,sans-serif"
+        font-size="9" font-weight="800" letter-spacing=".12em" fill="#1E3A8A" pointer-events="none">BRAND ARCHITECTURE</text>
 
       <!-- Ring 6 · Brandconomics · r=142 · #F59E0B -->
       <circle cx="450" cy="210" r="142" fill="none" stroke="rgba(245,158,11,.12)" stroke-width="5"/>
@@ -417,6 +439,14 @@
         stroke-dasharray="0 893" transform="rotate(-90 450 210)" opacity=".80"/>
       <text x="450" y="58" text-anchor="middle" font-family="Inter,sans-serif"
         font-size="9" font-weight="800" letter-spacing=".12em" fill="#92400E" pointer-events="none">BRANDCONOMICS</text>
+
+      <!-- Ring 7 · Paris Syndrome · r=131 · #EC4899 -->
+      <circle cx="450" cy="210" r="131" fill="none" stroke="rgba(236,72,153,.12)" stroke-width="5"/>
+      <circle id="ring-parissyndrome" cx="450" cy="210" r="131" fill="none"
+        stroke="#EC4899" stroke-width="5" stroke-linecap="round"
+        stroke-dasharray="0 823" transform="rotate(-90 450 210)" opacity=".80"/>
+      <text x="450" y="69" text-anchor="middle" font-family="Inter,sans-serif"
+        font-size="9" font-weight="800" letter-spacing=".12em" fill="#9D174D" pointer-events="none">PARIS SYNDROME</text>
 
       <!-- Ring 5 · BAV Pulse · r=120 · #10B981 -->
       <circle cx="450" cy="210" r="120" fill="none" stroke="rgba(16,185,129,.12)" stroke-width="5"/>
@@ -586,8 +616,10 @@ const get=n=>BRANDS.find(x=>x.n===n);
 
 // Ring config: outermost → innermost
 const RINGS=[
-  {k:'brandconomics',r:142,sc:b=>b.E,   c:'#F59E0B'},
-  {k:'bavpulse',     r:120,sc:b=>b.loop, c:'#10B981'},
+  {k:'brandarchitecture',r:164,sc:b=>+((b.D+b.E)/2).toFixed(1),                      c:'#4361EE'},
+  {k:'brandconomics',    r:142,sc:b=>b.E,                                              c:'#F59E0B'},
+  {k:'parissyndrome',    r:131,sc:b=>Math.max(0,Math.round(100-Math.abs(b.D-b.CX))), c:'#EC4899'},
+  {k:'bavpulse',         r:120,sc:b=>b.loop,                                           c:'#10B981'},
   {k:'totalsearch',  r:98, sc:b=>b.R,    c:'#3B82F6'},
   {k:'tensity',      r:76, sc:b=>b.D,    c:'#EF4444'},
   {k:'growth',       r:54, sc:b=>b.CX,   c:'#8B5CF6'},
@@ -658,7 +690,7 @@ function paint(name){
   layer1(b);
 }
 
-const NAME_MAP={brandconomics:'Brandconomics',bavpulse:'BAV Pulse',totalsearch:'Total Search',tensity:'Tensity',growth:'Growth Strategy',loyalty:'Loyalty Strategy'};
+const NAME_MAP={brandarchitecture:'Brand Architecture',brandconomics:'Brandconomics',parissyndrome:'Paris Syndrome',bavpulse:'BAV Pulse',totalsearch:'Total Search',tensity:'Tensity',growth:'Growth Strategy',loyalty:'Loyalty Strategy'};
 
 function layer1(b){
   const rk=RANKED.findIndex(x=>x.n===b.n)+1;
@@ -743,6 +775,12 @@ function select(name){
 
 // SPECS for modal
 const SC={
+  brandarchitecture:{title:'Brand Architecture',c:'#4361EE',pilar:'Coherencia de portfolio — Diferenciación + Estima · Capital Transaccional',
+    desc:b=>{const v=+((b.D+b.E)/2).toFixed(1);return`Brand Architecture mide qué tan sólida y coherente es la estructura de marca. Con ${v} pts (Diferenciación ${b.D.toFixed(1)} · Estima ${b.E.toFixed(1)}), ${v>70?'el portfolio tiene una identidad robusta — la marca puede extenderse y expandirse sin perder su esencia':v>50?'arquitectura funcional pero con fricciones — la coherencia entre lo que la marca es y lo que promete aún no es suficiente para extensiones sin riesgo':'arquitectura débil — el portfolio carece de ancla identitaria clara, cada extensión erosiona la marca madre'}. Una arquitectura sólida es la base del pricing power sostenido.`},
+    dims:b=>[{l:'Diferenciación BAV',v:b.D},{l:'Estima BAV',v:b.E}],sc:b=>+((b.D+b.E)/2).toFixed(1)},
+  parissyndrome:{title:'Paris Syndrome',c:'#EC4899',pilar:'Alineación promesa–entrega — Diferenciación vs CX · BX→CX',
+    desc:b=>{const gap=Math.abs(b.D-b.CX);const score=Math.max(0,Math.round(100-gap));return`Paris Syndrome mide la brecha entre lo que la marca promete culturalmente (Diferenciación: ${b.D.toFixed(1)} pts) y lo que el consumidor experimenta en la relación real (CX: ${b.CX.toFixed(1)} pts). Brecha actual: ${gap.toFixed(1)} pts. ${score>75?'Alineación alta — la marca cumple su promesa. El consumidor no se decepciona: construye confianza acumulada y fidelidad sostenida':score>50?'Brecha moderada — la promesa supera la experiencia. El consumidor detecta el desajuste y reduce gradualmente su disposición a pagar una prima':'Síndrome activo — la brecha es crítica. La marca genera expectativas que no puede cumplir, erosionando silenciosamente el equity cada ciclo'}. Esta brecha es uno de los principales destructores de Capital Intangible a mediano plazo.`},
+    dims:b=>[{l:'Diferenciación BAV (promesa)',v:b.D},{l:'CX Score (entrega real)',v:b.CX}],sc:b=>Math.max(0,Math.round(100-Math.abs(b.D-b.CX)))},
   brandconomics:{title:'Brandconomics',c:'#F59E0B',pilar:'Estima — BAV Pilar 3 · Capital Transaccional',
     desc:b=>`Con Estima de ${b.E.toFixed(1)} pts, ${b.E>75?'la marca cumple su promesa en todos los canales — la transacción refuerza el equity':b.E>50?'estima funcional sin diferenciación experiencial':'la transacción destruye equity — brecha crítica entre promesa y entrega'}. CES y ticket medio son los KPIs operativos.`,
     dims:b=>[{l:'Estima BAV',v:b.E},{l:'Brand Stature',v:b.sta}],sc:b=>b.E},
