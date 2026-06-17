@@ -303,47 +303,102 @@
 </div>
 </section>
 
-<!-- ─── SECTION 2: ECOSYSTEM CHANNELS ─── -->
+<!-- ─── SECTION 2: MODELO 3D + INDICADORES ─── -->
 <section class="eco-section">
-  <div class="eco-label">Ecosistema de señales</div>
+  <div class="eco-label">El Modelo</div>
   <div class="eco-inner">
-    <h2 class="eco-headline">El <span class="blue">Total Search Score</span><br>mide 5 señales de presencia digital real</h2>
-    <p class="eco-sub">Cada señal viene de una fuente pública verificable. Calibrada con los pilares BAV para conectar visibilidad digital con capital de marca.</p>
+    <div style="display:grid;grid-template-columns:1fr 420px;gap:60px;align-items:center;margin-bottom:60px;">
+      <div>
+        <h2 class="eco-headline">Cinco indicadores.<br>Un solo <span class="blue">score de visibilidad</span>.</h2>
+        <p class="eco-sub" style="margin-bottom:0">La visibilidad de una marca no vive en un solo canal. Vive en la intersección de su demanda real, su autoridad digital, su conversación social y su capital de marca.</p>
+      </div>
+      <!-- DIAGRAMA 3D -->
+      <div style="perspective:900px;display:flex;justify-content:center;align-items:center;height:320px;">
+        <div style="position:relative;width:320px;height:320px;transform-style:preserve-3d;animation:rotateY 18s linear infinite;" id="diagram3d">
+          <!-- Pyramid built with CSS 3D -->
+          <svg viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg" style="width:320px;height:320px;filter:drop-shadow(0 20px 60px rgba(59,130,246,0.30))">
+            <!-- Base layer: Intención + Autoridad -->
+            <polygon points="160,30 310,220 10,220" fill="none" stroke="rgba(59,130,246,0.15)" stroke-width="1"/>
+            <!-- Layer fills -->
+            <polygon points="160,30 310,220 10,220" fill="url(#pyGrad)" opacity="0.85"/>
+            <!-- Inner lines -->
+            <line x1="160" y1="30" x2="160" y2="290" stroke="rgba(59,130,246,0.25)" stroke-width="1" stroke-dasharray="4 4"/>
+            <!-- Tier 1: base -->
+            <rect x="30" y="222" width="260" height="30" rx="4" fill="rgba(6,182,212,0.18)" stroke="rgba(6,182,212,0.4)" stroke-width="1"/>
+            <text x="160" y="241" text-anchor="middle" fill="#06B6D4" font-size="9" font-weight="700" letter-spacing="1" font-family="Inter,sans-serif">CONVERSACIÓN SOCIAL · 30%</text>
+            <!-- Tier 2 -->
+            <rect x="55" y="182" width="210" height="36" rx="4" fill="rgba(59,130,246,0.15)" stroke="rgba(59,130,246,0.40)" stroke-width="1"/>
+            <text x="160" y="197" text-anchor="middle" fill="#60A5FA" font-size="9" font-weight="700" letter-spacing="1" font-family="Inter,sans-serif">DEMANDA ACTIVA · 35%</text>
+            <text x="160" y="211" text-anchor="middle" fill="#60A5FA" font-size="8" font-family="Inter,sans-serif">+ AUTORIDAD DIGITAL · 15%</text>
+            <!-- Tier 3: top -->
+            <rect x="90" y="140" width="140" height="38" rx="4" fill="rgba(139,92,246,0.18)" stroke="rgba(139,92,246,0.40)" stroke-width="1"/>
+            <text x="160" y="156" text-anchor="middle" fill="#A78BFA" font-size="9" font-weight="700" letter-spacing="1" font-family="Inter,sans-serif">CAPITAL DE MARCA · 20%</text>
+            <text x="160" y="170" text-anchor="middle" fill="#A78BFA" font-size="8" font-family="Inter,sans-serif">Relevancia + Diferenciación</text>
+            <!-- Apex: TS Score -->
+            <circle cx="160" cy="52" r="28" fill="rgba(59,130,246,0.20)" stroke="rgba(59,130,246,0.70)" stroke-width="1.5"/>
+            <text x="160" y="47" text-anchor="middle" fill="#fff" font-size="9" font-weight="800" letter-spacing="0.5" font-family="Inter,sans-serif">TOTAL</text>
+            <text x="160" y="60" text-anchor="middle" fill="#60A5FA" font-size="9" font-weight="800" letter-spacing="0.5" font-family="Inter,sans-serif">SEARCH</text>
+            <!-- Search Gap badge -->
+            <rect x="205" y="265" width="105" height="28" rx="14" fill="rgba(244,63,94,0.15)" stroke="rgba(244,63,94,0.40)" stroke-width="1"/>
+            <text x="257" y="283" text-anchor="middle" fill="#FB7185" font-size="9" font-weight="700" font-family="Inter,sans-serif">SEARCH GAP = R − D</text>
+            <!-- Left badge -->
+            <rect x="10" y="265" width="88" height="28" rx="14" fill="rgba(16,185,129,0.12)" stroke="rgba(16,185,129,0.35)" stroke-width="1"/>
+            <text x="54" y="283" text-anchor="middle" fill="#34D399" font-size="9" font-weight="700" font-family="Inter,sans-serif">DIAGNÓSTICO</text>
+            <!-- gradient def -->
+            <defs>
+              <linearGradient id="pyGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="rgba(139,92,246,0.08)"/>
+                <stop offset="50%" stop-color="rgba(59,130,246,0.08)"/>
+                <stop offset="100%" stop-color="rgba(6,182,212,0.10)"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- INDICADORES -->
     <div class="channels">
       <div class="ch">
         <span class="ch-weight">35%</span>
-        <div class="ch-icon">📈</div>
-        <div class="ch-name">Google Trends</div>
-        <div class="ch-desc">Volumen real de búsqueda intencional en Colombia 12 meses. La señal más directa de demanda activa. Base de toda presencia digital.</div>
+        <div class="ch-icon">🔥</div>
+        <div class="ch-name">Demanda Activa</div>
+        <div class="ch-desc">Volumen de búsqueda intencional en los últimos 12 meses. Lo que el mercado ya está pidiendo.</div>
+        <div style="margin-top:12px;font-size:9px;color:var(--muted);letter-spacing:.06em">ref · Google Trends</div>
       </div>
       <div class="ch">
         <span class="ch-weight">15%</span>
-        <div class="ch-icon">📚</div>
-        <div class="ch-name">Wikipedia Authority</div>
-        <div class="ch-desc">Pageviews y existencia de página verificada. Los LLMs citan Wikipedia. Sin autoridad enciclopédica, tu marca no existe para la IA generativa.</div>
+        <div class="ch-icon">🏛</div>
+        <div class="ch-name">Autoridad Digital</div>
+        <div class="ch-desc">Presencia verificada en fuentes que la IA consulta. Sin esta capa, la marca no existe para los motores generativos.</div>
+        <div style="margin-top:12px;font-size:9px;color:var(--muted);letter-spacing:.06em">ref · Wikipedia</div>
       </div>
       <div class="ch">
         <span class="ch-weight">30%</span>
-        <div class="ch-icon">📱</div>
-        <div class="ch-name">Social Score</div>
-        <div class="ch-desc">YouTube (40%) + TikTok (40%) + Reddit (20%). Suscriptores, vistas de hashtag, menciones en comunidades colombianas. Social SEO = búsqueda sin Google.</div>
-      </div>
-      <div class="ch">
-        <span class="ch-weight">10%</span>
-        <div class="ch-icon">🎯</div>
-        <div class="ch-name">BAV Relevancia</div>
-        <div class="ch-desc">La Relevancia BAV calibra la demanda orgánica esperada. Alta R con baja presencia digital = Search Gap crítico. La IA no encontrará lo que el mercado quiere.</div>
-      </div>
-      <div class="ch">
-        <span class="ch-weight">10%</span>
         <div class="ch-icon">⚡</div>
-        <div class="ch-name">BAV Diferenciación</div>
-        <div class="ch-desc">La Diferenciación BAV calibra la capacidad de ser citada. Una marca D alta con baja presencia digital tiene el activo pero no el canal. Escalar aquí es urgente.</div>
+        <div class="ch-name">Conversación Social</div>
+        <div class="ch-desc">Presencia en los canales donde las audiencias buscan sin Google. Video, comunidades y tendencias.</div>
+        <div style="margin-top:12px;font-size:9px;color:var(--muted);letter-spacing:.06em">ref · YouTube · TikTok · Reddit</div>
       </div>
-      <div class="ch" style="background:rgba(59,130,246,.06);border-color:rgba(59,130,246,.20);">
-        <div class="ch-icon">🔍</div>
-        <div class="ch-name">Search Gap = R − D</div>
-        <div class="ch-desc">Si Relevancia &gt; Diferenciación: demanda sin sustancia — la IA no cita. Si Diferenciación &gt; Relevancia: sustancia sin audiencia — oportunidad de escalar visibilidad.</div>
+      <div class="ch">
+        <span class="ch-weight">10%</span>
+        <div class="ch-icon">📡</div>
+        <div class="ch-name">Demanda de Marca</div>
+        <div class="ch-desc">Qué tanto el mercado ya la considera relevante. Calibra la demanda orgánica esperada en el modelo.</div>
+        <div style="margin-top:12px;font-size:9px;color:var(--muted);letter-spacing:.06em">ref · BAV Relevancia</div>
+      </div>
+      <div class="ch">
+        <span class="ch-weight">10%</span>
+        <div class="ch-icon">💎</div>
+        <div class="ch-name">Distintividad de Marca</div>
+        <div class="ch-desc">La capacidad de ser citada y reconocida como única. El activo que la IA prefiere cuando existe.</div>
+        <div style="margin-top:12px;font-size:9px;color:var(--muted);letter-spacing:.06em">ref · BAV Diferenciación</div>
+      </div>
+      <div class="ch" style="background:rgba(244,63,94,.05);border-color:rgba(244,63,94,.18);">
+        <div class="ch-icon">📐</div>
+        <div class="ch-name" style="color:#FB7185">Search Gap</div>
+        <div class="ch-desc">La brecha entre lo que la marca proyecta y lo que el ecosistema puede encontrar. El diagnóstico más revelador del modelo.</div>
+        <div style="margin-top:12px;font-size:10px;font-weight:700;color:#FB7185;letter-spacing:.04em">= Demanda − Distintividad</div>
       </div>
     </div>
   </div>
