@@ -552,68 +552,66 @@
   <div style="display:grid;grid-template-columns:1fr 340px;gap:28px;align-items:start;">
 
     <!-- LEFT: RADAR -->
-    <div style="background:var(--glass);border:1px solid var(--glass-b);border-radius:24px;padding:32px;">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
+    <div style="background:rgba(15,23,42,0.75);backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);border:1px solid rgba(96,165,250,0.18);border-radius:28px;padding:32px;box-shadow:0 8px 64px rgba(0,0,0,0.55),inset 0 1px 0 rgba(255,255,255,0.07);">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
         <div>
           <div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-bottom:6px;">Diagrama de área · 3 dimensiones</div>
           <div id="radar-title" style="font-size:16px;font-weight:800;color:#fff;">—</div>
         </div>
-        <!-- Legend small -->
-        <div style="display:flex;flex-direction:column;gap:5px;">
-          <div style="display:flex;align-items:center;gap:7px;font-size:10px;color:var(--muted2);">
-            <div style="width:20px;height:2px;background:rgba(96,165,250,0.6);border-radius:2px;"></div>
-            <span id="leg1">McDonald's</span>
-            <span id="leg1-ts" style="color:#60A5FA;font-weight:700;">—</span>
+        <!-- Legend -->
+        <div style="display:flex;flex-direction:column;gap:7px;">
+          <div style="display:flex;align-items:center;gap:8px;font-size:11px;">
+            <div style="width:22px;height:2px;background:rgba(148,163,184,0.50);border-radius:2px;border-top:1px dashed rgba(148,163,184,0.50);"></div>
+            <span id="leg1" style="color:rgba(148,163,184,0.70);">McDonald's</span>
+            <span id="leg1-ts" style="color:rgba(148,163,184,0.90);font-weight:700;">—</span>
           </div>
-          <div style="display:flex;align-items:center;gap:7px;font-size:10px;color:var(--muted2);">
-            <div style="width:20px;height:2px;background:rgba(6,182,212,0.6);border-radius:2px;"></div>
-            <span id="leg2">Rappi</span>
-            <span id="leg2-ts" style="color:#06B6D4;font-weight:700;">—</span>
+          <div style="display:flex;align-items:center;gap:8px;font-size:11px;">
+            <div style="width:22px;height:2px;background:rgba(148,163,184,0.35);border-radius:2px;border-top:1px dashed rgba(148,163,184,0.35);"></div>
+            <span id="leg2" style="color:rgba(148,163,184,0.55);">Rappi</span>
+            <span id="leg2-ts" style="color:rgba(148,163,184,0.70);font-weight:700;">—</span>
           </div>
-          <div style="display:flex;align-items:center;gap:7px;font-size:10px;color:var(--muted2);">
-            <div style="width:20px;height:2px;background:rgba(251,191,36,0.9);border-radius:2px;"></div>
-            <span id="leg3-name">—</span>
-            <span id="leg3-ts" style="color:#FBBf24;font-weight:700;">—</span>
+          <div style="display:flex;align-items:center;gap:8px;font-size:11px;">
+            <div style="width:22px;height:3px;background:#F97316;border-radius:2px;box-shadow:0 0 6px rgba(249,115,22,0.7);"></div>
+            <span id="leg3-name" style="color:#fff;font-weight:700;">—</span>
+            <span id="leg3-ts" style="color:#F97316;font-weight:900;">—</span>
           </div>
         </div>
       </div>
 
-      <!-- SVG RADAR -->
+      <!-- SVG RADAR — viewBox más alto para no cortar eje superior -->
       <div style="display:flex;justify-content:center;">
-        <svg id="radar-svg" viewBox="0 0 420 380" style="width:100%;max-width:480px;">
+        <svg id="radar-svg" viewBox="0 0 440 430" style="width:100%;max-width:520px;">
           <defs>
-            <filter id="rf-glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <filter id="rf-glow"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <filter id="rf-glow-sel"><feGaussianBlur stdDeviation="8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
           </defs>
-          <!-- Grid rings -->
           <g id="radar-grid"></g>
-          <!-- Axis lines + labels -->
           <g id="radar-axes"></g>
-          <!-- Areas -->
           <polygon id="area1" style="transition:all .5s ease"/>
           <polygon id="area2" style="transition:all .5s ease"/>
           <polygon id="area3" style="transition:all .5s ease"/>
-          <!-- Dots marca 3 -->
           <g id="radar-dots3"></g>
-          <!-- Axis labels -->
           <g id="radar-labels"></g>
-          <!-- Ref scores small text for marca1+2 -->
           <g id="radar-refs"></g>
         </svg>
       </div>
 
-      <!-- Axis mini legend -->
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px;border-top:1px solid rgba(255,255,255,.06);padding-top:16px;">
-        <div style="text-align:center;">
-          <div style="font-size:9px;color:var(--amber);font-weight:700;letter-spacing:.08em;">DEMANDA ACTIVA</div>
-          <div style="font-size:8px;color:var(--muted);margin-top:2px;">Trends + Wikipedia</div>
+      <!-- Axis legend con frase descriptiva + score marca seleccionada -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px;border-top:1px solid rgba(255,255,255,.07);padding-top:20px;">
+        <div style="text-align:center;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.14);border-radius:12px;padding:12px 8px;">
+          <div style="font-size:9px;color:var(--amber);font-weight:700;letter-spacing:.08em;margin-bottom:4px;">DEMANDA ACTIVA</div>
+          <div style="font-size:8px;color:var(--muted);margin-bottom:6px;line-height:1.4;">Lo que el mercado<br>ya está buscando.</div>
+          <div id="dim-da" style="font-size:20px;font-weight:900;color:var(--amber);">—</div>
         </div>
-        <div style="text-align:center;">
-          <div style="font-size:9px;color:#06B6D4;font-weight:700;letter-spacing:.08em;">CONV. SOCIAL</div>
-          <div style="font-size:8px;color:var(--muted);margin-top:2px;">YT · TikTok · Reddit</div>
+        <div style="text-align:center;background:rgba(6,182,212,0.06);border:1px solid rgba(6,182,212,0.14);border-radius:12px;padding:12px 8px;">
+          <div style="font-size:9px;color:#06B6D4;font-weight:700;letter-spacing:.08em;margin-bottom:4px;">CONV. SOCIAL</div>
+          <div style="font-size:8px;color:var(--muted);margin-bottom:6px;line-height:1.4;">Donde Gen Z busca<br>sin Google.</div>
+          <div id="dim-soc" style="font-size:20px;font-weight:900;color:#06B6D4;">—</div>
         </div>
-        <div style="text-align:center;">
-          <div style="font-size:9px;color:#A78BFA;font-weight:700;letter-spacing:.08em;">CAPITAL DE MARCA</div>
-          <div style="font-size:8px;color:var(--muted);margin-top:2px;">BAV R + D</div>
+        <div style="text-align:center;background:rgba(167,139,250,0.06);border:1px solid rgba(167,139,250,0.14);border-radius:12px;padding:12px 8px;">
+          <div style="font-size:9px;color:#A78BFA;font-weight:700;letter-spacing:.08em;margin-bottom:4px;">CAPITAL DE MARCA</div>
+          <div style="font-size:8px;color:var(--muted);margin-bottom:6px;line-height:1.4;">Lo que te hace<br>imposible de ignorar.</div>
+          <div id="dim-cap" style="font-size:20px;font-weight:900;color:#A78BFA;">—</div>
         </div>
       </div>
     </div>
@@ -622,7 +620,7 @@
     <div style="display:flex;flex-direction:column;gap:16px;">
 
       <!-- Search Gap card -->
-      <div style="background:var(--glass);border:1px solid var(--glass-b);border-radius:20px;padding:28px 24px;text-align:center;">
+      <div style="background:rgba(15,23,42,0.75);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(96,165,250,0.18);border-radius:20px;padding:28px 24px;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.07);">
         <div style="font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin-bottom:8px;">Search Gap</div>
         <div id="gap-brand-name" style="font-size:12px;font-weight:700;color:var(--muted2);margin-bottom:6px;">—</div>
         <div id="gap-value" style="font-size:52px;font-weight:900;letter-spacing:-.03em;line-height:1;">—</div>
@@ -642,7 +640,7 @@
       </div>
 
       <!-- Scores breakdown small -->
-      <div style="background:var(--glass);border:1px solid var(--glass-b);border-radius:20px;padding:20px 20px;">
+      <div style="background:rgba(15,23,42,0.75);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.09);border-radius:20px;padding:20px 20px;box-shadow:0 8px 40px rgba(0,0,0,0.40),inset 0 1px 0 rgba(255,255,255,0.06);">
         <div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-bottom:14px;">Scores · <span id="scores-brand-name">—</span></div>
         <div style="display:flex;flex-direction:column;gap:10px;">
           <div style="display:flex;justify-content:space-between;align-items:center;">
@@ -695,8 +693,8 @@ function dims(b) {
 }
 
 // ── Radar geometry (equilateral triangle, 3 axes) ────────
-const CX = 210, CY = 175, R_MAX = 145;
-// Angles: top=−90°, bottom-left=150°, bottom-right=30°
+// ViewBox 440×430, center shifted down to give space for top label
+const CX = 220, CY = 210, R_MAX = 160;
 const ANGLES = [-Math.PI/2, Math.PI/2 + Math.PI/3, Math.PI/6];
 const AXIS_COLORS = ['#F59E0B','#06B6D4','#A78BFA'];
 const AXIS_LABELS = ['Demanda\nActiva','Conv.\nSocial','Capital\nde Marca'];
@@ -754,10 +752,10 @@ function buildRadar(b1, b2, b3) {
     axG.appendChild(dot);
   });
 
-  // Axis labels
+  // Axis labels (adjusted offsets for larger viewBox)
   const labG = document.getElementById('radar-labels');
   labG.innerHTML = '';
-  const offsets = [[0,-18],[0,18],[30,0]];
+  const offsets = [[0,-22],[0,22],[34,0]];
   ANGLES.forEach((ang, i) => {
     const [ex,ey] = radarPt(i, 115);
     const lines = AXIS_LABELS[i].split('\n');
@@ -777,49 +775,52 @@ function buildRadar(b1, b2, b3) {
   });
 
   // Areas
-  function setArea(id, brand, fill, stroke, opacity, dasharray) {
+  function setArea(id, brand, fill, stroke, strokeW, opacity, dasharray) {
     const d = dims(brand);
     const pts = d.map((_,i) => radarPt(i, d[i]).join(',')).join(' ');
     const el = document.getElementById(id);
     el.setAttribute('points', pts);
     el.setAttribute('fill', fill);
     el.setAttribute('stroke', stroke);
-    el.setAttribute('stroke-width', '2');
+    el.setAttribute('stroke-width', strokeW);
     el.setAttribute('opacity', opacity);
     if (dasharray) el.setAttribute('stroke-dasharray', dasharray);
     else el.removeAttribute('stroke-dasharray');
   }
 
-  setArea('area1', b1, 'rgba(96,165,250,0.08)', '#60A5FA', '0.9', '5 3');
-  setArea('area2', b2, 'rgba(6,182,212,0.08)',  '#06B6D4', '0.9', '5 3');
-  setArea('area3', b3, 'rgba(251,191,36,0.18)', '#FBBf24', '1',   null);
+  // References: muted grey dashed, barely filled
+  setArea('area1', b1, 'rgba(148,163,184,0.05)', 'rgba(148,163,184,0.50)', '1.5', '1', '6 4');
+  setArea('area2', b2, 'rgba(148,163,184,0.03)', 'rgba(148,163,184,0.28)', '1',   '1', '6 4');
+  // Selected brand: orange, bold, prominent
+  setArea('area3', b3, 'rgba(249,115,22,0.22)',  '#F97316', '2.5', '1', null);
+  // Glow layer for selected
+  const glowPts = dims(b3).map((_,i) => radarPt(i, dims(b3)[i]).join(',')).join(' ');
+  const glowEl = document.getElementById('area3');
+  // Add a second glow polygon behind area3 — reuse area2 slot temporarily via filter
+  // Actually just apply filter on area3
+  glowEl.setAttribute('filter','url(#rf-glow-sel)');
 
   // Dots on marca3
   const dotsG = document.getElementById('radar-dots3');
   dotsG.innerHTML = '';
   dims(b3).forEach((val, i) => {
     const [px,py] = radarPt(i, val);
+    // Glow dot
+    const cg = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    cg.setAttribute('cx',px); cg.setAttribute('cy',py); cg.setAttribute('r','9');
+    cg.setAttribute('fill','rgba(249,115,22,0.25)');
+    dotsG.appendChild(cg);
+    // Main dot
     const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
     c.setAttribute('cx',px); c.setAttribute('cy',py); c.setAttribute('r','5');
-    c.setAttribute('fill','#FBBf24'); c.setAttribute('stroke','rgba(15,23,42,0.8)'); c.setAttribute('stroke-width','1.5');
+    c.setAttribute('fill','#F97316'); c.setAttribute('stroke','rgba(10,12,28,0.9)'); c.setAttribute('stroke-width','2');
     dotsG.appendChild(c);
-    // Value label
-    const tx = document.createElementNS('http://www.w3.org/2000/svg','text');
-    const offV = [[-8,-10],[8,12],[14,-4]];
-    tx.setAttribute('x', px + offV[i][0]);
-    tx.setAttribute('y', py + offV[i][1]);
-    tx.setAttribute('fill','#FBBf24');
-    tx.setAttribute('font-size','10');
-    tx.setAttribute('font-weight','800');
-    tx.setAttribute('font-family','Inter,sans-serif');
-    tx.textContent = val.toFixed(0);
-    dotsG.appendChild(tx);
   });
 
-  // Small ref scores for marca1+2
+  // Small ref scores for marca1+2 near their vertices
   const refG = document.getElementById('radar-refs');
   refG.innerHTML = '';
-  [[b1,'#60A5FA',-14],[b2,'#06B6D4',6]].forEach(([brand, col, dy]) => {
+  [[b1,'rgba(148,163,184,0.7)',-12],[b2,'rgba(148,163,184,0.45)',8]].forEach(([brand, col, dy]) => {
     dims(brand).forEach((val, i) => {
       const [px,py] = radarPt(i, val);
       const tx = document.createElementNS('http://www.w3.org/2000/svg','text');
@@ -830,7 +831,6 @@ function buildRadar(b1, b2, b3) {
       tx.setAttribute('font-weight','600');
       tx.setAttribute('text-anchor','middle');
       tx.setAttribute('font-family','Inter,sans-serif');
-      tx.setAttribute('opacity','0.55');
       tx.textContent = val.toFixed(0);
       refG.appendChild(tx);
     });
@@ -913,6 +913,11 @@ function updateDashboard(brandId) {
   document.getElementById('sc-da').textContent = da;
   document.getElementById('sc-soc').textContent = soc;
   document.getElementById('sc-cap').textContent = cap;
+
+  // Dimension score cards below radar
+  document.getElementById('dim-da').textContent = da;
+  document.getElementById('dim-soc').textContent = soc;
+  document.getElementById('dim-cap').textContent = cap;
 
   // Insight
   document.getElementById('insight-brand-name').textContent = b.id;
