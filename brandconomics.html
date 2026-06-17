@@ -607,7 +607,7 @@ function init(){
     d.className = 'ddi';
     d.textContent = b.n;
     d.dataset.brand = b.n;
-    d.onclick = e => { e.stopPropagation(); setNavBrand(b.n); toggleDD(); };
+    d.onclick = e => { e.stopPropagation(); setNavBrand(b.n); updateDynRow(); toggleDD(); };
     dd.appendChild(d);
   });
   updateDynRow();
