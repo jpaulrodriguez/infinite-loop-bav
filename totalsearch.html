@@ -560,10 +560,9 @@
         <th style="width:36px;">#</th>
         <th>Marca</th>
         <th style="min-width:120px">Total Search Score</th>
-        <th>Google Trends</th>
-        <th>Wikipedia</th>
-        <th>Social Score</th>
-        <th>BAV R/D</th>
+        <th>Demanda Activa</th>
+        <th>Conv. Social</th>
+        <th>Capital de Marca</th>
         <th>Search Gap</th>
       </tr>
     </thead>
@@ -649,19 +648,16 @@ function renderTable() {
         <div class="ts-bar"><div class="ts-fill" style="width:${b.ts_score}%"></div></div>
       </td>
       <td class="signal-cell sig-gt">
-        <span class="sig-val" style="color:var(--amber)">${b.gt_score.toFixed(0)}</span>
-        <div class="sig-bar"><div class="sig-fill" style="width:${b.gt_score}%"></div></div>
-      </td>
-      <td class="signal-cell sig-wiki">
-        <span class="sig-val" style="color:var(--green)">${b.wiki_score}</span>
-        <div class="sig-bar"><div class="sig-fill" style="background:var(--green);width:${b.wiki_score}%"></div></div>
+        <span class="sig-val" style="color:var(--amber)">${(b.gt_score*0.7+b.wiki_score*0.3).toFixed(0)}</span>
+        <div class="sig-bar"><div class="sig-fill" style="width:${b.gt_score*0.7+b.wiki_score*0.3}%"></div></div>
       </td>
       <td class="signal-cell sig-soc">
         <span class="sig-val" style="color:var(--teal)">${b.social_score.toFixed(1)}</span>
         <div class="sig-bar"><div class="sig-fill" style="background:var(--teal);width:${b.social_score}%"></div></div>
       </td>
-      <td style="text-align:right;font-size:12px;color:var(--muted2)">
-        R&nbsp;<strong style="color:var(--text)">${b.R.toFixed(0)}</strong> / D&nbsp;<strong style="color:var(--text)">${b.D.toFixed(0)}</strong>
+      <td class="signal-cell sig-wiki">
+        <span class="sig-val" style="color:#A78BFA">${((b.R+b.D)/2).toFixed(0)}</span>
+        <div class="sig-bar"><div class="sig-fill" style="background:#A78BFA;width:${(b.R+b.D)/2}%"></div></div>
       </td>
       <td class="gap-cell">
         <span class="gap-pill ${gap.cls}">${gap.icon} ${gap.label}</span>
