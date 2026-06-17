@@ -669,13 +669,24 @@ async function generatePPT(){
     pptx.layout = 'LAYOUT_WIDE';
     pptx.title  = 'Brandconomics® · ' + b.n;
 
-    // ── Paleta ──────────────────────────────────────────────────────────────
-    const BG='0C0D12', GOLD='D97706', GOLD_LT='F59E0B', TEXT='F1F5F9',
-          MUTED='64748B', MUTED2='94A3B8', SURF='1A1C26', SURF2='252836',
-          RED='EF4444', GREEN='22C55E', BLUE='38BDF8', PINK='F472B6', PURP='818CF8';
+    // ── Paleta WHITE MODE ────────────────────────────────────────────────────
+    const BG='FFFFFF', SURF='F8F9FA', SURF2='F1F5F9',
+          BORDER='E2E8F0', BORDER2='CBD5E1',
+          GOLD='D97706', GOLD_LT='F59E0B', GOLD_BG='FFFBEB', GOLD_BD='FDE68A',
+          TEXT='0F172A', MUTED='64748B', MUTED2='94A3B8',
+          RED='EF4444', GREEN='16A34A', BLUE='2563EB',
+          PINK='EC4899', PURP='7C3AED', ORANGE='EA580C';
 
-    const pColor = {'Líder integral':'22C55E','Medio':'F59E0B','Fuerza sin entrega':'818CF8',
-      'Débil':'EF4444','Crítico':'DC2626','Erosión activa':'F97316'}[b.patron]||'F59E0B';
+    const pColor = {'Líder integral':'16A34A','Medio':'D97706','Fuerza sin entrega':'7C3AED',
+      'Débil':'EF4444','Crítico':'DC2626','Erosión activa':'EA580C'}[b.patron]||'D97706';
+
+    // ── Color helper: tint hacia blanco ──────────────────────────────────────
+    function tint(hex,f){
+      const r=parseInt(hex.substr(0,2),16),g=parseInt(hex.substr(2,2),16),bv=parseInt(hex.substr(4,2),16);
+      const mix=(v)=>('0'+Math.min(255,Math.round(v+(255-v)*f)).toString(16)).slice(-2);
+      return mix(r)+mix(g)+mix(bv);
+    }
+    const P_BG=tint(pColor,0.90), P_LT=tint(pColor,0.70), P_MD=tint(pColor,0.45);
 
     // ── M2 Insight engine ────────────────────────────────────────────────────
     const diff=b.diff||0, rel=b.rel||0, est=b.est||0, know=b.know||0, cx=b.cx||0, pref=b.bav||0;
@@ -688,558 +699,503 @@ async function generatePPT(){
     const mainPt    = Math.max(perPt.diff,perPt.pref,perPt.use);
     const estDrag   = b.iv*(1-Math.exp(-0.0183*est));
     const knowDrag  = b.iv*(1-Math.exp(-0.0247*know));
+    const brandStrength = (diff+rel)/2;
+    const brandStature  = (est+know)/2;
 
-    // ── Narrativas BAV ───────────────────────────────────────────────────────
+    // ── Narrativas ejecutivas (lenguaje no técnico) ──────────────────────────
     const pNarr={
-      'Líder integral':'Diferenciación + Estatura simultáneas. El M2 confirma: este patrón genera los múltiplos IV/Rev más altos del mercado colombiano. Siguiente paso: financializar y defender la prima frente al sector.',
-      'Medio':'Presencia sin diferenciación dominante. El mercado conoce la marca pero no paga prima consistente. Gap estructural: subir Diferenciación +10 pts vale más que cualquier campaña de awareness.',
-      'Fuerza sin entrega':'Alta diferenciación, estatura insuficiente. La promesa existe — el mercado no la amplifica aún. Prioridad: convertir percepción en reputación masiva sin perder el edge diferenciador.',
-      'Débil':'Alta Estima y Conocimiento activan el beta negativo del M2. El mercado conoce la marca sin pagar diferencial. Seguir invirtiendo en awareness sin diferenciación destruye más IV del que crea.',
-      'Crítico':'Zona de destrucción de valor. Diferenciación y Estatura caen simultáneamente. Cada trimestre sin intervención reduce el múltiplo. Ventana estratégica urgente.',
-      'Erosión activa':'Declive activo. El mercado descuenta el intangible antes de que los estados financieros lo reflejen. Los ingresos aún no muestran el daño — pero ya está sucediendo.',
+      'Líder integral':b.n+' domina diferenciación y reputación simultáneamente — el patrón más rentable del modelo. Su intangible cotiza con prima sobre el mercado. La prioridad: defender ese liderazgo antes de que la complacencia lo erosione.',
+      'Medio':b.n+' es conocida pero no diferenciada. El mercado la valora, pero no paga una prima real. Subir Diferenciación 10 puntos genera más valor que cualquier campaña de awareness.',
+      'Fuerza sin entrega':'La promesa de '+b.n+' existe y es real — pero la masa crítica de mercado no la amplifica aún. El reto: convertir esa energía en reputación masiva sin perder el filo diferenciador.',
+      'Débil':b.n+' es conocida y respetada, pero sin diferenciación real. El mercado la conoce sin pagarle prima. Invertir más en awareness sin mejorar diferenciación destruye valor intangible.',
+      'Crítico':b.n+' está en zona de destrucción de valor. Diferenciación y reputación caen al mismo tiempo. Cada trimestre sin acción reduce el múltiplo. Requiere intervención urgente.',
+      'Erosión activa':'El valor intangible de '+b.n+' se deteriora antes de que los números financieros lo reflejen. El mercado ya lo descuenta. La ventana para actuar es ahora.',
     }[b.patron]||'Patrón estratégico identificado por el modelo BAV® Colombia 2026.';
 
     const trapNarr={
-      'Líder integral':'Riesgo del Líder: complacencia estratégica. El beta negativo de Estima (−0.0183) confirma que la alta reputación sin renovación activa de Diferenciación empieza a destruir IV silenciosamente.',
-      'Medio':'La trampa del término medio: visible pero no diferenciado. El mercado penaliza con múltiplos bajos. Un +10 pts en Diferenciación genera más ROI que duplicar el presupuesto de medios.',
-      'Fuerza sin entrega':'Diferenciación sin masa crítica. La energía cultural existe pero no se convierte en Estatura masiva. Gap de distribución de percepción que limita el múltiplo IV/Rev estructuralmente.',
-      'Débil':'La trampa más costosa del M2: Conocimiento alto sin Diferenciación. Cada punto de awareness sin diferenciación activa el beta negativo más alto del modelo (−0.0247). Cuesta IV.',
-      'Crítico':'Colapso simultáneo: cuando estima y diferenciación caen juntas, el IV se destruye exponencialmente — el modelo log-log amplifica la caída más rápido que cualquier métrica contable.',
-      'Erosión activa':'La brecha entre percepción y realidad financiera se está cerrando — hacia abajo. Los próximos 2–3 períodos reportados confirmarán lo que el modelo ya detecta hoy en los pilares BAV.',
+      'Líder integral':'Alta reputación sin renovación activa de Diferenciación puede erosionar el IV silenciosamente. El beta negativo de Estima (−0.0183) ya está activo.',
+      'Medio':'El término medio penaliza con múltiplos bajos. Subir 10 puntos de Diferenciación genera más retorno que duplicar el presupuesto de medios.',
+      'Fuerza sin entrega':'Diferenciación sin masa crítica limita el múltiplo estructuralmente. La percepción existe — falta distribución masiva.',
+      'Débil':'Conocimiento alto sin Diferenciación activa el beta negativo más alto del modelo (−0.0247). Cada punto de awareness adicional destruye IV.',
+      'Crítico':'Cuando diferenciación y reputación caen juntas, el IV se destruye exponencialmente — más rápido de lo que los estados financieros lo registran.',
+      'Erosión activa':'La brecha entre percepción y realidad financiera se está cerrando — hacia abajo.',
     }[b.patron]||'';
 
-    const bavPillars=[
-      ['Diferenciación',diff,'22C55E'],['Relevancia',rel,'F59E0B'],
-      ['Estima',est,'818CF8'],['Conocimiento',know,'94A3B8'],
-      ['Uso Regular',cx,'38BDF8'],['Preferencia',pref,'F472B6'],
-    ];
+    const actionNarr={
+      'Líder integral':'Financializar el intangible y blindar la diferenciación ante nuevos entrantes.',
+      'Medio':'Priorizar diferenciación sobre awareness — el ROI es 3× mayor.',
+      'Fuerza sin entrega':'Convertir percepción diferenciada en reputación masiva.',
+      'Débil':'Redirigir inversión de conocimiento hacia diferenciación real.',
+      'Crítico':'Intervención estratégica urgente en diferenciación y reputación simultáneamente.',
+      'Erosión activa':'Diagnóstico profundo y reposicionamiento antes del próximo período financiero.',
+    }[b.patron]||'Activar las palancas M2 identificadas.';
 
-    // ── Datos de radar (reutilizado en S7 y S10) ─────────────────────────────
+    const bavPillars=[
+      ['Diferenciación',diff,'16A34A'],['Relevancia',rel,'D97706'],
+      ['Estima',est,'7C3AED'],['Conocimiento',know,'64748B'],
+      ['Uso Regular',cx,'2563EB'],['Preferencia',pref,'EC4899'],
+    ];
     const radarData=[{name:b.n,
       labels:['Diferenciación','Relevancia','Estima','Conocimiento','Uso Regular','Preferencia'],
       values:[diff,rel,est,know,cx,pref]}];
 
-    // ── Color helpers (PptxGenJS only accepts 6-digit hex) ───────────────────
-    function dim(hex,f){
-      const r=parseInt(hex.substr(0,2),16),g=parseInt(hex.substr(2,2),16),b=parseInt(hex.substr(4,2),16);
-      const mix=(v,bg=12)=>('0'+Math.min(255,Math.round(bg+v*f)).toString(16)).slice(-2);
-      return mix(r)+mix(g)+mix(b);
-    }
-    // Gold shades
-    const G_XS=dim(GOLD,0.06),G_SM=dim(GOLD,0.12),G_MD=dim(GOLD,0.28),G_LG=dim(GOLD,0.42);
-    // Patron color shades
-    const P_XS=dim(pColor,0.08),P_SM=dim(pColor,0.18),P_MD=dim(pColor,0.35),P_LG=dim(pColor,0.55);
-    // Muted shades
-    const M_SM=dim(MUTED,0.18);
-
-    // ── Helpers ──────────────────────────────────────────────────────────────
+    // ── Slide helpers ────────────────────────────────────────────────────────
     function sl(){
       const s=pptx.addSlide();
       s.background={color:BG};
-      s.addShape(pptx.ShapeType.rect,{x:0,y:0,w:13.33,h:0.042,fill:{color:GOLD},line:{color:GOLD}});
-      s.addShape(pptx.ShapeType.rect,{x:0,y:7.2,w:13.33,h:0.01,fill:{color:SURF2},line:{color:SURF2}});
-      s.addText('VML · Brandconomics® · '+b.n+' · Colombia 2026',{x:0.4,y:7.24,w:12.5,h:0.18,fontSize:6.5,color:MUTED,align:'left'});
+      s.addShape(pptx.ShapeType.rect,{x:0,y:0,w:13.33,h:0.055,fill:{color:GOLD},line:{color:GOLD}});
+      s.addShape(pptx.ShapeType.rect,{x:0,y:7.14,w:13.33,h:0.012,fill:{color:BORDER},line:{color:BORDER}});
+      s.addText('VML · Brandconomics® · '+b.n+' · Colombia 2026',{x:0.4,y:7.2,w:12.5,h:0.18,fontSize:6.5,color:MUTED2});
       return s;
     }
-    function lbl(s,t,x=0.4,y=0.1){
-      s.addText(t,{x,y,w:12.5,h:0.22,fontSize:8,bold:true,color:GOLD,charSpacing:2.5});
+    function lbl(s,t,x=0.4,y=0.14){
+      s.addText(t,{x,y,w:12.5,h:0.22,fontSize:7.5,bold:true,color:GOLD,charSpacing:2.5});
     }
-    // Box with optional rounded corners
-    function box(s,x,y,w,h,fill=SURF,stroke='2A2C3A',r=0.08){
-      s.addShape(pptx.ShapeType.rect,{x,y,w,h,fill:{color:fill},line:{color:stroke,pt:0.5},rectRadius:r});
+    function box(s,x,y,w,h,fill=SURF,stroke=BORDER,r=0.08){
+      s.addShape(pptx.ShapeType.rect,{x,y,w,h,fill:{color:fill},line:{color:stroke,pt:0.8},rectRadius:r});
     }
-    // Card = box + left accent bar
     function card(s,x,y,w,h,accent,fill=SURF){
-      box(s,x,y,w,h,fill,dim(accent,0.35));
-      s.addShape(pptx.ShapeType.rect,{x,y,w:0.052,h,fill:{color:accent},line:{color:accent}});
+      box(s,x,y,w,h,fill,tint(accent,0.55));
+      s.addShape(pptx.ShapeType.rect,{x,y,w,h:0.055,fill:{color:accent},line:{color:accent}});
     }
-    // BAV progress bar
-    function bar(s,x,y,w,pct,color,h=0.15){
-      s.addShape(pptx.ShapeType.rect,{x,y,w,h,fill:{color:SURF2},line:{color:'2A2C3A',pt:0.3},rectRadius:0.04});
+    function bar(s,x,y,w,pct,color,h=0.14){
+      s.addShape(pptx.ShapeType.rect,{x,y,w,h,fill:{color:SURF2},line:{color:BORDER,pt:0.5},rectRadius:0.04});
       const fw=w*Math.min(pct,100)/100;
       if(fw>0.04) s.addShape(pptx.ShapeType.rect,{x,y,w:fw,h,fill:{color:color},line:{color:color},rectRadius:0.04});
     }
-    // Thin horizontal divider
-    function div(s,x,y,w,c=SURF2){
+    function div(s,x,y,w,c=BORDER){
       s.addShape(pptx.ShapeType.rect,{x,y,w,h:0.012,fill:{color:c},line:{color:c}});
     }
-    // Dark chart defaults
-    const DC={
-      chartArea:{fill:{color:SURF},border:{pt:0}},
-      plotArea:{fill:{color:SURF}},
-      catAxisLabelColor:MUTED2, valAxisLabelColor:MUTED2,
-      catGridLine:{color:'2A2C3A',pt:0.5}, valGridLine:{color:'2A2C3A',pt:0.5},
+    const LC={
+      chartArea:{fill:{color:BG},border:{pt:0}},
+      plotArea:{fill:{color:BG}},
+      catAxisLabelColor:MUTED, valAxisLabelColor:MUTED,
+      catGridLine:{color:BORDER,pt:0.5}, valGridLine:{color:BORDER,pt:0.5},
       catAxisLineShow:false, valAxisLineShow:false,
       showLegend:false, showValue:true,
       dataLabelFontSize:9, dataLabelColor:TEXT,
     };
 
-    // ── S1 COVER ──────────────────────────────────────────────────────────
+    // ══ S1 · PORTADA ════════════════════════════════════════════════════════
     const s1=pptx.addSlide();
     s1.background={color:BG};
-    s1.addShape(pptx.ShapeType.rect,{x:0,y:0,w:13.33,h:0.042,fill:{color:GOLD},line:{color:GOLD}});
-    // Left dark panel
-    s1.addShape(pptx.ShapeType.rect,{x:0,y:0.042,w:7.6,h:7.46,fill:{color:'080910'},line:{color:'080910'}});
-    // Gold diagonal accent strip top-right of left panel
-    s1.addShape(pptx.ShapeType.rect,{x:6.2,y:0.042,w:1.4,h:0.32,fill:{color:G_SM},line:{color:BG}});
-    s1.addText('BRANDCONOMICS® · CAPITAL INTANGIBLE · COLOMBIA 2026',{x:0.55,y:0.2,w:6.8,h:0.22,fontSize:7.5,bold:true,color:GOLD,charSpacing:2.5});
-    const nmSz=b.n.length>11?48:b.n.length>8?58:b.n.length>6?66:74;
-    s1.addText(b.n,{x:0.55,y:0.58,w:6.6,h:2.5,fontSize:nmSz,bold:true,color:TEXT,fontFace:'Calibri',valign:'middle'});
-    s1.addShape(pptx.ShapeType.rect,{x:0.55,y:3.22,w:1.6,h:0.048,fill:{color:GOLD},line:{color:GOLD}});
-    s1.addText(b.sector,{x:0.55,y:3.4,w:6.6,h:0.36,fontSize:14,color:GOLD,charSpacing:0.8});
-    s1.addText('Capital Intangible · Modelo M2 · Colombia 2026',{x:0.55,y:3.85,w:6.6,h:0.28,fontSize:10,color:MUTED2});
-    s1.addShape(pptx.ShapeType.rect,{x:0.55,y:4.38,w:2.9,h:0.42,fill:{color:P_XS},line:{color:P_LG},rectRadius:0.08});
-    s1.addText(b.patron,{x:0.62,y:4.44,w:2.76,h:0.3,fontSize:11,bold:true,color:pColor});
-    s1.addText('VML Colombia · Junio 2026',{x:0.55,y:6.9,w:6.6,h:0.22,fontSize:8.5,color:MUTED});
-    // Right: IV hero card
-    s1.addShape(pptx.ShapeType.rect,{x:7.7,y:0.5,w:5.18,h:3.5,fill:{color:G_SM},line:{color:G_LG,pt:0.8},rectRadius:0.1});
-    s1.addShape(pptx.ShapeType.rect,{x:7.7,y:0.5,w:5.18,h:0.042,fill:{color:GOLD},line:{color:GOLD}});
-    s1.addText('INTANGIBLE VALUE',{x:7.9,y:0.68,w:4.78,h:0.22,fontSize:8,bold:true,color:GOLD,charSpacing:2.5});
-    s1.addText('USD $'+b.iv.toFixed(1)+'B',{x:7.9,y:1.0,w:4.78,h:1.25,fontSize:54,bold:true,color:GOLD_LT,fontFace:'Calibri'});
-    s1.addText('Modelo M2 · R² = 53.9%',{x:7.9,y:2.32,w:4.78,h:0.24,fontSize:9,color:MUTED});
-    s1.addShape(pptx.ShapeType.rect,{x:7.9,y:2.7,w:4.78,h:0.012,fill:{color:'2A2C3A'},line:{color:'2A2C3A'}});
-    s1.addText('Múltiplo IV/Rev',{x:7.9,y:2.85,w:2.3,h:0.22,fontSize:8,color:MUTED});
-    s1.addText(b.mult.toFixed(1)+'x',{x:7.9,y:3.1,w:2.3,h:0.38,fontSize:22,bold:true,color:TEXT,fontFace:'Calibri'});
-    s1.addText('Equiv. PIB',{x:10.35,y:2.85,w:2.3,h:0.22,fontSize:8,color:MUTED});
-    s1.addText(b.gdp_flag+' '+b.gdp_pais,{x:10.35,y:3.1,w:2.3,h:0.38,fontSize:14,bold:true,color:TEXT});
-    // Right: BAV summary card
-    s1.addShape(pptx.ShapeType.rect,{x:7.7,y:4.18,w:5.18,h:2.98,fill:{color:SURF},line:{color:'2A2C3A',pt:0.5},rectRadius:0.08});
-    s1.addText('PILARES BAV® — POSICIÓN COLOMBIA 2026',{x:7.9,y:4.34,w:4.78,h:0.22,fontSize:7.5,bold:true,color:MUTED,charSpacing:1.5});
-    bavPillars.forEach(([nm,val,col],i)=>{
-      const py=4.66+i*0.37;
-      s1.addText(nm,{x:7.9,y:py,w:1.6,h:0.28,fontSize:8.5,color:MUTED2});
-      bar(s1,9.55,py+0.06,2.9,val,col);
-      s1.addText(val.toFixed(0),{x:12.5,y:py,w:0.42,h:0.26,fontSize:8.5,bold:true,color:col,align:'right'});
-    });
-
-    // ── S2 EL PROBLEMA ────────────────────────────────────────────────────
-    const s2=sl();
-    lbl(s2,'EL PROBLEMA · EL ACTIVO MÁS VALIOSO NO APARECE EN NINGÚN BALANCE');
-    card(s2,0.4,0.42,6.1,6.7,MUTED2,'111318');
-    s2.addText('El 90%\ndel valor\nde muchas\nmarcas no\naparece en\nningún\nbalance',{x:0.65,y:0.55,w:5.6,h:4.35,fontSize:30,bold:true,color:TEXT,fontFace:'Calibri',valign:'top',lineSpacingMultiple:1.08});
-    s2.addShape(pptx.ShapeType.rect,{x:0.65,y:5.0,w:0.9,h:0.048,fill:{color:GOLD},line:{color:GOLD}});
-    s2.addText('USD $306B en valor de marca: invisible para la contabilidad.',{x:0.65,y:5.16,w:5.6,h:0.27,fontSize:10,bold:true,color:TEXT});
-    s2.addText('Pero el mercado ya lo sabe — y lo paga.',{x:0.65,y:5.52,w:5.6,h:0.24,fontSize:9.5,color:MUTED2});
-    box(s2,6.9,0.42,5.98,6.7,'111318','2A2C3A');
-    s2.addText('90%',{x:7.1,y:0.55,w:5.58,h:2.3,fontSize:110,bold:true,color:GOLD,fontFace:'Calibri',align:'center'});
-    s2.addText('DEL VALOR DE COCA-COLA\nES CAPITAL INTANGIBLE',{x:7.2,y:2.72,w:5.38,h:0.46,fontSize:9,bold:true,color:MUTED2,align:'center',charSpacing:1.5});
-    // Donut chart
-    s2.addChart(pptx.ChartType.doughnut,
-      [{name:'Composición',labels:['Capital Intangible','Capital Financiero'],values:[90,10]}],
-      {x:7.2,y:3.3,w:5.5,h:3.5,
-       chartArea:{fill:{color:'111318'},border:{pt:0}},
-       plotArea:{fill:{color:'111318'}},
-       holeSize:55, chartColors:[GOLD,'2A2C3A'],
-       showLegend:true,legendPos:'b',legendFontSize:9,legendColor:MUTED2,
-       showValue:false,showLabel:false,dataLabelFontSize:0});
-
-    // ── S3 APERTURA COCA-COLA ─────────────────────────────────────────────
-    const s3=sl();
-    lbl(s3,'BRANDCONOMICS · APERTURA · LA BRECHA QUE EL MERCADO YA DESCUENTA');
-    card(s3,0.4,0.42,6.08,4.68,GOLD,'111318');
-    s3.addText('"Coca-Cola\nen la bolsa"',{x:0.65,y:0.55,w:5.6,h:1.85,fontSize:32,bold:true,color:GOLD,fontFace:'Calibri'});
-    s3.addText('Market Cap: USD $306B',{x:0.65,y:2.5,w:5.5,h:0.32,fontSize:13,bold:true,color:TEXT});
-    s3.addText('Lo que el mercado bursátil valora — intangible incluido.',{x:0.65,y:2.9,w:5.5,h:0.55,fontSize:9.5,color:MUTED2,wrap:true});
-    s3.addShape(pptx.ShapeType.rect,{x:0.65,y:3.6,w:5.5,h:0.62,fill:{color:G_SM},line:{color:G_MD},rectRadius:0.06});
-    s3.addText('$306B · 90% intangible',{x:0.78,y:3.74,w:5.22,h:0.32,fontSize:14,bold:true,color:GOLD_LT,fontFace:'Calibri'});
-    s3.addShape(pptx.ShapeType.rect,{x:6.62,y:0.42,w:0.04,h:4.68,fill:{color:'2A2C3A'},line:{color:'2A2C3A'}});
-    s3.addText('vs',{x:6.28,y:2.5,w:0.64,h:0.45,fontSize:16,bold:true,color:MUTED,align:'center'});
-    card(s3,6.74,0.42,6.14,4.68,MUTED,SURF);
-    s3.addText('"Coca-Cola\nen los balances"',{x:7.0,y:0.55,w:5.6,h:1.85,fontSize:32,bold:true,color:TEXT,fontFace:'Calibri'});
-    s3.addText('Assets – Liabilities = USD $34B',{x:7.0,y:2.5,w:5.6,h:0.32,fontSize:13,bold:true,color:MUTED2});
-    s3.addText('Lo que la contabilidad registra. El 90% del valor real queda invisible.',{x:7.0,y:2.9,w:5.6,h:0.55,fontSize:9.5,color:MUTED,wrap:true});
-    s3.addShape(pptx.ShapeType.rect,{x:7.0,y:3.6,w:5.5,h:0.62,fill:{color:SURF2},line:{color:'2A2C3A'},rectRadius:0.06});
-    s3.addText('$34B · 10% financiero',{x:7.12,y:3.74,w:5.22,h:0.32,fontSize:14,bold:true,color:MUTED2,fontFace:'Calibri'});
-    box(s3,0.4,5.28,12.48,1.82,SURF,'2A2C3A');
-    s3.addShape(pptx.ShapeType.rect,{x:0.4,y:5.28,w:0.052,h:1.82,fill:{color:GOLD},line:{color:GOLD}});
-    s3.addText('¿Por qué existe esta brecha?',{x:0.62,y:5.42,w:12.0,h:0.32,fontSize:13,bold:true,color:GOLD});
-    s3.addText('La marca, la reputación, la cultura y las relaciones con stakeholders no aparecen en ningún estado financiero estándar. Sin embargo, el mercado los valora — y los paga con una prima constante. Eso es el Capital Intangible. Brandconomics lo mide en dólares.',{x:0.62,y:5.82,w:12.0,h:1.12,fontSize:9.5,color:MUTED2,wrap:true});
-
-    // ── S4 CAPITAL INTANGIBLE ─────────────────────────────────────────────
-    const s4=sl();
-    lbl(s4,'CAPITAL INTANGIBLE · REFERENCIA COCA-COLA · ANATOMÍA DEL VALOR');
-    // Left: 3 stacked metric cards
-    card(s4,0.4,0.42,4.35,1.08,MUTED,SURF);
-    s4.addText('TOTAL ENTERPRISE VALUE',{x:0.62,y:0.52,w:3.92,h:0.2,fontSize:7.5,bold:true,color:MUTED,charSpacing:1.5});
-    s4.addText('$336 Billion USD',{x:0.62,y:0.76,w:3.92,h:0.42,fontSize:20,bold:true,color:TEXT,fontFace:'Calibri'});
-    card(s4,0.4,1.62,4.35,1.08,GOLD,G_SM);
-    s4.addText('INTANGIBLE VALUE',{x:0.62,y:1.72,w:3.92,h:0.2,fontSize:7.5,bold:true,color:GOLD,charSpacing:1.5});
-    s4.addText('$302 Billion USD',{x:0.62,y:1.96,w:3.92,h:0.42,fontSize:20,bold:true,color:GOLD_LT,fontFace:'Calibri'});
-    s4.addText('90% · Capital Intangible',{x:0.62,y:2.42,w:3.92,h:0.2,fontSize:9,bold:true,color:GOLD});
-    card(s4,0.4,2.82,4.35,1.08,MUTED,SURF);
-    s4.addText('FINANCIAL VALUE (BALANCE)',{x:0.62,y:2.92,w:3.92,h:0.2,fontSize:7.5,bold:true,color:MUTED,charSpacing:1.5});
-    s4.addText('$34 Billion USD',{x:0.62,y:3.16,w:3.92,h:0.42,fontSize:20,bold:true,color:TEXT,fontFace:'Calibri'});
-    // Bar chart: IV vs Financial
-    s4.addChart(pptx.ChartType.bar,
-      [{name:'USD $B',labels:['Intangible (IV)','Financiero'],values:[302,34]}],
-      {...DC,x:0.4,y:4.02,w:4.35,h:3.12,barDir:'bar',
-       chartColors:[GOLD,MUTED],dataLabelFormatCode:'$#,##0"B"',
-       valAxisMaxVal:340,showTitle:false});
-    // Right: insight + quote + GDP
-    card(s4,5.0,0.42,7.88,3.7,GOLD,SURF);
-    s4.addText('El 90% del Valor de Coca-Cola es intangible',{x:5.22,y:0.56,w:7.44,h:1.1,fontSize:22,bold:true,color:TEXT,fontFace:'Calibri',wrap:true});
-    div(s4,5.22,1.76,7.44,G_MD);
-    s4.addShape(pptx.ShapeType.rect,{x:5.22,y:1.9,w:0.052,h:0.82,fill:{color:GOLD},line:{color:GOLD}});
-    s4.addText('"Si mañana se quemaran todas nuestras fábricas, el valor de Coca‑Cola seguiría casi intacto. Lo que realmente vale es la marca en la mente de las personas."',{x:5.44,y:1.94,w:7.22,h:0.9,fontSize:10,color:MUTED2,italics:true,wrap:true});
-    s4.addText('— Roberto Goizueta, CEO Coca-Cola',{x:5.44,y:2.94,w:7.22,h:0.26,fontSize:9,bold:true,color:GOLD});
-    box(s4,5.0,4.28,7.88,1.86,SURF,'2A2C3A');
-    s4.addShape(pptx.ShapeType.rect,{x:5.0,y:4.28,w:7.88,h:0.042,fill:{color:GOLD},line:{color:GOLD}});
-    s4.addText('EQUIVALENTE EN PIB',{x:5.22,y:4.44,w:7.44,h:0.22,fontSize:7.5,bold:true,color:GOLD,charSpacing:1.5});
-    s4.addText('🇵🇪 Perú',{x:5.22,y:4.72,w:4.0,h:0.44,fontSize:22,bold:true,color:TEXT});
-    s4.addText('El IV de Coca-Cola ($302B) equivale al PIB completo de Perú ($289B). Una marca colombiana podría superar el PIB de Ecuador.',{x:5.22,y:5.26,w:7.44,h:0.78,fontSize:9.5,color:MUTED2,wrap:true});
-
-    // ── S5 UNA MARCA NO ES UN GASTO ───────────────────────────────────────
-    const s5=sl();
-    lbl(s5,'UNA MARCA NO ES UN GASTO · ES UNA ECONOMÍA ENTERA');
-    s5.addText('El valor intangible de las marcas más poderosas supera el PIB de países soberanos. Brandconomics lo mide.',{x:0.4,y:0.36,w:12.5,h:0.28,fontSize:9.5,color:MUTED2});
-    const tY=0.76,tH=0.28;
-    s5.addShape(pptx.ShapeType.rect,{x:0.3,y:tY,w:12.73,h:tH,fill:{color:'111318'},line:{color:'111318'}});
-    [['MARCA',0.42,2.2],['VALOR INTANGIBLE',2.78,2.7],['PAÍS EQUIVALENTE',5.62,3.3],['% INTANGIBLE',9.12,2.0],['IV/REV',11.32,1.75]].forEach(([c,x,w])=>{
-      s5.addText(c,{x,y:tY+0.05,w,h:0.18,fontSize:7,bold:true,color:MUTED,charSpacing:1.5});
-    });
-    const sRows=[
-      ['Apple','USD $3,144B','🇫🇷 Francia $3,130B','98.2%','—'],
-      ['Microsoft','USD $2,531B','🇮🇹 Italia $2,333B','90.4%','—'],
-      ['Amazon','USD $1,768B','🇦🇺 Australia $1,723B','86.2%','—'],
-      ['Tesla','USD $730B','🇦🇷 Argentina $647B','91.2%','—'],
-      ['Samsung','USD $457B','🇸🇬 Singapur $497B','53.1%','—'],
-      ['LVMH','USD $199B','🇭🇺 Hungría $212B','69.6%','—'],
-      ['Coca-Cola','USD $302B','🇵🇪 Perú $289B','89.4%','—'],
-    ];
-    const cX=[0.42,2.78,5.62,9.12,11.32],cW=[2.2,2.7,3.3,2.0,1.75];
-    sRows.forEach((row,ri)=>{
-      const rY=tY+tH+0.02+ri*0.34;
-      s5.addShape(pptx.ShapeType.rect,{x:0.3,y:rY,w:12.73,h:0.32,fill:{color:ri%2?'0F1118':BG},line:{color:ri%2?'0F1118':BG}});
-      row.forEach((cell,ci)=>{
-        s5.addText(cell,{x:cX[ci],y:rY+0.06,w:cW[ci],h:0.22,fontSize:ci===1?9.5:9,bold:ci===0||ci===1,color:ci===1?GOLD_LT:ci===0?TEXT:MUTED2});
-      });
-    });
-    // Dynamic brand row — highlighted + left accent
-    const dynY=tY+tH+0.02+sRows.length*0.34;
-    s5.addShape(pptx.ShapeType.rect,{x:0.3,y:dynY,w:12.73,h:0.42,fill:{color:G_SM},line:{color:G_MD}});
-    s5.addShape(pptx.ShapeType.rect,{x:0.3,y:dynY,w:0.052,h:0.42,fill:{color:GOLD},line:{color:GOLD}});
-    const dynPct=b.pct_int!==null?b.pct_int.toFixed(1)+'%':'—';
-    [b.n,'USD $'+b.iv.toFixed(1)+'B',b.gdp_flag+' '+b.gdp_pais+' $'+b.gdp_b+'B',dynPct,b.mult.toFixed(1)+'x'].forEach((cell,ci)=>{
-      s5.addText(cell,{x:cX[ci],y:dynY+0.08,w:cW[ci],h:0.28,fontSize:ci===0?11:10,bold:true,color:ci===1?GOLD_LT:ci===0?GOLD:TEXT});
-    });
-
-    // ── S6 LOS 4 PILARES BAV® ────────────────────────────────────────────
-    const s6=sl();
-    lbl(s6,'LOS 4 PILARES DEL VALOR ECONÓMICO · BRAND ASSET VALUATOR®');
-    const stats6=[['+2.5M','Consumidores\nencuestados'],['+63,000','Marcas\ndiferentes'],['32 Años','De aprendizaje\ny validación'],['52 Países','Con datos\nconsistentes'],['75 Métricas','Estables\nglobalmente']];
-    stats6.forEach((st,i)=>{
-      const sx=0.4+i*2.54;
-      box(s6,sx,0.42,2.38,1.12,SURF,G_MD);
-      s6.addShape(pptx.ShapeType.rect,{x:sx,y:0.42,w:2.38,h:0.042,fill:{color:GOLD},line:{color:GOLD}});
-      s6.addText(st[0],{x:sx+0.12,y:0.54,w:2.14,h:0.48,fontSize:20,bold:true,color:GOLD_LT,fontFace:'Calibri',align:'center'});
-      s6.addText(st[1],{x:sx+0.12,y:1.06,w:2.14,h:0.34,fontSize:7.5,color:MUTED,align:'center',wrap:true});
-    });
-    const pillarDef=[
-      {name:'DIFERENCIACIÓN',sub:'FORTALEZA · BRAND POWER',desc:'La razón por la que el mercado te elige sobre alternativas. Genera preferencia real y prima de precio directa. Es el único pilar que garantiza ingresos sin descuento.',color:'22C55E',beta:'β +0.0113',sig:'CREAR VALOR INTANGIBLE'},
-      {name:'RELEVANCIA',sub:'FORTALEZA · BRAND POWER',desc:'Qué tan apropiada y pertinente es la marca para el consumidor. Sustenta la base de usuarios activos y la penetración de mercado.',color:'F59E0B',beta:'β +0.0011',sig:'Efecto Neutro en M2'},
-      {name:'ESTIMA',sub:'ESTATURA · BRAND STATURE',desc:'Cuánto respeta el mercado a la marca. Alta estima sin diferenciación activa el beta negativo: el mercado respeta pero no paga prima.',color:'818CF8',beta:'β −0.0183',sig:'⚠ TRAMPA: DESTRUYE IV'},
-      {name:'FAMILIARIDAD',sub:'ESTATURA · BRAND STATURE',desc:'Conocimiento íntimo y cotidiano. Cuando supera a la diferenciación activa el mayor beta negativo del modelo (-0.0247).',color:'94A3B8',beta:'β −0.0247',sig:'⚠ TRAMPA MÁXIMA'},
-    ];
-    pillarDef.forEach((p,i)=>{
-      const px=0.4+i*3.22;
-      box(s6,px,1.7,3.08,5.38,SURF,dim(p.color,0.35));
-      s6.addShape(pptx.ShapeType.rect,{x:px,y:1.7,w:3.08,h:0.052,fill:{color:p.color},line:{color:p.color}});
-      s6.addText(p.name,{x:px+0.14,y:1.86,w:2.8,h:0.34,fontSize:11.5,bold:true,color:p.color,charSpacing:0.8});
-      s6.addText(p.sub,{x:px+0.14,y:2.26,w:2.8,h:0.2,fontSize:7,bold:true,color:MUTED,charSpacing:1});
-      div(s6,px+0.14,2.56,2.8,SURF2);
-      s6.addText(p.desc,{x:px+0.14,y:2.64,w:2.8,h:1.32,fontSize:8.5,color:MUTED2,wrap:true,valign:'top'});
-      box(s6,px+0.14,4.1,2.8,0.78,dim(p.color,0.10),dim(p.color,0.28));
-      s6.addText(p.beta,{x:px+0.22,y:4.18,w:2.6,h:0.34,fontSize:15,bold:true,color:p.color,fontFace:'Calibri'});
-      s6.addText(p.sig,{x:px+0.22,y:4.56,w:2.6,h:0.24,fontSize:8,bold:true,color:p.color});
-    });
-
-    // ── S7 POSICIÓN INFINITE LOOP + RADAR ────────────────────────────────
-    const s7=sl();
-    lbl(s7,'POSICIÓN EN EL INFINITE LOOP BAV® · '+b.n.toUpperCase());
+    s1.addShape(pptx.ShapeType.rect,{x:0,y:0,w:13.33,h:0.055,fill:{color:GOLD},line:{color:GOLD}});
     // Left panel
-    card(s7,0.4,0.42,5.76,6.68,pColor,SURF);
-    s7.addText('PATRÓN ESTRATÉGICO',{x:0.65,y:0.62,w:5.28,h:0.22,fontSize:7.5,bold:true,color:MUTED,charSpacing:1.5});
-    s7.addText(b.patron,{x:0.65,y:0.9,w:5.28,h:0.62,fontSize:26,bold:true,color:pColor,fontFace:'Calibri'});
-    s7.addText(b.sector,{x:0.65,y:1.6,w:5.28,h:0.3,fontSize:11,color:MUTED2});
-    div(s7,0.65,2.04,5.28);
-    s7.addText(pNarr,{x:0.65,y:2.16,w:5.28,h:1.58,fontSize:9.5,color:MUTED2,wrap:true,valign:'top'});
-    s7.addText('PILARES BAV® — COLOMBIA 2026',{x:0.65,y:3.9,w:5.28,h:0.22,fontSize:7.5,bold:true,color:MUTED,charSpacing:1.5});
+    s1.addText('BRANDCONOMICS® · CAPITAL INTANGIBLE · COLOMBIA 2026',{x:0.55,y:0.22,w:7.0,h:0.22,fontSize:7.5,bold:true,color:GOLD,charSpacing:2.5});
+    const nmSz=b.n.length>11?44:b.n.length>8?52:b.n.length>6?60:68;
+    s1.addText(b.n,{x:0.55,y:0.56,w:7.0,h:2.2,fontSize:nmSz,bold:true,color:TEXT,fontFace:'Calibri',valign:'middle'});
+    s1.addShape(pptx.ShapeType.rect,{x:0.55,y:2.9,w:1.8,h:0.04,fill:{color:GOLD},line:{color:GOLD}});
+    s1.addText(b.sector,{x:0.55,y:3.06,w:7.0,h:0.34,fontSize:13,color:MUTED});
+    s1.addText('Capital Intangible · Modelo M2 Brandconomics® · Colombia 2026',{x:0.55,y:3.5,w:7.0,h:0.26,fontSize:9.5,color:MUTED2});
+    s1.addShape(pptx.ShapeType.rect,{x:0.55,y:4.04,w:3.2,h:0.46,fill:{color:P_BG},line:{color:P_LT,pt:0.8},rectRadius:0.08});
+    s1.addText(b.patron,{x:0.72,y:4.12,w:3.0,h:0.28,fontSize:11,bold:true,color:pColor});
+    s1.addText('VML Colombia · Junio 2026',{x:0.55,y:6.84,w:7.0,h:0.22,fontSize:8.5,color:MUTED2});
+    // Right: gold tinted panel
+    s1.addShape(pptx.ShapeType.rect,{x:7.9,y:0.055,w:5.43,h:7.44,fill:{color:GOLD_BG},line:{color:GOLD_BD,pt:0}});
+    s1.addShape(pptx.ShapeType.rect,{x:7.9,y:0.055,w:0.04,h:7.44,fill:{color:GOLD},line:{color:GOLD}});
+    s1.addText('VALOR INTANGIBLE',{x:8.14,y:0.5,w:5.0,h:0.22,fontSize:8,bold:true,color:GOLD,charSpacing:2.5});
+    const ivSz=b.iv>=100?52:b.iv>=10?60:68;
+    s1.addText('USD $'+b.iv.toFixed(1)+'B',{x:8.14,y:0.82,w:5.0,h:1.4,fontSize:ivSz,bold:true,color:TEXT,fontFace:'Calibri'});
+    s1.addText('Modelo M2 Brandconomics® · R²=53.9%',{x:8.14,y:2.3,w:5.0,h:0.22,fontSize:8.5,color:MUTED});
+    div(s1,8.14,2.68,4.8,GOLD_BD);
+    s1.addText('Múltiplo IV/Ingresos',{x:8.14,y:2.86,w:2.4,h:0.22,fontSize:8,color:MUTED});
+    s1.addText(b.mult.toFixed(1)+'x',{x:8.14,y:3.12,w:2.4,h:0.52,fontSize:28,bold:true,color:TEXT,fontFace:'Calibri'});
+    s1.addText('Equivalente PIB',{x:10.72,y:2.86,w:2.4,h:0.22,fontSize:8,color:MUTED});
+    s1.addText(b.gdp_flag+' '+b.gdp_pais,{x:10.72,y:3.12,w:2.4,h:0.52,fontSize:13,bold:true,color:TEXT});
+    div(s1,8.14,3.78,4.8,GOLD_BD);
+    s1.addText('PILARES BAV® · COLOMBIA 2026',{x:8.14,y:3.96,w:4.8,h:0.2,fontSize:7.5,bold:true,color:MUTED,charSpacing:1.5});
     bavPillars.forEach(([nm,val,col],i)=>{
-      const py=4.22+i*0.38;
-      s7.addText(nm,{x:0.65,y:py,w:1.78,h:0.28,fontSize:8.5,color:MUTED2});
-      bar(s7,2.5,py+0.07,3.12,val,col);
-      s7.addText(val.toFixed(0),{x:5.68,y:py,w:0.42,h:0.26,fontSize:8.5,bold:true,color:col,align:'right'});
-    });
-    // Right: radar chart
-    s7.addText('RADAR BAV® · POSICIÓN COMPETITIVA',{x:6.5,y:0.42,w:6.42,h:0.22,fontSize:7.5,bold:true,color:MUTED,charSpacing:1.5});
-    s7.addChart(pptx.ChartType.radar, radarData, {
-      x:6.4,y:0.62,w:6.5,h:3.55,
-      chartArea:{fill:{color:SURF},border:{pt:0}},
-      plotArea:{fill:{color:SURF}},
-      radarStyle:'filled', chartColors:[pColor],
-      catAxisLabelColor:MUTED2, valAxisLabelColor:MUTED2,
-      valAxisMaxVal:100, valAxisMinVal:0,
-      showLegend:false, lineDataSymbol:'none', dataLabelFontSize:0,
-    });
-    // Trap box
-    box(s7,6.4,4.38,6.5,2.72,SURF,'2A2C3A');
-    s7.addShape(pptx.ShapeType.rect,{x:6.4,y:4.38,w:6.5,h:0.052,fill:{color:RED},line:{color:RED}});
-    s7.addText('LA TRAMPA DEL SECTOR',{x:6.62,y:4.54,w:6.08,h:0.22,fontSize:7.5,bold:true,color:RED,charSpacing:1.5});
-    s7.addText(trapNarr,{x:6.62,y:4.88,w:6.08,h:1.32,fontSize:10,color:TEXT,wrap:true,valign:'top'});
-    s7.addText('Sector: '+b.sector+'  ·  Patrón: '+b.patron,{x:6.62,y:6.32,w:6.08,h:0.28,fontSize:8.5,bold:true,color:MUTED2});
-
-    // ── S8 LO QUE EL CFO YA CONOCE ───────────────────────────────────────
-    const s8=sl();
-    lbl(s8,'LO QUE EL CFO YA CONOCE · '+b.n.toUpperCase()+' · FINANCIERO 2024');
-    // 4 KPI cards
-    const cfoCells=[
-      {lbl:'INGRESOS 2024',val:b.rev_usd?'USD $'+b.rev_usd.toFixed(2)+'B':'—',sub:b.margen!=null?'Margen neto: '+b.margen.toFixed(1)+'%':'—',vc:TEXT,ac:MUTED},
-      {lbl:'UTILIDAD NETA',val:b.gan_usd!=null?'USD $'+b.gan_usd.toFixed(2)+'B':'—',sub:b.roe!=null?'ROE: '+b.roe.toFixed(1)+'%':'—',vc:b.gan_usd>=0?GREEN:RED,ac:b.gan_usd>=0?GREEN:RED},
-      {lbl:'PATRIMONIO CONTABLE',val:b.pat_usd?'USD $'+b.pat_usd.toFixed(2)+'B':'—',sub:'Balance sheet · TRM 4,200',vc:MUTED2,ac:MUTED},
-      {lbl:'CAPITAL INTANGIBLE M2',val:'USD $'+b.iv.toFixed(1)+'B',sub:'No figura en el balance',vc:GOLD_LT,ac:GOLD},
-    ];
-    cfoCells.forEach((c,i)=>{
-      const cx=0.4+i*3.22;
-      box(s8,cx,0.42,3.06,1.52,i===3?G_SM:SURF,i===3?G_LG:'2A2C3A');
-      s8.addShape(pptx.ShapeType.rect,{x:cx,y:0.42,w:3.06,h:0.042,fill:{color:c.ac},line:{color:c.ac}});
-      s8.addText(c.lbl,{x:cx+0.14,y:0.54,w:2.78,h:0.2,fontSize:7.5,bold:true,color:MUTED,charSpacing:1.5});
-      s8.addText(c.val,{x:cx+0.14,y:0.78,w:2.78,h:0.5,fontSize:i===3?19:17,bold:true,color:c.vc,fontFace:'Calibri'});
-      s8.addText(c.sub,{x:cx+0.14,y:1.32,w:2.78,h:0.26,fontSize:8,color:i===3?GOLD:MUTED,wrap:true});
-    });
-    // Insight strip
-    s8.addShape(pptx.ShapeType.rect,{x:0.4,y:2.1,w:12.48,h:0.88,fill:{color:G_SM},line:{color:G_MD}});
-    s8.addShape(pptx.ShapeType.rect,{x:0.4,y:2.1,w:0.052,h:0.88,fill:{color:GOLD},line:{color:GOLD}});
-    s8.addText('Insight M2:',{x:0.62,y:2.18,w:1.8,h:0.26,fontSize:9,bold:true,color:GOLD});
-    const ivInsight=b.pct_int!==null
-      ? b.pct_int.toFixed(1)+'% del enterprise value de '+b.n+' es capital intangible — $'+b.iv.toFixed(1)+'B que no aparecen en ningún balance. Por cada $1 de ingreso anual, el intangible vale $'+b.mult.toFixed(1)+'. La palanca #1 para crear valor es '+mainLever+' (+$'+mainPt.toFixed(3)+'B por punto).'
-      : 'El capital intangible de '+b.n+' (USD $'+b.iv.toFixed(1)+'B) no aparece en ningún estado financiero. La palanca #1 para crear valor es '+mainLever+' — vale $'+mainPt.toFixed(3)+'B por cada punto de mejora.';
-    s8.addText(ivInsight,{x:0.62,y:2.46,w:12.08,h:0.44,fontSize:9.5,color:MUTED2,wrap:true});
-    // Left: mult + pct cards
-    card(s8,0.4,3.14,5.88,4.0,GOLD,SURF);
-    s8.addText('MÚLTIPLO IV / INGRESOS',{x:0.62,y:3.3,w:5.44,h:0.22,fontSize:7.5,bold:true,color:MUTED,charSpacing:1.5});
-    s8.addText(b.mult.toFixed(1)+'x',{x:0.62,y:3.58,w:5.44,h:1.08,fontSize:64,bold:true,color:b.mult>=1.5?GREEN:b.mult>=1?GOLD_LT:RED,fontFace:'Calibri'});
-    s8.addText('Por cada $1 de ingreso anual, el intangible de '+b.n+' vale $'+b.mult.toFixed(1)+'.',{x:0.62,y:4.72,w:5.44,h:0.52,fontSize:10,color:MUTED2,wrap:true});
-    div(s8,0.62,5.38,5.44);
-    s8.addText(b.gdp_flag+' '+b.gdp_pais+'  ·  PIB USD $'+b.gdp_b+'B',{x:0.62,y:5.52,w:5.44,h:0.3,fontSize:11,bold:true,color:TEXT});
-    s8.addText('Equivalente en PIB al IV de '+b.n,{x:0.62,y:5.88,w:5.44,h:0.22,fontSize:8.5,color:MUTED});
-    // Right: financial bar chart
-    if(b.rev_usd){
-      s8.addChart(pptx.ChartType.bar,
-        [{name:'USD $B',labels:['Ingresos','Utilidad','Patrimonio','IV (M2)'],
-          values:[b.rev_usd||0,b.gan_usd||0,b.pat_usd||0,b.iv]}],
-        {...DC,x:6.62,y:3.14,w:6.14,h:4.0,barDir:'bar',
-         chartColors:[MUTED2,b.gan_usd>=0?GREEN:RED,MUTED,GOLD_LT],
-         dataLabelFormatCode:'$0.00"B"'});
-    }else{
-      box(s8,6.62,3.14,6.14,4.0,SURF,'2A2C3A');
-      s8.addText('Datos financieros no disponibles para este emisor.',{x:6.82,y:4.8,w:5.74,h:0.5,fontSize:9.5,color:MUTED,align:'center'});
-    }
-
-    // ── S9 FRAMEWORK M2 ───────────────────────────────────────────────────
-    const s9=sl();
-    lbl(s9,'EL FRAMEWORK · BRANDCONOMICS M2 · '+b.n.toUpperCase());
-    box(s9,0.4,0.38,12.52,1.02,SURF,G_LG);
-    s9.addShape(pptx.ShapeType.rect,{x:0.4,y:0.38,w:0.052,h:1.02,fill:{color:GOLD},line:{color:GOLD}});
-    s9.addText('ln(IV) = 0.690 + 0.0113·Diff − 0.0183·Est − 0.0247·Know + 0.0011·Rel + 0.0140·Use + 0.0132·Pref + 1.034·ln(Rev)',{x:0.62,y:0.54,w:12.08,h:0.52,fontSize:12,bold:true,color:GOLD_LT,fontFace:'Calibri'});
-    s9.addText('R² = 53.9%  ·  n = 106 empresas  ·  17 sectores  ·  BAV explica 41× más valor que el ciclo de mercado',{x:0.62,y:1.08,w:12.08,h:0.22,fontSize:8.5,color:MUTED});
-    const betas9=[
-      {name:'Diferenciación',beta:'+0.0113',sig:'CREAR VALOR',color:'22C55E',val:diff,usd:perPt.diff},
-      {name:'Preferencia',beta:'+0.0132',sig:'MAYOR BETA +',color:'F472B6',val:pref,usd:perPt.pref},
-      {name:'Uso Regular',beta:'+0.0140',sig:'ACTIVAR',color:'38BDF8',val:cx,usd:perPt.use},
-      {name:'Relevancia',beta:'+0.0011',sig:'Neutro',color:'94A3B8',val:rel,usd:b.iv*(Math.exp(0.0011)-1)},
-      {name:'Estima',beta:'−0.0183',sig:'⚠ TRAMPA',color:'EF4444',val:est,usd:-estDrag},
-      {name:'Conocimiento',beta:'−0.0247',sig:'⚠ MAYOR TRAP',color:'DC2626',val:know,usd:-knowDrag},
-    ];
-    betas9.forEach((bt,i)=>{
-      const bx=0.4+(i%3)*4.3, by=1.56+Math.floor(i/3)*2.72;
-      box(s9,bx,by,4.12,2.58,SURF,dim(bt.color,0.35));
-      s9.addShape(pptx.ShapeType.rect,{x:bx,y:by,w:4.12,h:0.052,fill:{color:bt.color},line:{color:bt.color}});
-      s9.addText(bt.name,{x:bx+0.14,y:by+0.16,w:3.84,h:0.32,fontSize:13,bold:true,color:bt.color});
-      s9.addText('β = '+bt.beta,{x:bx+0.14,y:by+0.54,w:3.84,h:0.44,fontSize:22,bold:true,color:TEXT,fontFace:'Calibri'});
-      s9.addText(b.n+': '+bt.val.toFixed(0)+' pts',{x:bx+0.14,y:by+1.04,w:3.84,h:0.26,fontSize:9,color:MUTED2});
-      bar(s9,bx+0.14,by+1.36,3.84,bt.val,bt.color);
-      box(s9,bx+0.14,by+1.68,3.84,0.72,dim(bt.color,0.09),dim(bt.color,0.28));
-      s9.addText(bt.sig,{x:bx+0.22,y:by+1.76,w:3.68,h:0.24,fontSize:8.5,bold:true,color:bt.color});
-      const usdLbl=bt.usd>=0?'+$'+bt.usd.toFixed(3)+'B/pt':'−$'+Math.abs(bt.usd).toFixed(3)+'B drag';
-      s9.addText(usdLbl,{x:bx+0.22,y:by+2.04,w:3.68,h:0.26,fontSize:8.5,bold:true,color:bt.color});
+      const py=4.28+i*0.44;
+      s1.addText(nm,{x:8.14,y:py,w:1.8,h:0.32,fontSize:8.5,color:MUTED});
+      bar(s1,10.02,py+0.08,2.58,val,col,0.16);
+      s1.addText(val.toFixed(0),{x:12.68,y:py,w:0.44,h:0.3,fontSize:8.5,bold:true,color:col,align:'right'});
     });
 
-    // ── S10 RESULTADO BRANDCONOMICS ───────────────────────────────────────
-    const s10=sl();
-    lbl(s10,'RESULTADO BRANDCONOMICS® · '+b.n.toUpperCase());
-    // Left hero panel
-    card(s10,0.4,0.38,7.28,6.72,GOLD,'080910');
-    s10.addText('INTANGIBLE VALUE',{x:0.65,y:0.58,w:6.82,h:0.24,fontSize:8,bold:true,color:GOLD,charSpacing:2.5});
-    const ivSz=b.iv>=100?60:b.iv>=10?68:76;
-    s10.addText('USD $'+b.iv.toFixed(1)+'B',{x:0.65,y:0.9,w:6.82,h:1.5,fontSize:ivSz,bold:true,color:GOLD_LT,fontFace:'Calibri'});
-    s10.addText('El número que no aparece en el balance sheet de '+b.n+'.',{x:0.65,y:2.5,w:6.82,h:0.34,fontSize:11,color:MUTED2});
-    s10.addText('Modelo M2 Brandconomics® · BAV Colombia 2026 · TRM 4,200',{x:0.65,y:2.9,w:6.82,h:0.24,fontSize:8,color:MUTED});
-    div(s10,0.65,3.28,6.82);
-    const kpis10=[
-      {lbl:'MÚLTIPLO IV/REV',val:b.mult.toFixed(1)+'x',color:b.mult>=1.5?GREEN:b.mult>=1?GOLD_LT:RED},
-      {lbl:'% INTANGIBLE',val:b.pct_int!==null?b.pct_int.toFixed(1)+'%':'—',color:GOLD},
-      {lbl:'EQUIV. PIB',val:b.gdp_flag+' '+b.gdp_pais,color:TEXT},
-      {lbl:'PATRÓN BAV®',val:b.patron,color:pColor},
-    ];
-    kpis10.forEach((k,i)=>{
-      const ky=3.46+i*0.74;
-      s10.addShape(pptx.ShapeType.rect,{x:0.65,y:ky,w:6.82,h:0.62,fill:{color:SURF},line:{color:'2A2C3A'}});
-      s10.addText(k.lbl,{x:0.85,y:ky+0.08,w:3.2,h:0.2,fontSize:7,bold:true,color:MUTED,charSpacing:1.5});
-      s10.addText(k.val,{x:3.8,y:ky+0.05,w:3.42,h:0.52,fontSize:15,bold:true,color:k.color,align:'right',fontFace:'Calibri'});
-    });
-    // Palanca callout
-    s10.addShape(pptx.ShapeType.rect,{x:0.65,y:6.44,w:6.82,h:0.52,fill:{color:G_SM},line:{color:G_MD}});
-    s10.addText('Palanca #1: '+mainLever+' · +$'+mainPt.toFixed(3)+'B por punto adicional',{x:0.78,y:6.54,w:6.56,h:0.28,fontSize:8.5,bold:true,color:GOLD_LT,wrap:true});
-    // Right: radar + diagnosis
-    s10.addText('RADAR BAV®',{x:7.84,y:0.38,w:5.12,h:0.22,fontSize:7.5,bold:true,color:MUTED,charSpacing:1.5});
-    s10.addChart(pptx.ChartType.radar, radarData, {
-      x:7.74,y:0.58,w:5.22,h:3.28,
-      chartArea:{fill:{color:SURF},border:{pt:0}},
-      plotArea:{fill:{color:SURF}},
-      radarStyle:'filled', chartColors:[pColor],
-      catAxisLabelColor:MUTED2, valAxisLabelColor:MUTED2,
-      valAxisMaxVal:100, valAxisMinVal:0,
-      showLegend:false, lineDataSymbol:'none', dataLabelFontSize:0,
-    });
-    box(s10,7.74,4.0,5.22,3.1,SURF,P_MD);
-    s10.addShape(pptx.ShapeType.rect,{x:7.74,y:4.0,w:5.22,h:0.052,fill:{color:pColor},line:{color:pColor}});
-    s10.addText('DIAGNÓSTICO DE PATRÓN',{x:7.94,y:4.16,w:4.82,h:0.22,fontSize:7.5,bold:true,color:MUTED,charSpacing:1.5});
-    s10.addText(b.patron,{x:7.94,y:4.44,w:4.82,h:0.44,fontSize:18,bold:true,color:pColor});
-    s10.addText(pNarr,{x:7.94,y:4.96,w:4.82,h:1.72,fontSize:9,color:MUTED2,wrap:true,valign:'top'});
+    // ══ S2 · EL ACTIVO INVISIBLE ═════════════════════════════════════════════
+    const s2=sl();
+    lbl(s2,'EL ACTIVO MÁS VALIOSO · NO APARECE EN NINGÚN BALANCE');
+    card(s2,0.4,0.48,6.2,6.62,GOLD,GOLD_BG);
+    s2.addText('El '+(b.pct_int?b.pct_int.toFixed(0):90)+'%\ndel valor de\n'+b.n+'\nno aparece\nen ningún\nbalance.',{x:0.64,y:0.64,w:5.72,h:4.6,fontSize:30,bold:true,color:TEXT,fontFace:'Calibri',valign:'top',lineSpacingMultiple:1.1});
+    div(s2,0.64,5.46,5.72,GOLD_BD);
+    s2.addText('USD $'+b.iv.toFixed(1)+'B en capital intangible — invisible para la contabilidad, pero ya valorado por el mercado.',{x:0.64,y:5.58,w:5.72,h:0.52,fontSize:9.5,color:MUTED,wrap:true});
+    // Right
+    s2.addText('COMPOSICIÓN DEL VALOR · '+b.n.toUpperCase(),{x:6.9,y:0.48,w:6.0,h:0.22,fontSize:7.5,bold:true,color:MUTED,charSpacing:1.5});
+    s2.addChart(pptx.ChartType.doughnut,
+      [{name:'Composición',labels:['Capital Intangible','Capital Financiero'],
+        values:[b.pct_int||90, b.pct_int?100-b.pct_int:10]}],
+      {x:6.9,y:0.72,w:6.1,h:3.9,
+       chartArea:{fill:{color:BG},border:{pt:0}},
+       plotArea:{fill:{color:BG}},
+       holeSize:60, chartColors:[GOLD,BORDER2],
+       showLegend:true,legendPos:'b',legendFontSize:10,legendColor:MUTED,
+       showValue:true,dataLabelFontSize:12,dataLabelColor:TEXT});
+    box(s2,6.9,4.86,6.1,2.24,SURF,BORDER);
+    s2.addShape(pptx.ShapeType.rect,{x:6.9,y:4.86,w:6.1,h:0.04,fill:{color:GOLD},line:{color:GOLD}});
+    s2.addText('¿Por qué existe esta brecha?',{x:7.12,y:4.98,w:5.66,h:0.28,fontSize:11,bold:true,color:TEXT});
+    s2.addText('La marca, la reputación y las relaciones con clientes no aparecen en ningún estado financiero. Pero el mercado los valora y los paga con una prima constante. Eso es el Capital Intangible. Brandconomics lo mide en dólares.',{x:7.12,y:5.36,w:5.66,h:1.52,fontSize:9,color:MUTED,wrap:true});
 
-    // ── S11 LOS TRES CAPITALES ────────────────────────────────────────────
-    const s11=sl();
-    lbl(s11,'LOS TRES CAPITALES DE '+b.n.toUpperCase()+' · COMPOSICIÓN DEL INTANGIBLE');
-    s11.addText('El capital intangible se compone de tres dimensiones gestionables — cada una con palancas específicas.',{x:0.4,y:0.36,w:12.5,h:0.27,fontSize:9.5,color:MUTED2});
-    const caps={'Líder integral':{c:30,r:40,o:21},'Medio':{c:22,r:35,o:34},'Fuerza sin entrega':{c:35,r:30,o:26},'Débil':{c:15,r:25,o:51},'Crítico':{c:10,r:20,o:61},'Erosión activa':{c:12,r:28,o:51}}[b.patron]||{c:20,r:35,o:36};
+    // ══ S3 · LOS TRES CAPITALES (estilo deck ISA) ═════════════════════════════
+    const s3=sl();
+    lbl(s3,'LOS TRES CAPITALES DE '+b.n.toUpperCase());
+    s3.addText('El intangible se compone de tres dimensiones gestionables',{x:0.4,y:0.42,w:12.52,h:0.46,fontSize:18,bold:true,color:TEXT,fontFace:'Calibri'});
+    const caps={'Líder integral':{c:30,r:40,o:21},'Medio':{c:22,r:35,o:34},'Fuerza sin entrega':{c:35,r:30,o:26},'Débil':{c:15,r:25,o:51},'Crítico':{c:10,r:20,o:61},'Erosión activa':{c:12,r:28,o:51}}[b.patron]||{c:20,r:37,o:34};
+    const capRem=100-caps.c-caps.r-caps.o;
     const capitalDef=[
       {name:'Capital Cultural',pct:caps.c,color:GOLD,
-        desc:'Brand equity, identidad simbólica y propósito de '+b.n+'. La velocidad cultural vs. histórica.',
+        desc:'Brand equity, identidad simbólica y propósito de '+b.n+'. La velocidad cultural vs. la histórica.',
         items:['Identidad y propósito de marca','Velocidad cultural BAV®','Reputación sectorial'],
         iv:b.iv*caps.c/100},
-      {name:'Capital Relacional',pct:caps.r,color:'4ADE80',
-        desc:'Compromiso emocional y lealtad de stakeholders clave: clientes, socios, comunidades.',
-        items:['Lealtad y advocacy de clientes','NPS y satisfacción','Confianza de socios'],
+      {name:'Capital Relacional',pct:caps.r,color:'16A34A',
+        desc:'Compromiso emocional y lealtad de stakeholders clave: clientes, socios y comunidades.',
+        items:['Lealtad y advocacy de clientes','NPS y satisfacción sostenida','Confianza de socios e inversores'],
         iv:b.iv*caps.r/100},
-      {name:'Capital Organizacional',pct:caps.o,color:'818CF8',
-        desc:'Innovación, sistemas, capital humano y preparación estratégica de '+b.n+'.',
+      {name:'Capital Organizacional',pct:caps.o,color:'7C3AED',
+        desc:'Innovación, sistemas, capital humano y preparación estratégica de '+b.n+' para el futuro.',
         items:['Capacidad de innovación','Talento y cultura interna','Eficiencia operativa'],
         iv:b.iv*caps.o/100},
     ];
     capitalDef.forEach((cap,i)=>{
       const cx=0.4+i*4.3;
-      box(s11,cx,0.78,4.12,5.52,SURF,dim(cap.color,0.35));
-      s11.addShape(pptx.ShapeType.rect,{x:cx,y:0.78,w:4.12,h:0.052,fill:{color:cap.color},line:{color:cap.color}});
-      s11.addText(cap.pct+'%',{x:cx+0.14,y:0.92,w:2.1,h:0.8,fontSize:48,bold:true,color:cap.color,fontFace:'Calibri'});
-      s11.addText('≈ USD $'+cap.iv.toFixed(2)+'B',{x:cx+0.14,y:1.78,w:3.84,h:0.3,fontSize:11,bold:true,color:cap.color});
-      s11.addText(cap.name,{x:cx+0.14,y:2.16,w:3.84,h:0.32,fontSize:12,bold:true,color:TEXT});
-      div(s11,cx+0.14,2.56,3.84,SURF2);
-      s11.addText(cap.desc,{x:cx+0.14,y:2.66,w:3.84,h:1.05,fontSize:8.5,color:MUTED2,wrap:true});
+      box(s3,cx,1.02,4.12,6.08,BG,BORDER);
+      s3.addShape(pptx.ShapeType.rect,{x:cx,y:1.02,w:4.12,h:0.055,fill:{color:cap.color},line:{color:cap.color}});
+      // Percentage circle
+      s3.addShape(pptx.ShapeType.ellipse,{x:cx+1.22,y:1.2,w:1.68,h:1.68,fill:{color:tint(cap.color,0.18)},line:{color:tint(cap.color,0.18)}});
+      s3.addText(cap.pct+'%',{x:cx+1.22,y:1.4,w:1.68,h:0.9,fontSize:28,bold:true,color:BG,fontFace:'Calibri',align:'center',valign:'middle'});
+      s3.addText('≈ USD $'+cap.iv.toFixed(2)+'B',{x:cx+0.12,y:3.02,w:3.88,h:0.3,fontSize:9.5,bold:true,color:cap.color,align:'center'});
+      s3.addText(cap.name,{x:cx+0.12,y:3.42,w:3.88,h:0.36,fontSize:12,bold:true,color:TEXT,align:'center'});
+      div(s3,cx+0.24,3.9,3.64,BORDER);
+      s3.addText(cap.desc,{x:cx+0.2,y:4.04,w:3.72,h:0.96,fontSize:8.5,color:MUTED,wrap:true,align:'center'});
+      div(s3,cx+0.24,5.08,3.64,BORDER);
       cap.items.forEach((item,j)=>{
-        s11.addShape(pptx.ShapeType.ellipse,{x:cx+0.18,y:3.86+j*0.36+0.09,w:0.09,h:0.09,fill:{color:cap.color},line:{color:cap.color}});
-        s11.addText(item,{x:cx+0.34,y:3.86+j*0.36,w:3.5,h:0.3,fontSize:9,color:MUTED});
+        s3.addShape(pptx.ShapeType.ellipse,{x:cx+0.28,y:5.26+j*0.44+0.12,w:0.1,h:0.1,fill:{color:cap.color},line:{color:cap.color}});
+        s3.addText(item,{x:cx+0.48,y:5.26+j*0.44,w:3.44,h:0.36,fontSize:9,color:MUTED});
       });
     });
-    // Composition stacked bar + note
-    box(s11,0.4,6.4,12.48,0.7,SURF,'2A2C3A');
-    s11.addText('COMPOSICIÓN:',{x:0.6,y:6.52,w:2.0,h:0.2,fontSize:7,bold:true,color:MUTED,charSpacing:1});
-    const bW=8.5,bX=2.72,bY=6.52;
-    s11.addShape(pptx.ShapeType.rect,{x:bX,y:bY,w:bW*(caps.c/100),h:0.36,fill:{color:GOLD},line:{color:GOLD}});
-    s11.addShape(pptx.ShapeType.rect,{x:bX+bW*(caps.c/100),y:bY,w:bW*(caps.r/100),h:0.36,fill:{color:'4ADE80'},line:{color:'4ADE80'}});
-    s11.addShape(pptx.ShapeType.rect,{x:bX+bW*((caps.c+caps.r)/100),y:bY,w:bW*(caps.o/100),h:0.36,fill:{color:'818CF8'},line:{color:'818CF8'}});
-    s11.addText('C: '+caps.c+'%  R: '+caps.r+'%  O: '+caps.o+'%',{x:bX+bW+0.14,y:bY+0.04,w:2.0,h:0.26,fontSize:7.5,bold:true,color:MUTED2});
+    s3.addText('El '+(capRem>0?capRem+'% restante es Capital Financiero':'saldo es Capital Financiero')+' — lo único visible en el balance sheet hoy.',{x:0.4,y:7.0,w:12.52,h:0.2,fontSize:8,color:MUTED2,align:'center'});
 
-    // ── S12 ESCENARIOS WHAT-IF ────────────────────────────────────────────
-    const s12=sl();
-    lbl(s12,'ESCENARIOS WHAT-IF · '+b.n.toUpperCase()+' · PALANCAS DE VALOR EN USD');
-    s12.addText('¿Cuánto valor genera mover cada dimensión +5 puntos? El modelo M2 lo calcula en dólares.',{x:0.4,y:0.36,w:12.5,h:0.27,fontSize:9.5,color:MUTED2});
-    // IV actual banner
-    s12.addShape(pptx.ShapeType.rect,{x:0.4,y:0.76,w:12.52,h:0.72,fill:{color:SURF},line:{color:'2A2C3A'}});
-    s12.addShape(pptx.ShapeType.rect,{x:0.4,y:0.76,w:0.052,h:0.72,fill:{color:GOLD},line:{color:GOLD}});
-    s12.addText('IV ACTUAL:',{x:0.62,y:0.9,w:1.5,h:0.28,fontSize:9,bold:true,color:MUTED,charSpacing:1.5});
-    s12.addText('USD $'+b.iv.toFixed(2)+'B',{x:2.28,y:0.86,w:3.2,h:0.44,fontSize:22,bold:true,color:GOLD_LT,fontFace:'Calibri'});
-    s12.addText('Múltiplo: '+b.mult.toFixed(1)+'x  ·  Patrón: '+b.patron+'  ·  Palanca #1: '+mainLever,{x:5.62,y:0.9,w:7.02,h:0.28,fontSize:9,color:MUTED});
-    // 3 scenario cards (left side)
+    // ══ S4 · POWER GRID BAV® ════════════════════════════════════════════════
+    const s4=sl();
+    lbl(s4,'POWER GRID BAV® · POSICIÓN ESTRATÉGICA · '+b.n.toUpperCase());
+    // Left insight
+    const gridQuad = brandStrength>=50&&brandStature>=50?'LEADERSHIP':brandStrength>=50?'MOMENTUM':brandStature>=50?'FATIGUED':'UNFOCUSED';
+    const gridInsight={
+      LEADERSHIP:b.n+' compite en el cuadrante de liderazgo — alta fortaleza de marca y alta estatura simultáneas.',
+      MOMENTUM:b.n+' tiene fortaleza diferenciada pero aún construye estatura. Hay energía real. El reto: amplificarla masivamente.',
+      FATIGUED:b.n+' es conocida y respetada, pero sin diferenciación activa. El mercado la conoce sin elegirla sobre alternativas.',
+      UNFOCUSED:b.n+' opera con fortaleza y estatura por debajo del promedio. Requiere una apuesta estratégica clara.',
+    }[gridQuad];
+    s4.addText(gridInsight,{x:0.4,y:0.5,w:5.5,h:1.9,fontSize:18,bold:true,color:TEXT,fontFace:'Calibri',wrap:true,lineSpacingMultiple:1.15});
+    div(s4,0.4,2.54,5.5,BORDER);
+    const gridBody={
+      LEADERSHIP:'El mercado que importa ya la percibe como distinta y líder. Una marca en Leadership con estatura sólida convierte percepción en múltiplo IV/Rev superior.',
+      MOMENTUM:'La diferenciación existe pero no se convierte en reputación masiva. Sin escalar la estatura entre decisores, esa energía no se traduce en valor intangible reconocido por el mercado.',
+      FATIGUED:'Alta estima y conocimiento sin diferenciación activan el beta negativo del M2 (−0.0183 y −0.0247). El mercado conoce la marca pero no paga prima diferencial.',
+      UNFOCUSED:'Posición que requiere priorización. Sin claridad en diferenciación ni en estatura, el múltiplo IV/Rev permanece bajo el promedio del sector.',
+    }[gridQuad];
+    s4.addText(gridBody,{x:0.4,y:2.68,w:5.5,h:2.1,fontSize:9.5,color:MUTED,wrap:true});
+    box(s4,0.4,4.9,5.5,2.24,SURF,BORDER);
+    s4.addShape(pptx.ShapeType.rect,{x:0.4,y:4.9,w:5.5,h:0.04,fill:{color:pColor},line:{color:pColor}});
+    s4.addText('Acción recomendada',{x:0.6,y:5.02,w:5.1,h:0.24,fontSize:9,bold:true,color:pColor});
+    s4.addText(actionNarr,{x:0.6,y:5.32,w:5.1,h:1.64,fontSize:9.5,color:MUTED,wrap:true});
+    // Right: Power Grid
+    s4.addShape(pptx.ShapeType.rect,{x:6.2,y:0.48,w:6.72,h:6.62,fill:{color:SURF},line:{color:BORDER,pt:0.8}});
+    // Quadrant dividers
+    s4.addShape(pptx.ShapeType.rect,{x:9.56,y:0.48,w:0.014,h:6.62,fill:{color:BORDER2},line:{color:BORDER2}});
+    s4.addShape(pptx.ShapeType.rect,{x:6.2,y:3.79,w:6.72,h:0.014,fill:{color:BORDER2},line:{color:BORDER2}});
+    // Diagonal reference line (Leadership diagonal)
+    s4.addShape(pptx.ShapeType.line,{x:6.2,y:7.1,w:6.72,h:-6.62,line:{color:BORDER2,pt:0.8,dashType:'dash'}});
+    // Quadrant labels
+    s4.addText('MOMENTUM',{x:6.32,y:0.58,w:3.1,h:0.26,fontSize:8,bold:true,color:MUTED2,charSpacing:1.5});
+    s4.addText('LEADERSHIP',{x:9.68,y:0.58,w:3.1,h:0.26,fontSize:8,bold:true,color:MUTED2,charSpacing:1.5});
+    s4.addText('UNFOCUSED',{x:6.32,y:6.76,w:3.1,h:0.22,fontSize:8,bold:true,color:MUTED2,charSpacing:1.5});
+    s4.addText('FATIGUED',{x:9.68,y:6.76,w:3.1,h:0.22,fontSize:8,bold:true,color:MUTED2,charSpacing:1.5});
+    s4.addText('MASS MARKET',{x:10.4,y:4.4,w:2.3,h:0.3,fontSize:7,bold:true,color:MUTED2,charSpacing:1,align:'right'});
+    // Axis labels
+    s4.addText('Brand Strength (Diferenciación & Relevancia)',{x:5.34,y:2.4,w:1.0,h:3.3,fontSize:7.5,color:MUTED,align:'center',wrap:true,rotate:270});
+    s4.addText('Brand Stature (Estima & Conocimiento)',{x:6.2,y:7.08,w:6.72,h:0.2,fontSize:7.5,color:MUTED,align:'center'});
+    // Brand dot
+    const dotX=6.2+(brandStature/100)*6.72;
+    const dotY=7.1-(brandStrength/100)*6.62;
+    s4.addShape(pptx.ShapeType.ellipse,{x:dotX-0.16,y:dotY-0.16,w:0.32,h:0.32,fill:{color:pColor},line:{color:pColor}});
+    s4.addText(b.n,{x:dotX+0.22,y:dotY-0.2,w:2.2,h:0.34,fontSize:10,bold:true,color:TEXT});
+    // Crosshair
+    s4.addShape(pptx.ShapeType.rect,{x:dotX-0.006,y:0.48,w:0.012,h:dotY-0.48,fill:{color:tint(pColor,0.65)},line:{color:tint(pColor,0.65)}});
+    s4.addShape(pptx.ShapeType.rect,{x:6.2,y:dotY-0.006,w:dotX-6.2,h:0.012,fill:{color:tint(pColor,0.65)},line:{color:tint(pColor,0.65)}});
+    // Score badge
+    s4.addShape(pptx.ShapeType.rect,{x:6.32,y:6.34,w:3.1,h:0.34,fill:{color:P_BG},line:{color:P_LT,pt:0.8},rectRadius:0.06});
+    s4.addText('Fortaleza: '+brandStrength.toFixed(0)+'  ·  Estatura: '+brandStature.toFixed(0),{x:6.42,y:6.42,w:2.94,h:0.2,fontSize:8,bold:true,color:pColor});
+
+    // ══ S5 · POSICIÓN BAV® + RADAR ═══════════════════════════════════════════
+    const s5=sl();
+    lbl(s5,'POSICIÓN BAV® · PILARES DE VALOR · '+b.n.toUpperCase());
+    card(s5,0.4,0.48,5.76,6.6,pColor,P_BG);
+    s5.addText('PATRÓN ESTRATÉGICO',{x:0.64,y:0.66,w:5.3,h:0.22,fontSize:7.5,bold:true,color:MUTED,charSpacing:1.5});
+    s5.addText(b.patron,{x:0.64,y:0.94,w:5.3,h:0.6,fontSize:24,bold:true,color:pColor,fontFace:'Calibri'});
+    s5.addText(b.sector,{x:0.64,y:1.62,w:5.3,h:0.3,fontSize:11,color:MUTED});
+    div(s5,0.64,2.06,5.3,BORDER);
+    s5.addText(pNarr,{x:0.64,y:2.2,w:5.3,h:1.9,fontSize:9.5,color:MUTED,wrap:true,valign:'top'});
+    s5.addText('PILARES BAV® — COLOMBIA 2026',{x:0.64,y:4.22,w:5.3,h:0.22,fontSize:7.5,bold:true,color:MUTED,charSpacing:1.5});
+    bavPillars.forEach(([nm,val,col],i)=>{
+      const py=4.52+i*0.38;
+      s5.addText(nm,{x:0.64,y:py,w:1.78,h:0.28,fontSize:8.5,color:MUTED});
+      bar(s5,2.48,py+0.07,3.12,val,col,0.15);
+      s5.addText(val.toFixed(0),{x:5.66,y:py,w:0.44,h:0.26,fontSize:8.5,bold:true,color:col,align:'right'});
+    });
+    s5.addText('RADAR BAV® · POSICIÓN COMPETITIVA',{x:6.5,y:0.48,w:6.4,h:0.22,fontSize:7.5,bold:true,color:MUTED,charSpacing:1.5});
+    s5.addChart(pptx.ChartType.radar,radarData,{
+      x:6.4,y:0.7,w:6.5,h:3.8,
+      chartArea:{fill:{color:BG},border:{pt:0}},
+      plotArea:{fill:{color:BG}},
+      radarStyle:'filled',chartColors:[pColor],
+      catAxisLabelColor:MUTED,valAxisLabelColor:MUTED,
+      valAxisMaxVal:100,valAxisMinVal:0,
+      showLegend:false,lineDataSymbol:'none',dataLabelFontSize:0,
+    });
+    box(s5,6.4,4.72,6.5,2.36,SURF,BORDER);
+    s5.addShape(pptx.ShapeType.rect,{x:6.4,y:4.72,w:6.5,h:0.04,fill:{color:RED},line:{color:RED}});
+    s5.addText('PUNTO DE ATENCIÓN',{x:6.62,y:4.84,w:6.08,h:0.22,fontSize:7.5,bold:true,color:RED,charSpacing:1.5});
+    s5.addText(trapNarr,{x:6.62,y:5.14,w:6.08,h:1.76,fontSize:9.5,color:MUTED,wrap:true});
+
+    // ══ S6 · MAPA DE ATRIBUTOS BAV® (Treemap) ════════════════════════════════
+    const s6=sl();
+    lbl(s6,'MAPA DE ATRIBUTOS BAV® · '+b.n.toUpperCase());
+    // Left: insight headline (estilo deck ISA)
+    const attrH=diff>=70?'Tu inversión en diferenciación no se perdió.\nLlegó exactamente\nadonde tenía que llegar.':diff>=50?'La diferenciación de '+b.n+'\nestá en construcción.\nLa ventana para\nconsolidarla es ahora.':'Mientras otras marcas\ndel sector diferencian,\n'+b.n+' aún tiene\nesa oportunidad.';
+    s6.addText(attrH,{x:0.4,y:0.48,w:5.4,h:2.6,fontSize:19,bold:true,color:TEXT,fontFace:'Calibri',wrap:true,lineSpacingMultiple:1.12});
+    div(s6,0.4,3.24,5.4,BORDER);
+    const attrBody=diff>=70?'Mientras otras marcas del sector tienen diferenciación como promesa, '+b.n+' ya la tiene como percepción medida. Esa ventaja se cuantifica. Y se defiende.':diff>=50?b.n+' construye diferenciación activa. Los atributos clave están en movimiento — consolidarlos como percepción dominante requiere consistencia estratégica.':b.n+' tiene atributos de marca funcionales, pero la diferenciación percibida está bajo el promedio. El mercado la usa sin elegirla activamente sobre alternativas.';
+    s6.addText(attrBody,{x:0.4,y:3.38,w:5.4,h:1.6,fontSize:10,color:MUTED,wrap:true,bold:true});
+    s6.addText('Fuente: WPP BAV Colombia 2026 · Finance Decision Maker · HR Decision Maker',{x:0.4,y:6.9,w:5.4,h:0.2,fontSize:7,color:MUTED2});
+    // Treemap: simulated rectangles from BAV pillar-derived attributes
+    const attrs=[
+      {n:'distinctive',v:diff},{n:'innovative',v:diff*0.88},{n:'different',v:diff*0.74},
+      {n:'leader',v:Math.max(diff,rel)*0.82},{n:'visionary',v:diff*0.62},
+      {n:'relevant',v:rel},{n:'progressive',v:rel*0.78},{n:'social',v:rel*0.65},
+      {n:'prestigious',v:est},{n:'trusted',v:est*0.86},{n:'reliable',v:est*0.72},{n:'authentic',v:est*0.6},
+      {n:'familiar',v:know},{n:'traditional',v:know*0.75},
+      {n:'helpful',v:cx},{n:'good_value',v:cx*0.8},
+      {n:'worth_more',v:pref},{n:'best_brand',v:pref*0.78},
+    ].sort((a2,b2)=>b2.v-a2.v);
+    // Color: orange gradient tinted by intensity (like ISA treemap)
+    const tmX=5.92,tmY=0.48,tmW=7.0,tmH=6.7;
+    const rowDefs=[[0,4],[5,10],[11,17]];
+    const rowFrac=[0.38,0.34,0.28];
+    let ry=tmY;
+    rowDefs.forEach((rng,ri)=>{
+      const rowAttrs=attrs.slice(rng[0],rng[1]+1);
+      const rowSum=rowAttrs.reduce((s,a)=>s+a.v,0);
+      const rh=tmH*rowFrac[ri];
+      let rx=tmX;
+      rowAttrs.forEach(a=>{
+        const w=tmW*(a.v/rowSum)-0.04;
+        const intensity=Math.min(1,a.v/100);
+        const col=tint(ORANGE,1-intensity*0.75);
+        s6.addShape(pptx.ShapeType.rect,{x:rx,y:ry,w:w,h:rh-0.04,fill:{color:col},line:{color:col}});
+        if(w>0.45) s6.addText(a.n.replace(/_/g,' '),{x:rx+0.06,y:ry+0.06,w:w-0.12,h:rh-0.18,fontSize:Math.max(6.5,Math.min(9.5,w*9)),color:'FFFFFF',valign:'bottom',wrap:true});
+        rx+=w+0.04;
+      });
+      ry+=rh;
+    });
+
+    // ══ S7 · DATOS FINANCIEROS + RESULTADO M2 ════════════════════════════════
+    const s7=sl();
+    lbl(s7,'LO QUE EL CFO YA SABE · '+b.n.toUpperCase()+' · FINANCIERO 2024');
+    const cfoCells=[
+      {lbl:'INGRESOS 2024',val:b.rev_usd?'USD $'+b.rev_usd.toFixed(2)+'B':'—',sub:b.margen!=null?'Margen neto: '+b.margen.toFixed(1)+'%':'—',vc:TEXT,ac:MUTED},
+      {lbl:'UTILIDAD NETA',val:b.gan_usd!=null?'USD $'+b.gan_usd.toFixed(2)+'B':'—',sub:b.roe!=null?'ROE: '+b.roe.toFixed(1)+'%':'—',vc:b.gan_usd>=0?GREEN:RED,ac:b.gan_usd>=0?GREEN:RED},
+      {lbl:'PATRIMONIO',val:b.pat_usd?'USD $'+b.pat_usd.toFixed(2)+'B':'—',sub:'Balance sheet · TRM 4,200',vc:MUTED,ac:MUTED},
+      {lbl:'INTANGIBLE M2',val:'USD $'+b.iv.toFixed(1)+'B',sub:'No figura en el balance',vc:GOLD,ac:GOLD},
+    ];
+    cfoCells.forEach((c,i)=>{
+      const cx=0.4+i*3.22;
+      box(s7,cx,0.48,3.06,1.46,i===3?GOLD_BG:SURF,i===3?GOLD_BD:BORDER);
+      s7.addShape(pptx.ShapeType.rect,{x:cx,y:0.48,w:3.06,h:0.04,fill:{color:c.ac},line:{color:c.ac}});
+      s7.addText(c.lbl,{x:cx+0.14,y:0.6,w:2.78,h:0.2,fontSize:7.5,bold:true,color:MUTED,charSpacing:1.5});
+      s7.addText(c.val,{x:cx+0.14,y:0.84,w:2.78,h:0.48,fontSize:i===3?19:17,bold:true,color:c.vc,fontFace:'Calibri'});
+      s7.addText(c.sub,{x:cx+0.14,y:1.36,w:2.78,h:0.24,fontSize:8,color:i===3?GOLD:MUTED,wrap:true});
+    });
+    box(s7,0.4,2.1,12.52,0.82,GOLD_BG,GOLD_BD);
+    s7.addShape(pptx.ShapeType.rect,{x:0.4,y:2.1,w:0.04,h:0.82,fill:{color:GOLD},line:{color:GOLD}});
+    s7.addText('Lo que el mercado ya descuenta:',{x:0.62,y:2.2,w:2.8,h:0.24,fontSize:9,bold:true,color:GOLD});
+    const ivIns=b.pct_int!==null?b.pct_int.toFixed(1)+'% del valor de '+b.n+' es capital intangible: USD $'+b.iv.toFixed(1)+'B que no aparecen en ningún balance. Por cada $1 de ingreso, el intangible vale $'+b.mult.toFixed(1)+'. Palanca #1: '+mainLever+' (+$'+mainPt.toFixed(3)+'B por punto).':'El capital intangible de '+b.n+' (USD $'+b.iv.toFixed(1)+'B) no aparece en ningún estado financiero. Palanca #1: '+mainLever+' — +$'+mainPt.toFixed(3)+'B por cada punto de mejora.';
+    s7.addText(ivIns,{x:0.62,y:2.46,w:12.08,h:0.38,fontSize:9.5,color:MUTED,wrap:true});
+    // Left: mult card
+    card(s7,0.4,3.08,5.88,4.04,GOLD,GOLD_BG);
+    s7.addText('MÚLTIPLO IV / INGRESOS',{x:0.62,y:3.26,w:5.44,h:0.22,fontSize:7.5,bold:true,color:MUTED,charSpacing:1.5});
+    s7.addText(b.mult.toFixed(1)+'x',{x:0.62,y:3.54,w:5.44,h:1.1,fontSize:62,bold:true,color:b.mult>=1.5?GREEN:b.mult>=1?GOLD:RED,fontFace:'Calibri'});
+    s7.addText('Por cada $1 de ingreso anual, el intangible de '+b.n+' vale $'+b.mult.toFixed(1)+'.',{x:0.62,y:4.7,w:5.44,h:0.5,fontSize:10,color:MUTED,wrap:true});
+    div(s7,0.62,5.34,5.44,GOLD_BD);
+    s7.addText(b.gdp_flag+' '+b.gdp_pais+'  ·  PIB USD $'+b.gdp_b+'B',{x:0.62,y:5.48,w:5.44,h:0.3,fontSize:11,bold:true,color:TEXT});
+    s7.addText('Equivalente en PIB al intangible de '+b.n,{x:0.62,y:5.84,w:5.44,h:0.22,fontSize:8.5,color:MUTED});
+    // Right: bar chart
+    if(b.rev_usd){
+      s7.addChart(pptx.ChartType.bar,
+        [{name:'USD $B',labels:['Ingresos','Utilidad','Patrimonio','IV (M2)'],
+          values:[b.rev_usd||0,Math.max(b.gan_usd||0,0),b.pat_usd||0,b.iv]}],
+        {...LC,x:6.62,y:3.08,w:6.14,h:4.04,barDir:'bar',
+         chartColors:[MUTED2,b.gan_usd>=0?GREEN:RED,BORDER2,GOLD],
+         dataLabelFormatCode:'$0.00"B"'});
+    }else{
+      box(s7,6.62,3.08,6.14,4.04,SURF,BORDER);
+      s7.addText('Datos financieros no disponibles.',{x:6.82,y:4.8,w:5.74,h:0.5,fontSize:9.5,color:MUTED2,align:'center'});
+    }
+
+    // ══ S8 · FRAMEWORK M2 (Los 6 drivers) ════════════════════════════════════
+    const s8=sl();
+    lbl(s8,'EL MODELO · BRANDCONOMICS M2 · '+b.n.toUpperCase());
+    box(s8,0.4,0.44,12.52,0.98,GOLD_BG,GOLD_BD);
+    s8.addShape(pptx.ShapeType.rect,{x:0.4,y:0.44,w:0.04,h:0.98,fill:{color:GOLD},line:{color:GOLD}});
+    s8.addText('ln(IV) = 0.690 + 0.0113·Diff − 0.0183·Est − 0.0247·Know + 0.0011·Rel + 0.0140·Use + 0.0132·Pref + 1.034·ln(Rev)',{x:0.62,y:0.56,w:12.08,h:0.5,fontSize:11.5,bold:true,color:TEXT,fontFace:'Calibri'});
+    s8.addText('R² = 53.9%  ·  106 empresas  ·  17 sectores  ·  BAV explica 41× más valor que el ciclo de mercado',{x:0.62,y:1.08,w:12.08,h:0.22,fontSize:8.5,color:MUTED});
+    const betas8=[
+      {name:'Diferenciación',beta:'+0.0113',sig:'Genera valor directamente',color:'16A34A',val:diff,usd:perPt.diff},
+      {name:'Preferencia',beta:'+0.0132',sig:'Beta positivo más alto',color:'EC4899',val:pref,usd:perPt.pref},
+      {name:'Uso Regular',beta:'+0.0140',sig:'Consolida el intangible',color:'2563EB',val:cx,usd:perPt.use},
+      {name:'Relevancia',beta:'+0.0011',sig:'Efecto neutro en M2',color:MUTED,val:rel,usd:b.iv*(Math.exp(0.0011)-1)},
+      {name:'Estima',beta:'−0.0183',sig:'⚠ Puede destruir IV si supera Diff',color:'EF4444',val:est,usd:-estDrag},
+      {name:'Conocimiento',beta:'−0.0247',sig:'⚠ Sin Diff: destrucción máxima',color:'DC2626',val:know,usd:-knowDrag},
+    ];
+    betas8.forEach((bt,i)=>{
+      const bx=0.4+(i%3)*4.3, by=1.58+Math.floor(i/3)*2.76;
+      box(s8,bx,by,4.12,2.62,BG,BORDER);
+      s8.addShape(pptx.ShapeType.rect,{x:bx,y:by,w:4.12,h:0.04,fill:{color:bt.color},line:{color:bt.color}});
+      s8.addText(bt.name,{x:bx+0.14,y:by+0.14,w:3.84,h:0.32,fontSize:13,bold:true,color:bt.color});
+      s8.addText('β = '+bt.beta,{x:bx+0.14,y:by+0.5,w:3.84,h:0.44,fontSize:22,bold:true,color:TEXT,fontFace:'Calibri'});
+      s8.addText(b.n+': '+bt.val.toFixed(0)+' puntos',{x:bx+0.14,y:by+1.0,w:3.84,h:0.26,fontSize:9,color:MUTED2});
+      bar(s8,bx+0.14,by+1.32,3.84,bt.val,bt.color,0.14);
+      box(s8,bx+0.14,by+1.62,3.84,0.76,tint(bt.color,0.90),tint(bt.color,0.68));
+      s8.addText(bt.sig,{x:bx+0.22,y:by+1.72,w:3.68,h:0.24,fontSize:8.5,bold:true,color:bt.color});
+      const uL=bt.usd>=0?'+$'+bt.usd.toFixed(3)+'B/pt':'−$'+Math.abs(bt.usd).toFixed(3)+'B drag';
+      s8.addText(uL,{x:bx+0.22,y:by+2.02,w:3.68,h:0.26,fontSize:8.5,bold:true,color:bt.color});
+    });
+
+    // ══ S9 · RESULTADO M2 + DIAGNÓSTICO ══════════════════════════════════════
+    const s9=sl();
+    lbl(s9,'RESULTADO BRANDCONOMICS® · '+b.n.toUpperCase());
+    card(s9,0.4,0.44,7.28,6.66,GOLD,GOLD_BG);
+    s9.addText('VALOR INTANGIBLE CALCULADO',{x:0.64,y:0.62,w:6.82,h:0.22,fontSize:8,bold:true,color:MUTED,charSpacing:2});
+    const ivSz2=b.iv>=100?56:b.iv>=10?64:72;
+    s9.addText('USD $'+b.iv.toFixed(1)+'B',{x:0.64,y:0.9,w:6.82,h:1.38,fontSize:ivSz2,bold:true,color:TEXT,fontFace:'Calibri'});
+    s9.addText('El número que no aparece en el balance de '+b.n+'.',{x:0.64,y:2.38,w:6.82,h:0.32,fontSize:11,color:MUTED});
+    s9.addText('Modelo M2 Brandconomics® · BAV Colombia 2026 · TRM 4,200',{x:0.64,y:2.78,w:6.82,h:0.22,fontSize:8,color:MUTED2});
+    div(s9,0.64,3.16,6.82,GOLD_BD);
+    const kpis9=[
+      {lbl:'MÚLTIPLO IV/INGRESOS',val:b.mult.toFixed(1)+'x',color:b.mult>=1.5?GREEN:b.mult>=1?GOLD:RED},
+      {lbl:'% CAPITAL INTANGIBLE',val:b.pct_int!==null?b.pct_int.toFixed(1)+'%':'—',color:GOLD},
+      {lbl:'EQUIVALENTE EN PIB',val:b.gdp_flag+' '+b.gdp_pais,color:TEXT},
+      {lbl:'PATRÓN ESTRATÉGICO BAV®',val:b.patron,color:pColor},
+    ];
+    kpis9.forEach((k,i)=>{
+      const ky=3.34+i*0.76;
+      box(s9,0.64,ky,6.82,0.66,BG,BORDER);
+      s9.addText(k.lbl,{x:0.84,y:ky+0.1,w:3.4,h:0.2,fontSize:7.5,bold:true,color:MUTED,charSpacing:1.5});
+      s9.addText(k.val,{x:3.84,y:ky+0.06,w:3.38,h:0.52,fontSize:15,bold:true,color:k.color,align:'right',fontFace:'Calibri'});
+    });
+    box(s9,0.64,6.42,6.82,0.54,P_BG,P_LT);
+    s9.addText('Palanca #1: '+mainLever+' · +$'+mainPt.toFixed(3)+'B por punto adicional',{x:0.78,y:6.52,w:6.56,h:0.3,fontSize:9,bold:true,color:pColor});
+    // Right: radar
+    s9.addText('RADAR BAV®',{x:7.84,y:0.44,w:5.12,h:0.22,fontSize:7.5,bold:true,color:MUTED,charSpacing:1.5});
+    s9.addChart(pptx.ChartType.radar,radarData,{
+      x:7.74,y:0.64,w:5.22,h:3.3,
+      chartArea:{fill:{color:BG},border:{pt:0}},
+      plotArea:{fill:{color:BG}},
+      radarStyle:'filled',chartColors:[pColor],
+      catAxisLabelColor:MUTED,valAxisLabelColor:MUTED,
+      valAxisMaxVal:100,valAxisMinVal:0,
+      showLegend:false,lineDataSymbol:'none',dataLabelFontSize:0,
+    });
+    box(s9,7.74,4.06,5.22,3.04,SURF,BORDER);
+    s9.addShape(pptx.ShapeType.rect,{x:7.74,y:4.06,w:5.22,h:0.04,fill:{color:pColor},line:{color:pColor}});
+    s9.addText('DIAGNÓSTICO DE PATRÓN',{x:7.94,y:4.18,w:4.82,h:0.22,fontSize:7.5,bold:true,color:MUTED,charSpacing:1.5});
+    s9.addText(b.patron,{x:7.94,y:4.46,w:4.82,h:0.44,fontSize:18,bold:true,color:pColor});
+    s9.addText(pNarr,{x:7.94,y:4.96,w:4.82,h:1.72,fontSize:9,color:MUTED,wrap:true,valign:'top'});
+
+    // ══ S10 · ESCENARIOS WHAT-IF ══════════════════════════════════════════════
+    const s10=sl();
+    lbl(s10,'ESCENARIOS WHAT-IF · '+b.n.toUpperCase()+' · ¿CUÁNTO VALE CADA MOVIMIENTO?');
+    s10.addText('Cada punto de mejora genera valor intangible cuantificado en dólares. Así se toman decisiones de marca con retorno medible.',{x:0.4,y:0.44,w:12.52,h:0.28,fontSize:9.5,color:MUTED,wrap:true});
+    box(s10,0.4,0.88,12.52,0.72,GOLD_BG,GOLD_BD);
+    s10.addShape(pptx.ShapeType.rect,{x:0.4,y:0.88,w:0.04,h:0.72,fill:{color:GOLD},line:{color:GOLD}});
+    s10.addText('IV ACTUAL:',{x:0.62,y:0.98,w:1.5,h:0.26,fontSize:9,bold:true,color:MUTED,charSpacing:1.5});
+    s10.addText('USD $'+b.iv.toFixed(2)+'B',{x:2.26,y:0.94,w:3.2,h:0.44,fontSize:22,bold:true,color:GOLD,fontFace:'Calibri'});
+    s10.addText('Múltiplo: '+b.mult.toFixed(1)+'x  ·  Patrón: '+b.patron+'  ·  Palanca #1: '+mainLever,{x:5.6,y:0.98,w:7.02,h:0.26,fontSize:9,color:MUTED});
     const scens=[
-      {title:'+5 pts Diferenciación',beta:'β = +0.0113',delta:dD,newIV:b.iv+dD,color:'22C55E',
-        desc:'Genera prima de precio directa. De '+diff.toFixed(0)+' → '+(diff+5).toFixed(0)+' pts. Impacto: +$'+dD.toFixed(3)+'B  (+'+((dD/b.iv)*100).toFixed(1)+'% del IV actual).'},
-      {title:'+5 pts Preferencia',beta:'β = +0.0132',delta:dP,newIV:b.iv+dP,color:'F472B6',
-        desc:'Mayor beta positivo del modelo. De '+pref.toFixed(0)+' → '+(pref+5).toFixed(0)+' pts. Impacto: +$'+dP.toFixed(3)+'B  (+'+((dP/b.iv)*100).toFixed(1)+'% del IV actual).'},
-      {title:'+5 pts Uso Regular',beta:'β = +0.0140',delta:dU,newIV:b.iv+dU,color:'38BDF8',
-        desc:'Frecuencia consolida el intangible. De '+cx.toFixed(0)+' → '+(cx+5).toFixed(0)+' pts. Impacto: +$'+dU.toFixed(3)+'B  (+'+((dU/b.iv)*100).toFixed(1)+'% del IV actual).'},
+      {title:'+5 puntos Diferenciación',beta:'β = +0.0113',delta:dD,newIV:b.iv+dD,color:'16A34A',
+        desc:'Diferenciación: '+diff.toFixed(0)+' → '+(diff+5).toFixed(0)+' pts. Genera prima de precio directa. Impacto: +$'+dD.toFixed(3)+'B (+'+((dD/b.iv)*100).toFixed(1)+'% del IV actual).'},
+      {title:'+5 puntos Preferencia',beta:'β = +0.0132',delta:dP,newIV:b.iv+dP,color:'EC4899',
+        desc:'Preferencia: '+pref.toFixed(0)+' → '+(pref+5).toFixed(0)+' pts. El beta positivo más alto del modelo. Impacto: +$'+dP.toFixed(3)+'B (+'+((dP/b.iv)*100).toFixed(1)+'% del IV actual).'},
+      {title:'+5 puntos Uso Regular',beta:'β = +0.0140',delta:dU,newIV:b.iv+dU,color:'2563EB',
+        desc:'Uso: '+cx.toFixed(0)+' → '+(cx+5).toFixed(0)+' pts. La frecuencia consolida el intangible. Impacto: +$'+dU.toFixed(3)+'B (+'+((dU/b.iv)*100).toFixed(1)+'% del IV actual).'},
     ];
     scens.forEach((sc,i)=>{
-      const sy=1.66+i*1.54;
-      card(s12,0.4,sy,7.28,1.4,sc.color,SURF);
-      s12.addText(sc.title,{x:0.65,y:sy+0.1,w:4.4,h:0.34,fontSize:14,bold:true,color:sc.color,fontFace:'Calibri'});
-      s12.addText(sc.beta,{x:5.2,y:sy+0.14,w:2.2,h:0.22,fontSize:9,bold:true,color:MUTED});
-      s12.addText('+USD $'+sc.delta.toFixed(3)+'B',{x:0.65,y:sy+0.5,w:6.8,h:0.46,fontSize:26,bold:true,color:sc.color,fontFace:'Calibri'});
-      s12.addText('→ IV nuevo: $'+sc.newIV.toFixed(2)+'B',{x:4.2,y:sy+0.58,w:3.2,h:0.28,fontSize:9,color:MUTED2,align:'right'});
-      s12.addText(sc.desc,{x:0.65,y:sy+1.02,w:6.8,h:0.3,fontSize:8,color:MUTED,wrap:true});
+      const sy=1.76+i*1.54;
+      card(s10,0.4,sy,7.28,1.42,sc.color,BG);
+      s10.addText(sc.title,{x:0.64,y:sy+0.1,w:4.4,h:0.34,fontSize:14,bold:true,color:sc.color,fontFace:'Calibri'});
+      s10.addText(sc.beta,{x:5.18,y:sy+0.14,w:2.2,h:0.22,fontSize:9,bold:true,color:MUTED});
+      s10.addText('+USD $'+sc.delta.toFixed(3)+'B',{x:0.64,y:sy+0.5,w:6.8,h:0.46,fontSize:26,bold:true,color:sc.color,fontFace:'Calibri'});
+      s10.addText('→ IV nuevo: $'+sc.newIV.toFixed(2)+'B',{x:4.18,y:sy+0.58,w:3.2,h:0.26,fontSize:9,color:MUTED2,align:'right'});
+      s10.addText(sc.desc,{x:0.64,y:sy+1.04,w:6.8,h:0.3,fontSize:8,color:MUTED,wrap:true});
     });
-    // Combined bottom
-    s12.addShape(pptx.ShapeType.rect,{x:0.4,y:6.3,w:7.28,h:0.8,fill:{color:G_SM},line:{color:G_MD}});
-    s12.addShape(pptx.ShapeType.rect,{x:0.4,y:6.3,w:0.052,h:0.8,fill:{color:GOLD},line:{color:GOLD}});
-    s12.addText('Escenario combinado (+5pts Diff + Pref + Uso):',{x:0.62,y:6.38,w:7.0,h:0.26,fontSize:8.5,bold:true,color:GOLD});
-    s12.addText('IV potencial = $'+(b.iv+dAll).toFixed(2)+'B  ·  Upside = +$'+dAll.toFixed(3)+'B  ·  +'+((dAll/b.iv)*100).toFixed(1)+'% de uplift total',{x:0.62,y:6.66,w:7.0,h:0.36,fontSize:10,bold:true,color:GOLD_LT,wrap:true});
-    // Bar chart right
-    s12.addChart(pptx.ChartType.bar,
+    box(s10,0.4,6.38,7.28,0.76,GOLD_BG,GOLD_BD);
+    s10.addShape(pptx.ShapeType.rect,{x:0.4,y:6.38,w:0.04,h:0.76,fill:{color:GOLD},line:{color:GOLD}});
+    s10.addText('Escenario combinado (+5pts Diff + Pref + Uso):',{x:0.62,y:6.48,w:7.0,h:0.24,fontSize:8.5,bold:true,color:GOLD});
+    s10.addText('IV potencial = $'+(b.iv+dAll).toFixed(2)+'B  ·  Upside = +$'+dAll.toFixed(3)+'B  ·  +'+((dAll/b.iv)*100).toFixed(1)+'% de uplift total',{x:0.62,y:6.74,w:7.0,h:0.32,fontSize:10,bold:true,color:TEXT,wrap:true});
+    s10.addChart(pptx.ChartType.bar,
       [{name:'Diferenciación',labels:['Diferenciación +5','Preferencia +5','Uso Regular +5'],values:[dD,0,0]},
        {name:'Preferencia',   labels:['Diferenciación +5','Preferencia +5','Uso Regular +5'],values:[0,dP,0]},
        {name:'Uso Regular',   labels:['Diferenciación +5','Preferencia +5','Uso Regular +5'],values:[0,0,dU]}],
-      {...DC,x:7.82,y:1.62,w:5.08,h:5.52,barDir:'bar',barGrouping:'clustered',
-       chartColors:[GREEN,PINK,BLUE],
-       showLegend:true,legendPos:'b',legendFontSize:9,legendColor:MUTED2,
+      {...LC,x:7.82,y:1.62,w:5.08,h:5.52,barDir:'bar',barGrouping:'clustered',
+       chartColors:['16A34A','EC4899','2563EB'],
+       showLegend:true,legendPos:'b',legendFontSize:9,legendColor:MUTED,
        dataLabelFormatCode:'+$0.000"B"',showTitle:true,title:'Delta IV por palanca (+5 pts)',
-       titleFontSize:9,titleColor:MUTED2});
+       titleFontSize:9,titleColor:MUTED});
 
-    // ── S13 CÓMO LO HACEMOS ───────────────────────────────────────────────
-    const s13=sl();
-    lbl(s13,'CÓMO LO HACEMOS · CUATRO FASES · ~10 SEMANAS · '+b.n.toUpperCase());
-    s13.addText('Un proceso riguroso para llegar a un número confiable del Intangible Value.',{x:0.4,y:0.36,w:12.5,h:0.27,fontSize:9.5,color:MUTED2});
+    // ══ S11 · CÓMO LO HACEMOS (Fases) ════════════════════════════════════════
+    const s11=sl();
+    lbl(s11,'CÓMO LO HACEMOS · CUATRO FASES · ~10 SEMANAS · '+b.n.toUpperCase());
+    s11.addText('Un proceso riguroso para llegar a un número confiable del Valor Intangible.',{x:0.4,y:0.44,w:12.52,h:0.26,fontSize:9.5,color:MUTED});
     const phases=[
       {num:'01',title:'BAV® Sindicado',weeks:'Semanas 1–3',color:GOLD,
-        desc:'Estudio cuantitativo con el perfil de Tomador de Decisiones de '+b.n+'. Medición de Diferenciación, Relevancia, Estima, Conocimiento, Uso y Preferencia.',
-        out:'Score de los 6 pilares BAV calibrado para Colombia.'},
+        desc:'Estudio cuantitativo con el perfil de Tomador de Decisiones de '+b.n+'. Medimos Diferenciación, Relevancia, Estima, Conocimiento, Uso y Preferencia.',
+        out:'Los 6 pilares BAV calibrados para Colombia.'},
       {num:'02',title:'BAV® Pulse',weeks:'Semanas 4–5',color:PURP,
-        desc:'Análisis del pulso digital de '+b.n+' en tiempo real. Cómo las conversaciones digitales mueven los 4 e-pilares. Presencia y velocidad cultural.',
+        desc:'Análisis del pulso digital de '+b.n+' en tiempo real. Cómo las conversaciones digitales mueven los pilares. Presencia y velocidad cultural.',
         out:'Diagnóstico de velocidad cultural vs. histórica.'},
       {num:'03',title:'Análisis Financiero',weeks:'Semanas 6–8',color:BLUE,
-        desc:'Market cap, book value, revenue auditado de '+b.n+'. Cálculo del IV real con el modelo M2. BC Score y múltiplo IV/Revenue.',
-        out:'IV en USD, múltiplo, posición en el cubo de patrones.'},
-      {num:'04',title:'Diagnóstico y Entrega',weeks:'Semanas 9–10',color:'4ADE80',
+        desc:'Market cap, book value e ingresos auditados de '+b.n+'. Cálculo del IV real con el modelo M2. BC Score y múltiplo IV/Revenue.',
+        out:'IV en USD, múltiplo y posición en el cubo de patrones.'},
+      {num:'04',title:'Diagnóstico y Entrega',weeks:'Semanas 9–10',color:GREEN,
         desc:'Síndrome, escenarios what-if en USD y hoja de ruta estratégica personalizada para maximizar el IV de '+b.n+'.',
         out:'Deck ejecutivo + hoja de ruta accionable.'},
     ];
     phases.forEach((p,i)=>{
       const px=0.4+i*3.22;
-      box(s13,px,0.78,3.06,5.88,SURF,dim(p.color,0.35));
-      s13.addShape(pptx.ShapeType.rect,{x:px,y:0.78,w:3.06,h:0.052,fill:{color:p.color},line:{color:p.color}});
-      s13.addText(p.num,{x:px+0.14,y:0.92,w:2.78,h:0.6,fontSize:38,bold:true,color:p.color,fontFace:'Calibri'});
-      s13.addText(p.title,{x:px+0.14,y:1.62,w:2.78,h:0.36,fontSize:12,bold:true,color:TEXT});
-      s13.addShape(pptx.ShapeType.rect,{x:px+0.14,y:2.06,w:1.7,h:0.28,fill:{color:dim(p.color,0.15)},line:{color:dim(p.color,0.35)},rectRadius:0.06});
-      s13.addText(p.weeks,{x:px+0.22,y:2.1,w:1.55,h:0.18,fontSize:7.5,bold:true,color:p.color});
-      div(s13,px+0.14,2.46,2.78,SURF2);
-      s13.addText(p.desc,{x:px+0.14,y:2.56,w:2.78,h:2.18,fontSize:8.5,color:MUTED2,wrap:true,valign:'top'});
-      div(s13,px+0.14,4.82,2.78,SURF2);
-      s13.addText('Output:',{x:px+0.14,y:4.9,w:0.7,h:0.22,fontSize:7.5,bold:true,color:p.color});
-      s13.addText(p.out,{x:px+0.88,y:4.9,w:2.04,h:0.72,fontSize:8,color:p.color,wrap:true});
+      box(s11,px,0.86,3.06,6.24,BG,BORDER);
+      s11.addShape(pptx.ShapeType.rect,{x:px,y:0.86,w:3.06,h:0.04,fill:{color:p.color},line:{color:p.color}});
+      s11.addText(p.num,{x:px+0.14,y:0.98,w:2.78,h:0.6,fontSize:38,bold:true,color:p.color,fontFace:'Calibri'});
+      s11.addText(p.title,{x:px+0.14,y:1.66,w:2.78,h:0.36,fontSize:12,bold:true,color:TEXT});
+      box(s11,px+0.14,2.1,1.82,0.28,tint(p.color,0.88),tint(p.color,0.62),0.06);
+      s11.addText(p.weeks,{x:px+0.22,y:2.14,w:1.66,h:0.18,fontSize:7.5,bold:true,color:p.color});
+      div(s11,px+0.14,2.5,2.78,BORDER);
+      s11.addText(p.desc,{x:px+0.14,y:2.62,w:2.78,h:2.2,fontSize:8.5,color:MUTED,wrap:true,valign:'top'});
+      div(s11,px+0.14,4.9,2.78,BORDER);
+      s11.addText('Entregable:',{x:px+0.14,y:4.98,w:0.92,h:0.22,fontSize:7.5,bold:true,color:p.color});
+      s11.addText(p.out,{x:px+0.14,y:5.24,w:2.78,h:1.54,fontSize:8.5,color:p.color,wrap:true});
     });
 
-    // ── S14 CIERRE ────────────────────────────────────────────────────────
-    const s14=pptx.addSlide();
-    s14.background={color:'080910'};
-    s14.addShape(pptx.ShapeType.rect,{x:0,y:0,w:13.33,h:0.042,fill:{color:GOLD},line:{color:GOLD}});
-    // Giant faded IV number as background texture
-    s14.addText(b.iv.toFixed(0)+'B',{x:1.5,y:0.8,w:10.33,h:5.8,fontSize:220,bold:true,color:G_XS,fontFace:'Calibri',align:'center'});
-    // Content layer
-    s14.addText('LA PREGUNTA FINAL',{x:1.5,y:1.08,w:10.3,h:0.28,fontSize:9,bold:true,color:GOLD,charSpacing:3,align:'center'});
-    s14.addShape(pptx.ShapeType.rect,{x:4.62,y:1.48,w:4.08,h:0.04,fill:{color:G_MD},line:{color:G_MD}});
-    s14.addText('¿Qué pasaría si '+b.n+'\nsupiera exactamente\nqué dimensión mover\npara maximizar\nsu valor intangible?',{x:1.5,y:1.62,w:10.3,h:3.5,fontSize:34,bold:true,color:TEXT,fontFace:'Calibri',align:'center',lineSpacingMultiple:1.15});
-    s14.addText('Ese es Brandconomics.',{x:1.5,y:5.28,w:10.3,h:0.58,fontSize:24,bold:true,color:GOLD,fontFace:'Calibri',align:'center'});
-    s14.addShape(pptx.ShapeType.rect,{x:4.3,y:6.0,w:4.73,h:0.04,fill:{color:G_MD},line:{color:G_MD}});
-    s14.addText('brandconomics@cscvml.com · VML Colombia · 2026',{x:1.5,y:6.14,w:10.3,h:0.26,fontSize:9,color:MUTED,align:'center'});
-    s14.addText('Confidencial · '+b.n+' · Junio 2026',{x:1.5,y:6.48,w:10.3,h:0.22,fontSize:7.5,color:MUTED,align:'center'});
+    // ══ S12 · CIERRE ══════════════════════════════════════════════════════════
+    const s12=pptx.addSlide();
+    s12.background={color:TEXT};
+    s12.addShape(pptx.ShapeType.rect,{x:0,y:0,w:13.33,h:0.055,fill:{color:GOLD},line:{color:GOLD}});
+    // Faded IV number as background texture
+    s12.addText(b.iv.toFixed(0)+'B',{x:1.5,y:0.6,w:10.33,h:5.8,fontSize:200,bold:true,color:tint(TEXT,0.12),fontFace:'Calibri',align:'center'});
+    s12.addText('LA PREGUNTA FINAL',{x:1.5,y:0.9,w:10.3,h:0.28,fontSize:9,bold:true,color:GOLD,charSpacing:3,align:'center'});
+    s12.addShape(pptx.ShapeType.rect,{x:4.62,y:1.32,w:4.08,h:0.04,fill:{color:GOLD_BD},line:{color:GOLD_BD}});
+    s12.addText('¿Qué pasaría si '+b.n+'\nsupiera exactamente\nqué dimensión mover\npara maximizar\nsu valor intangible?',{x:1.5,y:1.48,w:10.3,h:3.5,fontSize:34,bold:true,color:'F8FAFC',fontFace:'Calibri',align:'center',lineSpacingMultiple:1.15});
+    s12.addText('Ese es Brandconomics.',{x:1.5,y:5.1,w:10.3,h:0.58,fontSize:24,bold:true,color:GOLD,fontFace:'Calibri',align:'center'});
+    s12.addShape(pptx.ShapeType.rect,{x:4.3,y:5.82,w:4.73,h:0.04,fill:{color:GOLD_BD},line:{color:GOLD_BD}});
+    s12.addText('brandconomics@cscvml.com · VML Colombia · 2026',{x:1.5,y:5.96,w:10.3,h:0.26,fontSize:9,color:MUTED2,align:'center'});
+    s12.addText('Confidencial · '+b.n+' · Junio 2026',{x:1.5,y:6.3,w:10.3,h:0.22,fontSize:7.5,color:MUTED,align:'center'});
 
     await pptx.writeFile({fileName:'Brandconomics_'+b.n.replace(/[^a-zA-Z0-9]/g,'_')+'_2026.pptx'});
 
