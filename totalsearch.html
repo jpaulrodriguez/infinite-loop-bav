@@ -904,29 +904,62 @@ const SORTED_EEAT = [...TS_DATA].sort((a, b) => eeat(b).score - eeat(a).score);
 const TOP1 = SORTED_EEAT[0];
 const TOP2 = SORTED_EEAT[1];
 
-// ── Insight engine — EEAT aware ───────────────────────────
+// ── Insight engine — narrativo y accionable ───────────────
 function generateInsight(b) {
   const e   = eeat(b);
   const gap = b.search_gap;
   const nm  = b.id;
-  const min4 = Math.min(e.experience, e.expertise, e.authority, e.trust);
-  const weak = e.experience===min4?'Experience':e.expertise===min4?'Expertise':e.trust===min4?'Trust':'Authority';
 
-  if (e.experience < 25 && e.authority > 60)
-    return `<strong>${nm}: alta autoridad, baja experiencia digital.</strong> Authority ${e.authority.toFixed(0)} vs Experience ${e.experience.toFixed(0)} — la marca es reconocida y respetada pero el mercado no la busca activamente ni comparte experiencias. Sin señales de Experience, ChatGPT y TikTok no la amplifican. <strong>Activar GT, TikTok y YouTube: la autoridad ya existe, falta el ruido digital.</strong>`;
-  if (e.expertise < 30 && e.score > 45)
-    return `<strong>${nm}: visible pero con baja autoridad editorial.</strong> Expertise ${e.expertise.toFixed(0)} — Wikipedia y BAV Conocimiento no amplifican la marca lo suficiente para que la IA la cite. Con EEAT ${e.score.toFixed(1)} hay base de presencia, pero los LLMs aún no la incluyen como referencia. <strong>Invertir en Wikipedia, contenido estructurado y GEO para aparecer en respuestas generativas.</strong>`;
-  if (e.trust < 38 && e.authority > 55)
-    return `<strong>${nm}: reconocida pero no diferenciada.</strong> Trust ${e.trust.toFixed(0)} (D+CX) vs Authority ${e.authority.toFixed(0)}. El mercado la conoce pero no tiene razones fuertes para elegirla sobre alternativas. ${gap > 20 ? `Search Gap +${gap.toFixed(0)} confirma que la demanda supera la diferenciación.` : ''} <strong>Construir narrativa de Trust antes que la IA democratice el acceso a competidores.</strong>`;
-  if (gap > 30)
-    return `<strong>${nm}: alta demanda, baja diferenciación.</strong> Search Gap +${gap.toFixed(0)} — el mercado la busca pero no encuentra sustancia propia. EEAT ${e.score.toFixed(1)}. En ecosistemas IA esta combinación es la más vulnerable: los LLMs citan al líder con Trust y Expertise sólidos. <strong>Prioridad: Trust (D+CX) y Expertise (contenido editorial).</strong>`;
-  if (gap < -20)
-    return `<strong>${nm}: más distintiva de lo que el mercado sabe.</strong> Trust ${e.trust.toFixed(0)} alto, pero Experience ${e.experience.toFixed(0)} bajo — la marca tiene personalidad pero el ecosistema digital no la amplifica. <strong>Gap negativo = oportunidad sin explotar. Activar búsqueda activa y conversación social.</strong>`;
-  if (e.score < 35)
-    return `<strong>${nm}: EEAT Score crítico (${e.score.toFixed(1)}).</strong> ${e.experience < 20 ? 'Experience casi nula — el mercado no la busca ni la comparte. ' : ''}${e.expertise < 25 ? 'Expertise muy baja — invisible para la IA editorial. ' : ''}${e.trust < 30 ? 'Trust débil — poca diferenciación percibida.' : ''} <strong>Activación urgente en todos los pilares EEAT para salir de la zona invisible.</strong>`;
-  if (e.authority > 75 && e.experience > 70)
-    return `<strong>${nm}: perfil EEAT dominante (${e.score.toFixed(1)}).</strong> Authority ${e.authority.toFixed(0)} + Experience ${e.experience.toFixed(0)} — domina reconocimiento y búsqueda activa. El foco debe estar en mantener Expertise y Trust para seguir siendo citada por los LLMs como referencia de categoría. <strong>Search Gap ${(gap>=0?'+':'')+gap.toFixed(0)}: ${gap>10?'vigilar diferenciación':'posición balanceada'}.</strong>`;
-  return `<strong>${nm}: perfil EEAT balanceado (${e.score.toFixed(1)}).</strong> Experience ${e.experience.toFixed(0)} · Expertise ${e.expertise.toFixed(0)} · Authority ${e.authority.toFixed(0)} · Trust ${e.trust.toFixed(0)}. ${gap > 10 ? `Search Gap +${gap.toFixed(0)}: relevancia supera diferenciación — reforzar Trust antes que la IA decida quién lidera la categoría.` : gap < -10 ? `Gap negativo (${gap.toFixed(0)}): diferenciación sin suficiente amplificación digital.` : 'Gap bajo control.'} <strong>Palanca inmediata: profundizar ${weak}.</strong>`;
+  // Identifica la dimensión más débil y la más fuerte
+  const dims4 = [
+    {k:'Experience', v:e.experience, src:'presencia en búsqueda activa y redes sociales'},
+    {k:'Expertise',  v:e.expertise,  src:'autoridad editorial (Wikipedia + conocimiento de marca)'},
+    {k:'Authority',  v:e.authority,  src:'reconocimiento y estima de mercado'},
+    {k:'Trust',      v:e.trust,      src:'diferenciación y experiencia del cliente'},
+  ];
+  dims4.sort((a,z)=>a.v-z.v);
+  const weakest  = dims4[0];
+  const strongest = dims4[dims4.length-1];
+
+  // ── Patrón 1: Marca poderosa, invisible digitalmente
+  if (e.authority > 72 && e.experience < 38)
+    return `<strong>${nm} es poderosa en el mercado pero casi invisible donde hoy se busca.</strong> Su reputación y reconocimiento son altos — el problema es que ese capital no se convierte en búsquedas activas ni en conversación digital. Cuando alguien pregunta a ChatGPT o busca en TikTok, ${nm} no aparece aunque debería. <strong>Qué hacer: abrir o reactivar canales sociales con contenido de uso real. La autoridad ya existe — solo falta ponerla donde el consumidor busca hoy.</strong>`;
+
+  // ── Patrón 2: Marca invisible para la IA (Expertise crítico)
+  if (e.expertise < 28 && e.score > 40)
+    return `<strong>${nm} existe para los consumidores, pero la IA no la conoce suficientemente.</strong> Wikipedia y las fuentes de conocimiento estructurado tienen muy poca información sobre la marca. Esto significa que cuando ChatGPT, Perplexity o Google AI Overviews responden preguntas de la categoría, ${nm} no es citada — aunque el mercado la prefiera. <strong>Qué hacer: fortalecer el artículo de Wikipedia, publicar contenido con datos propios y estructurar FAQ que los motores generativos puedan citar.</strong>`;
+
+  // ── Patrón 3: Conocida pero sin razón para elegirla (Trust bajo)
+  if (e.trust < 40 && e.authority > 55)
+    return `<strong>${nm} es conocida, pero el mercado aún no tiene una razón clara para preferirla.</strong> La gente sabe que existe y la busca, pero la diferenciación percibida es baja — lo que la vuelve intercambiable con la competencia. ${gap > 15 ? `El Search Gap de +${gap.toFixed(0)} confirma esto: hay mucha demanda pero poca unicidad.` : ''} En un ecosistema donde la IA compara marcas automáticamente, la que no tiene un ángulo único pierde relevancia. <strong>Qué hacer: definir y comunicar con claridad qué hace a ${nm} diferente. Sin eso, la visibilidad digital no se traduce en elección.</strong>`;
+
+  // ── Patrón 4: Search Gap alto — demanda sin sustancia
+  if (gap > 28)
+    return `<strong>${nm} genera mucha demanda pero sin la diferenciación que la respalde.</strong> El mercado la busca activamente, pero lo que encuentra no es suficientemente único para convertir esa búsqueda en preferencia real. En el modelo IA esto es crítico: los algoritmos citan marcas con sustancia propia — las que tienen alta demanda pero baja diferenciación quedan como referencia genérica. <strong>Qué hacer: construir contenido de marca propio (no solo producto), trabajar diferenciación en canales sociales y fortalecer Expertise editorial.</strong>`;
+
+  // ── Patrón 5: Diferenciación sin visibilidad (Gap muy negativo)
+  if (gap < -22)
+    return `<strong>${nm} tiene más personalidad de la que el mercado logra ver.</strong> Su diferenciación y confianza de marca son sólidas, pero la presencia digital no las amplifica. Es una marca con identidad propia que no ha encontrado su canal de distribución digital. <strong>Qué hacer: invertir en contenido que demuestre esa diferenciación — videos de producto, comunidad de usuarios, casos reales. Lo que ya la hace única debe volverse visible donde la gente busca.</strong>`;
+
+  // ── Patrón 6: Score crítico — invisibilidad total
+  if (e.score < 34)
+    return `<strong>${nm} está prácticamente fuera del ecosistema de búsqueda digital.</strong> Con un EEAT Score de ${e.score.toFixed(0)}, ninguna dimensión tiene el peso suficiente para aparecer cuando el consumidor busca. ${e.experience < 18 ? 'No hay señales de búsqueda activa ni conversación en redes. ' : ''}${e.expertise < 22 ? 'La IA no la tiene como fuente de referencia. ' : ''}Esto no es un problema de marca — es un problema de presencia digital que tiene solución táctica. <strong>Qué hacer: empezar por el canal más accesible (TikTok o YouTube) y construir desde ahí hacia Wikipedia y GEO.</strong>`;
+
+  // ── Patrón 7: Líderes EEAT — defender posición
+  if (e.authority > 78 && e.experience > 68)
+    return `<strong>${nm} lidera el ecosistema EEAT — el reto ahora es defender esa posición.</strong> Combina alta búsqueda activa con fuerte reconocimiento de mercado. Lo que la pone en riesgo no es la competencia actual, sino las marcas que están construyendo Expertise editorial y Trust diferenciado para desplazarla en los resultados IA. <strong>Qué hacer: mantener cadencia de contenido propio, reforzar ${weakest.k} (la dimensión más baja) y asegurar citación continua en motores generativos.</strong>`;
+
+  // ── Patrón 8: Perfil desbalanceado (una dimensión muy por encima)
+  if (strongest.v - weakest.v > 42)
+    return `<strong>${nm} tiene un perfil EEAT desbalanceado: ${strongest.k} muy alta, ${weakest.k} muy baja.</strong> Cuando una dimensión domina tanto sobre las demás, la visibilidad es frágil — depende de un solo canal y colapsa si ese canal cambia sus algoritmos. ${weakest.k === 'Experience' ? 'La marca es respetada pero no se busca activamente ni se comparte.' : weakest.k === 'Expertise' ? 'La marca es buscada pero la IA no la cita como fuente.' : weakest.k === 'Trust' ? 'La marca es conocida pero no diferenciada.' : 'La marca tiene conversación pero bajo reconocimiento institucional.'} <strong>Qué hacer: equilibrar el score trabajando ${weakest.k} (${weakest.src}).</strong>`;
+
+  // ── Patrón 9: Balanceado — señalar la palanca concreta
+  const gapNarr = gap > 12
+    ? `El Search Gap de +${gap.toFixed(0)} indica que la demanda supera la diferenciación — sin acción, la IA posicionará a competidores más únicos por encima.`
+    : gap < -12
+    ? `El Gap negativo (${gap.toFixed(0)}) muestra que la diferenciación existe pero no está siendo amplificada digitalmente.`
+    : `El Search Gap está bajo control — la demanda y la diferenciación están razonablemente alineadas.`;
+  return `<strong>${nm} tiene un perfil EEAT sólido, con margen de crecimiento claro.</strong> ${gapNarr} La dimensión más débil es ${weakest.k} (${weakest.src}), que es exactamente donde una mejora genera el mayor salto en visibilidad cross-canal. <strong>Qué hacer: concentrar esfuerzo en ${weakest.k} — es la palanca con mayor retorno dado el perfil actual de la marca.</strong>`;
 }
 
 // ── Main update ───────────────────────────────────────────
