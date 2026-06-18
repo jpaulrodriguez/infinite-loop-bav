@@ -1123,45 +1123,144 @@ async function generatePPT() {
   const rankN  = allSrt.findIndex(x=>x.id===b.id)+1;
   const gapCol = gap>20?DANGER:gap>10?WARN:gap<-15?AUTH_C:OK_C;
 
-  // ── Personalized text engines ─────────────────────────
+  // ── MOTOR DE ANÁLISIS REAL — patrones cruzados por marca ─
+  // Detecta el perfil único de cada marca basado en combinaciones de señales reales,
+  // no en buckets simples de score individual.
+
+  const isInvisibleGiant    = b.R > 82 && b.gt_score < 30;
+  const isDormantBrand      = b.R > 70 && b.D > 70 && b.gt_score < 15;
+  const isNameConflict      = b.R > 60 && b.gt_score < 5;
+  const isAIBlind           = b.wiki_score < 20 && b.K > 75;
+  const isGoogleOnly        = b.gt_score > 85 && b.social_score < 28;
+  const isSocialFirst       = b.social_score > 52 && b.gt_score < 40;
+  const isChallenger        = b.D > b.R && b.R < 50;
+  const isTrustVoid         = b.D < 12;
+  const isCriticalGap       = gap > 40;
+  const isHighParisSyndrome = b.paris_syndrome > 95 && e.trust < 55;
+  const isLoopLeader        = b.loop > 85;
+  const isLoopBroken        = b.loop < 32 && b.R > 50;
+  const isWikiGap           = b.wiki_score < 20 && b.R > 65;
+  const isNegativeGap       = gap < -20;
+
+  const secMap = {
+    "McDonald's":'QSR','Rappi':'E-commerce','Falabella':'Retail','Toyota':'Autos',
+    'Renault':'Autos','H&M':'Moda','Suzuki':'Autos','Nissan':'Autos','Chevrolet':'Autos',
+    'Mazda':'Autos','Hyundai':'Autos','Sura':'Seguros','American Airlines':'Aerolíneas',
+    'Coca-Cola':'Bebidas','OXXO':'Conveniencia','Ara':'Supermercados','Decameron':'Hoteles',
+    'Cruz Verde':'Farmacias','Terpel':'Combustibles','Farmatodo':'Farmacias','Poker':'Cervezas',
+    'Club Colombia':'Cervezas','Tigo':'Telecom','Tigo UNE':'Telecom','WOM':'Telecom',
+    'Seguros Bolivar':'Seguros','Avianca':'Aerolíneas','Aguila':'Cervezas','Cencosud':'Retail',
+    'Colpatria':'Bancos','Primax':'Combustibles','D1':'Supermercados','Corona':'Construcción',
+    'United Airlines':'Aerolíneas','Exito':'Supermercados','Makro':'Mayorista','Frisby':'QSR',
+    'Movistar':'Telecom','Olímpica':'Supermercados','Postobón':'Bebidas','Grupo Aval':'Bancos',
+    'Arturo Calle':'Moda','Tennis':'Moda','Zapatoca':'Supermercados','Petrobras':'Combustibles',
+    'Biomax':'Combustibles',
+  };
+  const sector = secMap[b.id] || 'Retail';
+  const sectorPeers = TS_DATA.filter(x => secMap[x.id] === sector && x.id !== b.id);
+  const sectorLeader = sectorPeers.length > 0
+    ? sectorPeers.sort((a,z) => eeat(z).score - eeat(a).score)[0]
+    : SORTED_EEAT[0];
+  const eLeader = eeat(sectorLeader);
+  const gapToLeader = {
+    experience: eLeader.experience - e.experience,
+    expertise:  eLeader.expertise  - e.expertise,
+    authority:  eLeader.authority  - e.authority,
+    trust:      eLeader.trust      - e.trust,
+  };
+  const avgExp  = +(TS_DATA.reduce((s,x)=>s+(x.gt_score*0.6+x.social_score*0.4),0)/TS_DATA.length).toFixed(1);
+  const avgWiki = +(TS_DATA.reduce((s,x)=>s+x.wiki_score,0)/TS_DATA.length).toFixed(1);
+
   function expDiag() {
-    const sc=e.experience;
-    if(sc<30) return `${b.id} tiene huella digital activa mínima. GT=${b.gt_score.toFixed(0)} · Social=${b.social_score.toFixed(0)}. La demanda orgánica es casi inexistente. En Google, TikTok e Instagram ${b.id} no aparece cuando el consumidor busca su categoría — aunque exista en el mercado offline. Sin señales activas, los algoritmos de IA no la priorizan.`;
-    if(sc<50) return `${b.id} tiene búsqueda activa limitada (GT=${b.gt_score.toFixed(0)}, Social=${b.social_score.toFixed(0)}). La marca existe en el imaginario del consumidor pero no genera demanda digital suficiente para dominar su categoría en búsqueda. La brecha está en convertir reconocimiento en búsqueda activa.`;
-    if(sc<70) return `Experience de ${b.id} es media (GT=${b.gt_score.toFixed(0)}, Social=${b.social_score.toFixed(0)}). Hay señal de demanda activa — el reto es amplificarla con contenido nativo de búsqueda en cada plataforma del ecosistema.`;
-    return `${b.id} tiene presencia activa sólida (GT=${b.gt_score.toFixed(0)}, Social=${b.social_score.toFixed(0)}). Es de las marcas más buscadas en su categoría. El reto: mantener cadencia y expandir a nuevas superficies de Social Search.`;
+    if (isNameConflict)
+      return `GT=${b.gt_score.toFixed(0)} revela una paradoja: ${b.id} es relevante (R=${b.R.toFixed(0)}) pero casi nadie la busca por nombre en Google. El consumidor busca la categoría de forma genérica — ${b.id} no está capturando esa demanda. Social=${b.social_score.toFixed(0)} confirma que tampoco hay conversación digital activa que la amplifique en redes.`;
+    if (isInvisibleGiant)
+      return `Paradoja del gigante invisible: ${b.id} tiene R=${b.R.toFixed(0)} (una de las relevancias más altas del estudio) pero GT=${b.gt_score.toFixed(0)}. El mercado la reconoce y la prefiere, pero esa preferencia no se convierte en búsqueda digital activa. Social=${b.social_score.toFixed(0)} confirma la misma brecha en redes. La IA necesita señales de búsqueda activa para priorizar una marca — sin ellas, ${b.id} es invisible para ChatGPT y TikTok Search aunque el consumidor offline la prefiera.`;
+    if (isDormantBrand)
+      return `${b.id} tiene equity intacto (R=${b.R.toFixed(0)}, D=${b.D.toFixed(0)}) pero GT=${b.gt_score.toFixed(0)} — esa fortaleza de marca no se traduce en búsqueda intencional. Es una marca que el consumidor usa pero no busca. En un ecosistema donde el 60% de búsquedas terminan sin clic, no estar en ese momento de búsqueda es no existir.${isHighParisSyndrome?' Paris Syndrome='+b.paris_syndrome+': las expectativas superan lo que el consumidor encuentra digitalmente.':''}`;
+    if (isGoogleOnly)
+      return `${b.id} es fuerte en Google (GT=${b.gt_score.toFixed(0)}) pero casi inexistente en Social Search (Social=${b.social_score.toFixed(0)}). El 49% de Gen Z usa TikTok como buscador primario — ${b.id} no existe para ese segmento. La concentración en un solo canal es una vulnerabilidad: si el algoritmo de Google cambia, toda la visibilidad se compromete.`;
+    if (isSocialFirst)
+      return `${b.id} tiene mayor presencia social (Social=${b.social_score.toFixed(0)}) que en Google (GT=${b.gt_score.toFixed(0)}). El consumidor habla de ella en TikTok pero no la busca en Google — lo que sugiere que es tema de conversación pero no de consideración de compra activa e intencional.`;
+    if (e.experience < 30)
+      return `GT=${b.gt_score.toFixed(0)} y Social=${b.social_score.toFixed(0)} — ambos en el cuartil inferior del estudio (promedio GT/Social: ${avgExp.toFixed(0)}). Cuando alguien busca la categoría de ${b.id} en TikTok o Google, no aparece. Sin señales de búsqueda activa, ChatGPT y Perplexity no tienen razón para citarla.`;
+    if (e.experience < 55)
+      return `${b.id} tiene presencia digital parcial (GT=${b.gt_score.toFixed(0)}, Social=${b.social_score.toFixed(0)}). ${gapToLeader.experience > 0 ? 'Está '+gapToLeader.experience.toFixed(0)+' puntos debajo del líder del sector ('+sectorLeader.id+') en búsqueda activa.' : 'Ya supera al líder del sector en Experience.'} La brecha más importante está en ${b.social_score < b.gt_score ? 'Social Search — redes generan el 40% de la señal Experience' : 'Google Trends — la búsqueda intencional directa'}.`;
+    return `${b.id} tiene presencia de búsqueda sólida (GT=${b.gt_score.toFixed(0)}, Social=${b.social_score.toFixed(0)})${sectorPeers.length>0?', entre las líderes de '+sector:''}. ${isLoopLeader?'El Loop Score ('+b.loop.toFixed(0)+') confirma un ciclo de marca virtuoso que refuerza esta demanda.':''} El reto: defenderse de challengers que construyen Social SEO agresivo.`;
   }
   function expAction() {
-    if(e.experience<30) return `Activar presencia desde cero: lanzar TikTok + Instagram con 3 contenidos/sem con keywords de la categoría. Campaña de búsqueda de marca en Google. Meta: GT supere 30 puntos en 60 días. Publicar contenido GEO-ready (datos propios, tutoriales, comparativas) para señalar relevancia a los algoritmos.`;
-    if(e.experience<50) return `Aumentar cadencia de contenido nativo en TikTok e Instagram. Optimizar Google Business Profile con posts semanales. Meta: Social de ${b.social_score.toFixed(0)} → 50+ en 90 días. Crear contenido de categoría (no solo producto) que capture búsquedas informacionales.`;
-    return `Defender y expandir: mantener cadencia actual + abrir nuevo canal (Pinterest / YouTube Shorts). Enfocarse en keywords de long-tail para capturar demanda no atendida por los líderes de la categoría.`;
+    if (isInvisibleGiant || isNameConflict)
+      return `Capturar demanda de categoría: crear contenido que posicione a ${b.id} en queries genéricas de ${sector.toLowerCase()} — el consumidor busca la categoría, no siempre la marca. TikTok: 3 videos/sem con keywords de categoría. Google: campaña mixta marca + categoría. Meta: GT de ${b.gt_score.toFixed(0)} → ${Math.min(b.gt_score+30,100).toFixed(0)} en 60 días.`;
+    if (isGoogleOnly)
+      return `Abrir Social Search: lanzar TikTok con keywords en los primeros 3s del audio. Instagram Reels con alt text manual optimizado. Meta: Social de ${b.social_score.toFixed(0)} → 40+ en 90 días. Diversificar la dependencia de Google es ahora una prioridad estructural, no táctica.`;
+    if (e.experience < 35)
+      return `Plan de emergencia de visibilidad: (1) TikTok + Instagram con 3 contenidos/sem, keywords de categoría en primeros 3s. (2) Google Business Profile completo con posts semanales. (3) Schema Organization en web. Meta mínima: GT supere 25 puntos en 60 días.`;
+    return `Consolidar con long-tail: capturar búsquedas de sub-categoría donde los líderes no producen contenido. ${sectorPeers.length>0?'Atacar keywords donde '+sectorLeader.id+' (GT='+sectorLeader.gt_score.toFixed(0)+') tiene brechas.':''} Meta: Social ${b.social_score.toFixed(0)} → ${Math.min(b.social_score+18,100).toFixed(0)} en 90 días.`;
   }
+
   function exp2Diag() {
-    if(e.expertise<30) return `${b.id} es invisible para los motores de IA generativa. Wiki=${b.wiki_score.toFixed(0)} y K=${b.K.toFixed(0)} indican poca autoridad editorial estructurada. Cuando ChatGPT o Perplexity responden sobre la categoría de ${b.id}, no la citan — no porque no exista, sino porque no hay contenido verificable suficiente.`;
-    if(e.expertise<55) return `${b.id} tiene expertise editorial en desarrollo (Wiki=${b.wiki_score.toFixed(0)}, K=${b.K.toFixed(0)}). Los LLMs la conocen pero no la priorizan como fuente experta. El 96% de marcas citadas en AI Overviews tienen EEAT sólido — ${b.id} está por debajo del umbral de citación frecuente.`;
-    return `${b.id} tiene base de expertise aceptable (Wiki=${b.wiki_score.toFixed(0)}, K=${b.K.toFixed(0)}). Es citada ocasionalmente por IA. La oportunidad es fortalecer la profundidad editorial para pasar de citación esporádica a sistemática.`;
+    if (isAIBlind || isWikiGap)
+      return `Contradicción crítica: ${b.id} tiene K=${b.K.toFixed(0)} (el mercado la conoce bien) pero Wiki=${b.wiki_score.toFixed(0)} (casi sin presencia en Wikipedia y fuentes estructuradas). Cuando ChatGPT o Google AI Overviews responden preguntas de la categoría, tienen "ruido" para saber que ${b.id} existe, pero no información verificada para citarla con confianza. La IA cita lo que puede verificar, no lo que es popular.`;
+    if (e.expertise < 25)
+      return `Expertise editorial prácticamente nulo (Wiki=${b.wiki_score.toFixed(0)}, K=${b.K.toFixed(0)} — promedio estudio: Wiki≈${avgWiki.toFixed(0)}). Los LLMs construyen respuestas a partir de fuentes verificables. Sin esa base, ${b.id} no puede ser citada — independientemente de qué tan buena sea la marca offline. Es el problema más silencioso del EEAT: nadie lo nota hasta que la IA recomienda a la competencia primero.`;
+    if (b.wiki_score > 60 && b.K < 45)
+      return `Perfil invertido: ${b.id} tiene buena presencia en Wikipedia (${b.wiki_score.toFixed(0)}) pero bajo conocimiento estructurado de marca (K=${b.K.toFixed(0)}). Los LLMs la citan como entidad, pero el consumidor no tiene un mapa mental sólido de qué representa — lo que limita la probabilidad de ser recomendada en consultas comerciales específicas.`;
+    if (e.expertise < 55)
+      return `Expertise en construcción (Wiki=${b.wiki_score.toFixed(0)}, K=${b.K.toFixed(0)}). ${gapToLeader.expertise > 0 ? sectorLeader.id+' (líder del sector) tiene Expertise de '+eLeader.expertise.toFixed(1)+' — '+gapToLeader.expertise.toFixed(0)+' puntos arriba.' : 'Ya supera al líder del sector en Expertise.'} El 96% de marcas citadas en AI Overviews tienen Expertise > 65 — ${b.id} aún no cruza ese umbral de citación sistemática.`;
+    return `Expertise sólido (Wiki=${b.wiki_score.toFixed(0)}, K=${b.K.toFixed(0)}) — de las mejores del estudio en esta dimensión. El reto es mantener frescura (los LLMs priorizan fuentes actualizadas en últimos 6 meses) y profundizar en sub-categorías donde la competencia no tiene contenido.`;
   }
   function exp2Action() {
-    if(e.expertise<35) return `Prioridad máxima: crear y optimizar artículo de Wikipedia de ${b.id} con información verificada. Publicar semanalmente contenido GEO-ready (guías con datos propios, estadísticas originales). Implementar Schema Article en el blog. Meta: aparecer en Perplexity al buscar la categoría en 90 días.`;
-    return `Fortalecer Wikipedia con ediciones verificadas. Blog de autoridad: 1 artículo/sem con datos propios, fuentes citables. Activar Schema markup (Article, FAQ, Organization). Objetivo: elevar frecuencia de citación en ChatGPT, Gemini y Perplexity.`;
+    if (isAIBlind || isWikiGap)
+      return `Hacer a ${b.id} citable por IA: (1) Crear/expandir artículo de Wikipedia con datos verificables y estructura Knowledge Graph. (2) Publicar mensualmente un estudio con datos propios que los LLMs puedan indexar. (3) Conseguir menciones en medios de alta autoridad del sector. Meta: Wiki de ${b.wiki_score.toFixed(0)} → 45+ en 6 meses — prerequisito para cualquier estrategia GEO.`;
+    if (e.expertise < 35)
+      return `GEO desde cero: (1) Wikipedia como prioridad #1. (2) Blog con Schema Article: 1 artículo/sem con datos originales, fuentes citadas, respuestas directas en los primeros 150 caracteres. (3) FAQ con Schema FAQPage respondiendo las 10 preguntas más comunes de la categoría. Meta: primeras citaciones en Perplexity en 90 días.`;
+    return `Profundizar expertise editorial: datos propios de ${b.id} sobre el sector, casos reales, estadísticas verificables. Actualizar Wikipedia trimestralmente. Activar Schema markup completo. Objetivo: aparecer sistemáticamente cuando un LLM responda sobre ${sector} en Colombia.`;
   }
+
   function authDiag() {
-    if(e.authority<40) return `${b.id} tiene bajo reconocimiento institucional (R=${b.R.toFixed(0)}, E=${b.E.toFixed(0)}). No es percibida como referencia de su categoría. Esto limita directamente su posicionamiento en AI Overviews y su capacidad de generar backlinks editoriales de calidad.`;
-    if(e.authority<65) return `Authority de ${b.id} en zona media (R=${b.R.toFixed(0)}, E=${b.E.toFixed(0)}). Hay reconocimiento, pero no suficiente para posicionarse como referencia indiscutida. La estima (${b.E.toFixed(0)}) limita la probabilidad de citación en medios del sector.`;
-    return `${b.id} tiene buena autoridad de mercado (R=${b.R.toFixed(0)}, E=${b.E.toFixed(0)}). El reto es traducir ese reconocimiento en menciones editoriales activas y fortalecer el Knowledge Panel de Google.`;
+    if (isLoopLeader && e.authority > 70)
+      return `${b.id} tiene ciclo de autoridad virtuoso: R=${b.R.toFixed(0)}, E=${b.E.toFixed(0)}, Loop=${b.loop.toFixed(0)}. El mercado la reconoce, la estima y vuelve a ella. El riesgo para marcas en esta posición no es perder autoridad de golpe, sino la erosión lenta cuando un challenger construye digital PR más agresivo en los canales donde ${b.id} no está activa.`;
+    if (isLoopBroken)
+      return `${b.id} tiene R=${b.R.toFixed(0)} (el mercado la conoce) pero Loop=${b.loop.toFixed(0)}: el ciclo está roto — la relevancia no se retroalimenta en estima y lealtad. La marca atrae atención pero no convierte esa atención en autoridad sostenida. En el ecosistema digital, un ciclo roto significa pérdida progresiva de posicionamiento aunque la relevancia se mantenga a corto plazo.`;
+    if (e.authority < 40)
+      return `Baja autoridad de mercado (R=${b.R.toFixed(0)}, E=${b.E.toFixed(0)}). Sin reconocimiento institucional sólido, los medios del sector no citan a ${b.id} naturalmente, los backlinks editoriales no llegan, y los LLMs la tratan como entidad secundaria. La autoridad baja también afecta conversión: el consumidor necesita validación externa que ${b.id} aún no genera con suficiente consistencia.`;
+    if (b.R > 75 && b.E < 55)
+      return `Desequilibrio R-E en ${b.id}: alta Relevancia (R=${b.R.toFixed(0)}) pero Estima moderada (E=${b.E.toFixed(0)}). El mercado la conoce pero no la admira al nivel de su uso. Esta brecha limita la autoridad editorial: los medios citan marcas que generan admiración, no solo reconocimiento. Es la diferencia entre "la marca que todos conocen" y "la marca a la que todos aspiran".`;
+    if (e.authority < 65)
+      return `Authority de ${b.id} en construcción (R=${b.R.toFixed(0)}, E=${b.E.toFixed(0)}). ${sectorPeers.length>0?sectorLeader.id+' (líder del sector) tiene Authority de '+eLeader.authority.toFixed(1)+' — una brecha de '+gapToLeader.authority.toFixed(0)+' puntos.':''} La Estima (E=${b.E.toFixed(0)}) es la señal más lenta de mover — requiere consistencia de marca sostenida en el tiempo, no campañas puntuales.`;
+    return `${b.id} tiene autoridad consolidada (R=${b.R.toFixed(0)}, E=${b.E.toFixed(0)})${isLoopLeader?', reforzada por un Loop Score de '+b.loop.toFixed(0):''}. ${isNegativeGap?'El Gap negativo ('+gap.toFixed(0)+') indica que tiene más personalidad de la que el mercado reconoce actualmente.':''} Mantener esta posición requiere presencia editorial activa: la autoridad no alimentada retrocede.`;
   }
   function authAction() {
-    if(e.authority<50) return `Digital PR activo: 2 notas de prensa/mes en medios del sector. Participar en rankings industriales. Activar Google Knowledge Panel. Construir backlinks desde medios relevantes. Objetivo: R de ${b.R.toFixed(0)} → 60+ en 12 meses.`;
-    return `Mantener presencia editorial: 1 colaboración/mes con medios del sector. Asegurar Knowledge Panel actualizado. Fortalecer backlinks desde fuentes de alta autoridad (.edu, medios especializados). Proteger Estima (E=${b.E.toFixed(0)}) con campañas de marca coherentes.`;
+    if (isLoopBroken)
+      return `Reparar el ciclo: el problema no es visibilidad, es conversión de relevancia en estima. Comunicar logros verificables y valor tangible — no solo reconocimiento. Digital PR enfocado en reconocimientos del sector. Objetivo: E de ${b.E.toFixed(0)} → ${Math.min(b.E+15,100).toFixed(0)} en 12 meses.`;
+    if (e.authority < 45)
+      return `Construir autoridad: (1) Participar en 2 rankings del sector en los próximos 6 meses. (2) Activar Google Knowledge Panel. (3) 5 backlinks desde medios relevantes en 90 días. (4) Comunicados de prensa en medios de ${sector}. Meta: R de ${b.R.toFixed(0)} → ${Math.min(b.R+20,100).toFixed(0)} en 12 meses.`;
+    return `Defender y ampliar: 2 colaboraciones/mes con medios del sector, rankings industriales, backlinks desde .edu y medios especializados. ${b.E < 65 ? 'Prioridad: Estima (E='+b.E.toFixed(0)+') — campañas que comuniquen valores y logros de '+b.id+', no solo producto.' : 'Mantener cadencia editorial y expandir a publicaciones internacionales del sector.'}`;
   }
+
   function trustDiag() {
-    if(e.trust<30) return `Trust crítico: D=${b.D.toFixed(0)} y CX=${b.CX.toFixed(0)}. ${b.id} tiene muy baja diferenciación percibida y experiencia de cliente insuficiente. En un ecosistema donde la IA compara marcas automáticamente, sin unicidad ni reseñas sólidas, ${b.id} se vuelve intercambiable.`;
-    if(e.trust<50) return `Trust en desarrollo (D=${b.D.toFixed(0)}, CX=${b.CX.toFixed(0)}). ${b.id} es conocida pero el mercado no tiene una razón emocional clara para preferirla.${gap>20?' El Search Gap de +'+gap.toFixed(0)+' confirma: demanda supera diferenciación — alta vulnerabilidad ante IA.':' La diferenciación no está siendo comunicada con consistencia.'}`;
-    return `Trust medio-alto (D=${b.D.toFixed(0)}, CX=${b.CX.toFixed(0)}). La oportunidad está en activar reseñas verificadas y comunicar más claramente la propuesta única de valor en todos los canales de búsqueda.`;
+    if (isTrustVoid)
+      return `D=${b.D.toFixed(0)} — diferenciación crítica, en el fondo del estudio. ${b.id} es conocida y usada, pero el mercado no identifica ningún rasgo que la haga única. En el modelo de IA comparativa, cuando ChatGPT responde "¿qué ${sector.toLowerCase()} me recomiendas?", las marcas sin diferenciación no son sugeridas — la IA prioriza marcas con identidad propia y reputación verificable. ${b.id} está en riesgo de ser ignorada por los motores generativos.`;
+    if (isCriticalGap)
+      return `Search Gap crítico +${gap.toFixed(0)}: ${b.id} tiene R=${b.R.toFixed(0)} (alta demanda) pero D=${b.D.toFixed(0)} (diferenciación muy baja). El mercado la busca por inercia — no por convicción. Esto es vulnerabilidad estructural: si un competidor diferenciado aparece en el mismo espacio de búsqueda, captura esa demanda. CX=${b.CX.toFixed(0)} indica que la experiencia tampoco compensa la falta de unicidad percibida.`;
+    if (isHighParisSyndrome && e.trust < 55)
+      return `Paris Syndrome=${b.paris_syndrome}: el consumidor tiene expectativas muy altas de ${b.id} (producto de su alta relevancia) pero la experiencia real (CX=${b.CX.toFixed(0)}) y la diferenciación percibida (D=${b.D.toFixed(0)}) no las satisfacen completamente. Este gap expectativa-realidad genera reseñas mixtas y lealtad frágil — exactamente las señales que los algoritmos de Trust penalizan.`;
+    if (b.D > 80 && e.trust < 55)
+      return `Paradoja de diferenciación: ${b.id} tiene D=${b.D.toFixed(0)} (alta unicidad percibida) pero CX=${b.CX.toFixed(0)} limita el Trust total. La marca es percibida como especial pero la experiencia de cliente no refuerza esa percepción en cada punto de contacto — promesa fuerte, entrega incompleta. Exactamente el patrón que genera reseñas mixtas y debilita el Trust digital.`;
+    if (isNegativeGap)
+      return `${b.id} tiene D=${b.D.toFixed(0)} mayor que R=${b.R.toFixed(0)} (Gap=${gap.toFixed(0)}) — tiene más personalidad de la que el mercado reconoce. CX=${b.CX.toFixed(0)} confirma que la experiencia es buena. El problema es de distribución y amplificación digital, no de calidad de producto — la diferenciación existe pero no llega a suficientes personas para convertirse en autoridad de mercado.`;
+    if (e.trust < 50)
+      return `Trust en construcción (D=${b.D.toFixed(0)}, CX=${b.CX.toFixed(0)}). ${sectorPeers.length>0?sectorLeader.id+' (líder del sector) tiene Trust de '+eLeader.trust.toFixed(1)+' — '+gapToLeader.trust.toFixed(0)+' puntos arriba.':''} ${gap>15?'El Search Gap de +'+gap.toFixed(0)+' indica demanda sin convicción: el consumidor busca a '+b.id+' por default, no por una razón concreta — la IA detecta esto y no la prioriza sobre competidores más diferenciados.':'La diferenciación necesita ser más visible en los canales donde el consumidor toma decisiones.'}`;
+    return `Trust sólido (D=${b.D.toFixed(0)}, CX=${b.CX.toFixed(0)}).${isLoopLeader?' Loop Score ('+b.loop.toFixed(0)+') confirma que la experiencia genera lealtad activa.':''} La oportunidad: convertir esa diferenciación real en evidencia digital verificable — reseñas, casos de uso, UGC — las señales que la IA usa para validar confianza antes de recomendar.`;
   }
   function trustAction() {
-    if(e.trust<40) return `Diferenciación urgente: definir y comunicar en todos los canales qué hace único a ${b.id}. Lanzar campaña de reseñas en Google Business Profile (meta: 50+ reseñas en 60 días). Responder 100% de reseñas existentes. Objetivo: D de ${b.D.toFixed(0)} → 45+ en 12 meses.`;
-    return `Fortalecer narrativa: '¿Por qué ${b.id}?' con beneficios únicos y verificables. Campaña de reseñas en Google Maps. Activar programa de experiencia post-venta que genere UGC auténtico. Target: CX de ${b.CX.toFixed(0)} → 75+ en 12 meses.`;
+    if (isTrustVoid)
+      return `Emergencia de diferenciación: ${b.id} debe definir y ejecutar su propuesta única urgentemente. (1) Definir qué hace ${b.id} que ningún competidor hace igual. (2) Comunicarlo en todos los touchpoints digitales de forma consistente. (3) Campaña de reseñas en Google Business Profile enfocada en ese atributo diferenciador. Sin D>20, ninguna estrategia de IA funcionará a largo plazo.`;
+    if (isCriticalGap)
+      return `Cerrar el gap R-D (+${gap.toFixed(0)}): elevar Diferenciación, no reducir Relevancia. (1) Narrativa clara de "¿por qué ${b.id} y no otro?" en todos los canales. (2) Activar atributos únicos en contenido social: no solo producto, sino valores, proceso, impacto. Meta en 12 meses: D de ${b.D.toFixed(0)} → ${Math.min(b.D+25,100).toFixed(0)}, reduciendo el Search Gap a menos de 20 pts.`;
+    if (b.D > 75 && b.CX < 65)
+      return `Cerrar la brecha promesa-experiencia: la diferenciación existe (D=${b.D.toFixed(0)}) pero CX=${b.CX.toFixed(0)} no la refuerza. Foco en: (1) Mejorar experiencia post-compra. (2) Responder 100% de reseñas con contexto de la propuesta única. (3) Generar UGC que muestre la diferenciación real en acción. Meta: CX de ${b.CX.toFixed(0)} → ${Math.min(b.CX+15,100).toFixed(0)} en 12 meses.`;
+    return `Amplificar el Trust existente: (1) Campaña de reseñas verificadas en Google Business Profile (meta: 80+ reseñas en 6 meses). (2) Testimoniales con Schema Review. (3) Comunicar D=${b.D.toFixed(0)} más explícitamente en contenido digital. Target: CX ${b.CX.toFixed(0)} → ${Math.min(b.CX+12,100).toFixed(0)} · D ${b.D.toFixed(0)} → ${Math.min(b.D+10,100).toFixed(0)} en 12 meses.`;
   }
 
   // Action plan — prioritized by weakest dims
