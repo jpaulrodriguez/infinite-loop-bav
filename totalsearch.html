@@ -6,6 +6,7 @@
 <title>Total Search · Visibilidad Digital · Colombia 2026</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
 <style>
   :root{
     --bg:#0C0D12;
@@ -685,6 +686,26 @@
   </div>
 </section>
 
+<!-- ─── DECK PERSONALIZADO ─── -->
+<section style="max-width:1200px;margin:0 auto;padding:0 40px 60px;">
+  <div style="display:flex;align-items:center;gap:16px;padding:20px 24px;background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.20);border-radius:16px;">
+    <div style="flex:1;">
+      <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;">Generar deck personalizado</div>
+      <div id="ppt-subtitle" style="font-size:11px;color:var(--muted);">10 slides · Total Search® · E-E-A-T · Colombia 2026 · selecciona una marca arriba</div>
+    </div>
+    <button id="dlBtnTS" onclick="generatePPT()" style="
+      display:inline-flex;align-items:center;gap:8px;padding:12px 22px;
+      border-radius:12px;border:none;cursor:pointer;
+      background:linear-gradient(135deg,#1D4ED8,#3B82F6);
+      color:#fff;font-family:'Inter',sans-serif;font-size:13px;font-weight:800;
+      letter-spacing:.04em;white-space:nowrap;
+      box-shadow:0 4px 20px rgba(59,130,246,0.35);
+      transition:opacity .18s,transform .18s;">
+      ↓ Descargar PPT
+    </button>
+  </div>
+</section>
+
 </main>
 
 <footer>
@@ -1028,6 +1049,359 @@ SORTED_EEAT.forEach(b => {
 });
 sel.value = 'Falabella';
 updateDashboard('Falabella');
+
+// ── Update PPT subtitle when brand changes ─────────────────
+const _origUpdate = updateDashboard;
+function updateDashboard(brandId) {
+  _origUpdate(brandId);
+  const sub = document.getElementById('ppt-subtitle');
+  if (sub && brandId) sub.textContent = `10 slides · Total Search® · E-E-A-T · Colombia 2026 · ${brandId}`;
+}
+updateDashboard('Falabella');
+
+// ── generatePPT ───────────────────────────────────────────
+async function generatePPT() {
+  const brandId = document.getElementById('brand-sel').value;
+  if (!brandId) { alert('Selecciona una marca primero'); return; }
+  const b = TS_DATA.find(x => x.id === brandId);
+  if (!b) return;
+  const e = eeat(b);
+  const gap = b.search_gap;
+  const btn = document.getElementById('dlBtnTS');
+  btn.textContent = 'Generando…'; btn.style.opacity = '0.7';
+
+  // ── Design tokens ──────────────────────────────────────
+  const BLK='191919', WHT='F5F5F5', BURG='723065', TEAL='104B68';
+  const GRAY='2E2E2E', GRAY2='3A3A3A', MGRAY='6B6B6B', LGRAY='B0B0B0';
+  const EXP_C='F97316', EXP2='A78BFA', AUTH_C='3B82F6', TRST='10B981';
+  const DANGER='EF4444', WARN='F59E0B', OK_C='22C55E';
+
+  function stLbl(s) { return s<30?'CRÍTICO':s<45?'EN DESARROLLO':s<60?'MEDIO':s<75?'BIEN':'LÍDER'; }
+  function stCol(s) { return s<45?WARN:s<30?DANGER:s<60?WARN:s<75?OK_C:'34D399'; }
+
+  // ── pptxgenjs setup ────────────────────────────────────
+  const pptx = new PptxGenJS();
+  pptx.layout = 'LAYOUT_WIDE';
+  pptx.title  = `Total Search® · ${b.id} · EEAT Colombia 2026`;
+
+  function ns() { const s=pptx.addSlide(); s.background={color:BLK}; return s; }
+  function R(s,x,y,w,h,color) { s.addShape(pptx.ShapeType.rect,{x,y,w,h,fill:{color},line:{color}}); }
+  function T(s,text,x,y,w,h,{sz=13,bold=false,color=WHT,align='left',italic=false}={}) {
+    s.addText(String(text),{x,y,w,h,fontSize:sz,bold,color,align,italic,fontFace:'Arial',valign:'top',wrap:true});
+  }
+  function BAR(s,x,y,wt,pct,color,h=0.22) {
+    R(s,x,y,wt,h,GRAY2);
+    if(pct>0) R(s,x,y,wt*Math.min(pct/100,1),h,color);
+  }
+  function HDR(s,sec,title,sub='',ac=BURG) {
+    R(s,0,0,13.33,0.06,ac);
+    T(s,sec,0.5,0.15,8,0.3,{sz:8,bold:true,color:ac});
+    T(s,title,0.5,0.44,11.5,0.82,{sz:28,bold:true});
+    if(sub) T(s,sub,0.5,1.25,11.5,0.4,{sz:11,color:LGRAY});
+    R(s,0.5,1.68,12.3,0.015,MGRAY);
+  }
+  function IBOX(s,x,y,w,h,title,body,ac) {
+    R(s,x,y,w,h,'262626');
+    R(s,x,y,0.055,h,ac);
+    T(s,title,x+0.1,y+0.1,w-0.15,0.3,{sz:9,bold:true,color:ac});
+    R(s,x+0.1,y+0.42,w-0.15,0.015,'444444');
+    T(s,body,x+0.1,y+0.5,w-0.15,h-0.56,{sz:9.5});
+  }
+  function PGN(s,n) { T(s,String(n).padStart(2,'0'),12.85,7.12,0.4,0.28,{sz:8,color:MGRAY}); }
+
+  // ── Sorted dims for personalization ────────────────────
+  const dimsSrt = [
+    {k:'Experience',v:e.experience,c:EXP_C},
+    {k:'Expertise', v:e.expertise, c:EXP2},
+    {k:'Authority', v:e.authority, c:AUTH_C},
+    {k:'Trust',     v:e.trust,     c:TRST},
+  ].sort((a,z)=>a.v-z.v);
+  const W1=dimsSrt[0], W2=dimsSrt[1], STR=dimsSrt[3];
+
+  // Rank
+  const allSrt = [...TS_DATA].sort((a,z)=>eeat(z).score-eeat(a).score);
+  const rankN  = allSrt.findIndex(x=>x.id===b.id)+1;
+  const gapCol = gap>20?DANGER:gap>10?WARN:gap<-15?AUTH_C:OK_C;
+
+  // ── Personalized text engines ─────────────────────────
+  function expDiag() {
+    const sc=e.experience;
+    if(sc<30) return `${b.id} tiene huella digital activa mínima. GT=${b.gt_score.toFixed(0)} · Social=${b.social_score.toFixed(0)}. La demanda orgánica es casi inexistente. En Google, TikTok e Instagram ${b.id} no aparece cuando el consumidor busca su categoría — aunque exista en el mercado offline. Sin señales activas, los algoritmos de IA no la priorizan.`;
+    if(sc<50) return `${b.id} tiene búsqueda activa limitada (GT=${b.gt_score.toFixed(0)}, Social=${b.social_score.toFixed(0)}). La marca existe en el imaginario del consumidor pero no genera demanda digital suficiente para dominar su categoría en búsqueda. La brecha está en convertir reconocimiento en búsqueda activa.`;
+    if(sc<70) return `Experience de ${b.id} es media (GT=${b.gt_score.toFixed(0)}, Social=${b.social_score.toFixed(0)}). Hay señal de demanda activa — el reto es amplificarla con contenido nativo de búsqueda en cada plataforma del ecosistema.`;
+    return `${b.id} tiene presencia activa sólida (GT=${b.gt_score.toFixed(0)}, Social=${b.social_score.toFixed(0)}). Es de las marcas más buscadas en su categoría. El reto: mantener cadencia y expandir a nuevas superficies de Social Search.`;
+  }
+  function expAction() {
+    if(e.experience<30) return `Activar presencia desde cero: lanzar TikTok + Instagram con 3 contenidos/sem con keywords de la categoría. Campaña de búsqueda de marca en Google. Meta: GT supere 30 puntos en 60 días. Publicar contenido GEO-ready (datos propios, tutoriales, comparativas) para señalar relevancia a los algoritmos.`;
+    if(e.experience<50) return `Aumentar cadencia de contenido nativo en TikTok e Instagram. Optimizar Google Business Profile con posts semanales. Meta: Social de ${b.social_score.toFixed(0)} → 50+ en 90 días. Crear contenido de categoría (no solo producto) que capture búsquedas informacionales.`;
+    return `Defender y expandir: mantener cadencia actual + abrir nuevo canal (Pinterest / YouTube Shorts). Enfocarse en keywords de long-tail para capturar demanda no atendida por los líderes de la categoría.`;
+  }
+  function exp2Diag() {
+    if(e.expertise<30) return `${b.id} es invisible para los motores de IA generativa. Wiki=${b.wiki_score.toFixed(0)} y K=${b.K.toFixed(0)} indican poca autoridad editorial estructurada. Cuando ChatGPT o Perplexity responden sobre la categoría de ${b.id}, no la citan — no porque no exista, sino porque no hay contenido verificable suficiente.`;
+    if(e.expertise<55) return `${b.id} tiene expertise editorial en desarrollo (Wiki=${b.wiki_score.toFixed(0)}, K=${b.K.toFixed(0)}). Los LLMs la conocen pero no la priorizan como fuente experta. El 96% de marcas citadas en AI Overviews tienen EEAT sólido — ${b.id} está por debajo del umbral de citación frecuente.`;
+    return `${b.id} tiene base de expertise aceptable (Wiki=${b.wiki_score.toFixed(0)}, K=${b.K.toFixed(0)}). Es citada ocasionalmente por IA. La oportunidad es fortalecer la profundidad editorial para pasar de citación esporádica a sistemática.`;
+  }
+  function exp2Action() {
+    if(e.expertise<35) return `Prioridad máxima: crear y optimizar artículo de Wikipedia de ${b.id} con información verificada. Publicar semanalmente contenido GEO-ready (guías con datos propios, estadísticas originales). Implementar Schema Article en el blog. Meta: aparecer en Perplexity al buscar la categoría en 90 días.`;
+    return `Fortalecer Wikipedia con ediciones verificadas. Blog de autoridad: 1 artículo/sem con datos propios, fuentes citables. Activar Schema markup (Article, FAQ, Organization). Objetivo: elevar frecuencia de citación en ChatGPT, Gemini y Perplexity.`;
+  }
+  function authDiag() {
+    if(e.authority<40) return `${b.id} tiene bajo reconocimiento institucional (R=${b.R.toFixed(0)}, E=${b.E.toFixed(0)}). No es percibida como referencia de su categoría. Esto limita directamente su posicionamiento en AI Overviews y su capacidad de generar backlinks editoriales de calidad.`;
+    if(e.authority<65) return `Authority de ${b.id} en zona media (R=${b.R.toFixed(0)}, E=${b.E.toFixed(0)}). Hay reconocimiento, pero no suficiente para posicionarse como referencia indiscutida. La estima (${b.E.toFixed(0)}) limita la probabilidad de citación en medios del sector.`;
+    return `${b.id} tiene buena autoridad de mercado (R=${b.R.toFixed(0)}, E=${b.E.toFixed(0)}). El reto es traducir ese reconocimiento en menciones editoriales activas y fortalecer el Knowledge Panel de Google.`;
+  }
+  function authAction() {
+    if(e.authority<50) return `Digital PR activo: 2 notas de prensa/mes en medios del sector. Participar en rankings industriales. Activar Google Knowledge Panel. Construir backlinks desde medios relevantes. Objetivo: R de ${b.R.toFixed(0)} → 60+ en 12 meses.`;
+    return `Mantener presencia editorial: 1 colaboración/mes con medios del sector. Asegurar Knowledge Panel actualizado. Fortalecer backlinks desde fuentes de alta autoridad (.edu, medios especializados). Proteger Estima (E=${b.E.toFixed(0)}) con campañas de marca coherentes.`;
+  }
+  function trustDiag() {
+    if(e.trust<30) return `Trust crítico: D=${b.D.toFixed(0)} y CX=${b.CX.toFixed(0)}. ${b.id} tiene muy baja diferenciación percibida y experiencia de cliente insuficiente. En un ecosistema donde la IA compara marcas automáticamente, sin unicidad ni reseñas sólidas, ${b.id} se vuelve intercambiable.`;
+    if(e.trust<50) return `Trust en desarrollo (D=${b.D.toFixed(0)}, CX=${b.CX.toFixed(0)}). ${b.id} es conocida pero el mercado no tiene una razón emocional clara para preferirla.${gap>20?' El Search Gap de +'+gap.toFixed(0)+' confirma: demanda supera diferenciación — alta vulnerabilidad ante IA.':' La diferenciación no está siendo comunicada con consistencia.'}`;
+    return `Trust medio-alto (D=${b.D.toFixed(0)}, CX=${b.CX.toFixed(0)}). La oportunidad está en activar reseñas verificadas y comunicar más claramente la propuesta única de valor en todos los canales de búsqueda.`;
+  }
+  function trustAction() {
+    if(e.trust<40) return `Diferenciación urgente: definir y comunicar en todos los canales qué hace único a ${b.id}. Lanzar campaña de reseñas en Google Business Profile (meta: 50+ reseñas en 60 días). Responder 100% de reseñas existentes. Objetivo: D de ${b.D.toFixed(0)} → 45+ en 12 meses.`;
+    return `Fortalecer narrativa: '¿Por qué ${b.id}?' con beneficios únicos y verificables. Campaña de reseñas en Google Maps. Activar programa de experiencia post-venta que genere UGC auténtico. Target: CX de ${b.CX.toFixed(0)} → 75+ en 12 meses.`;
+  }
+
+  // Action plan — prioritized by weakest dims
+  const actMap = {
+    Experience:[
+      'Activar TikTok: 3 videos/sem\ncon keywords de la categoría',
+      'Optimizar Google Business Profile\n(fotos, posts, Q&A semanales)',
+      'Implementar Schema Organization\n+ sameAs en web corporativa',
+    ],
+    Expertise:[
+      'Crear/optimizar artículo\nde Wikipedia con fuentes verificadas',
+      'Blog GEO-ready: 1 artículo/sem\ncon datos propios de la marca',
+      'Schema FAQPage en páginas\nclave del sitio web',
+    ],
+    Authority:[
+      'Digital PR: 2 notas de prensa/mes\nen medios del sector',
+      'Activar Google Knowledge Panel\ncon información actualizada',
+      'Link building desde medios\ndel sector y rankings industriales',
+    ],
+    Trust:[
+      'Campaña de reseñas verificadas\nen Google Business Profile',
+      'Responder 100% de reseñas\n(activas e históricas con contexto)',
+      `Narrativa de diferenciación:\n¿Por qué elegir ${b.id}?`,
+    ],
+  };
+  const f1Acts = [...(actMap[W1.k]||[]),...(actMap[W2.k]||[]).slice(0,2)].slice(0,5);
+  const f2Acts = ['Incrustar videos sociales en\nblog (Bucle de Autoridad VML)','YouTube: canal con tutoriales\nde la categoría (how-to)','Instagram Reels con alt text\ny captions SEO-optimizados','Auditar citación en ChatGPT\ny Perplexity: ¿nos mencionan?','Fortalecer Reddit/Quora como\nfuente de referencia para LLMs'];
+  const f3Acts = ['Reporte EEAT: medir avance\npor dimensión vs. baseline','Schema Article en todo\nel contenido editorial publicado','Actualizar contenido +6 meses\n(freshness = señal IA)','Expand Social SEO a Pinterest\no LinkedIn según el sector','Validar menciones en 3 LLMs:\nChatGPT · Perplexity · Gemini'];
+
+  // ════════════════════════════════════════════════════
+  // SLIDE 1 — PORTADA
+  const s1 = ns();
+  R(s1,0,0,13.33,0.06,BURG);
+  T(s1,b.id,0.5,0.9,8.5,2.0,{sz:100,bold:true});
+  T(s1,'Total Search® · Análisis E-E-A-T · Colombia 2026',0.5,2.9,9.2,0.45,{sz:16,color:LGRAY});
+  R(s1,0.5,3.42,8.8,0.04,BURG);
+  T(s1,`¿Dónde aparece ${b.id} cuando el consumidor busca en Google, IA, TikTok y redes?`,0.5,3.55,8.8,0.5,{sz:13,bold:true});
+  T(s1,'Un análisis de visibilidad omnicanal: Experience · Expertise · Authority · Trust',0.5,4.05,8.8,0.38,{sz:11,color:LGRAY});
+  R(s1,9.85,1.1,3.1,5.1,GRAY);
+  R(s1,9.85,1.1,3.1,0.055,BURG);
+  T(s1,'EEAT SCORE TOTAL',9.85,1.28,3.1,0.35,{sz:9,bold:true,color:MGRAY,align:'center'});
+  T(s1,e.score.toFixed(1),9.85,1.6,3.1,1.45,{sz:82,bold:true,color:stCol(e.score),align:'center'});
+  T(s1,'/ 100',9.85,2.95,3.1,0.32,{sz:13,color:MGRAY,align:'center'});
+  R(s1,10.05,3.35,2.7,0.015,MGRAY);
+  R(s1,10.2,3.48,2.35,0.32,stCol(e.score));
+  T(s1,stLbl(e.score),10.2,3.48,2.35,0.32,{sz:10,bold:true,color:BLK,align:'center'});
+  [[`E  Experience`,e.experience,EXP_C],[`E  Expertise`,e.expertise,EXP2],[`A  Authority`,e.authority,AUTH_C],[`T  Trust`,e.trust,TRST]].forEach(([lbl,sc,c],mi)=>{
+    const y=3.97+mi*0.47;
+    T(s1,lbl,9.98,y,1.7,0.32,{sz:8,color:LGRAY});
+    BAR(s1,9.98,y+0.3,2.5,sc,c,0.14);
+    T(s1,sc.toFixed(0),12.45,y+0.28,0.4,0.18,{sz:8,bold:true,color:c});
+  });
+  T(s1,'VML  ·  Confidencial  ·  Junio 2026',0.5,7.05,7,0.3,{sz:8,color:MGRAY});
+  PGN(s1,1);
+
+  // SLIDE 2 — TOTAL SEARCH CONTEXTO
+  const s2=ns();
+  HDR(s2,'01 / CONTEXTO','La búsqueda ya no es solo Google.',`El consumidor busca en 5 ecosistemas. ${b.id} necesita visibilidad en todos para no ser sustituida.`,TEAL);
+  [['🔍','GOOGLE\nSERP','AI Overviews · Featured Snippets\n60% búsquedas son zero-click\n→ Visibilidad off-site obligatoria',TEAL],
+   ['🤖','IA\nGENERATIVA','ChatGPT · Perplexity · Gemini\nTráfico IA retail +700% en 2025\n→ GEO es la nueva SEO',BURG],
+   ['📱','SOCIAL\nSEARCH','TikTok · Instagram · YouTube\n49% usa TikTok como buscador\n→ Social SEO canal primario',EXP_C],
+   ['🛒','MARKET-\nPLACES','>50% compras empiezan aquí\nGoogle Maps · Verticales\n→ Reseñas y presencia críticas',TRST],
+   ['💬','OWNED\nSEARCH','Site search · Chatbots propios\n2–3× más conversión\n→ Data first-party de máxima calidad',EXP2]
+  ].forEach(([ico,title,body,color],i)=>{
+    const x=0.38+i*2.59;
+    R(s2,x,1.85,2.45,4.65,GRAY);
+    R(s2,x,1.85,2.45,0.07,color);
+    T(s2,ico,x+0.12,1.96,2.2,0.5,{sz:22});
+    T(s2,title,x+0.12,2.42,2.2,0.78,{sz:14,bold:true,color});
+    R(s2,x+0.12,3.18,2.1,0.015,'444444');
+    T(s2,body,x+0.12,3.28,2.2,1.55,{sz:9.5,color:LGRAY});
+  });
+  R(s2,0.38,6.55,12.6,0.88,'1C1C1C');
+  R(s2,0.38,6.55,0.05,0.88,BURG);
+  T(s2,`E-E-A-T — Experience · Expertise · Authority · Trust — es la moneda de confianza que Google y la IA usan para decidir a quién citar, recomendar y mostrar en cada superficie. Es el eje que unifica la estrategia de visibilidad de ${b.id}.`,0.55,6.63,12.1,0.72,{sz:11,bold:true});
+  PGN(s2,2);
+
+  // SLIDE 3 — METODOLOGÍA
+  const s3=ns();
+  HDR(s3,'02 / METODOLOGÍA E-E-A-T','Cuatro señales. Un solo score de visibilidad.','Cada dimensión combina señales BAV (equity de marca) con señales digitales (GT, Wikipedia, CX, Social Search).',BURG);
+  [['E','EXPERIENCE','GT × 60%\n+ Social × 40%','Demanda activa en Google y redes. ¿El consumidor busca espontáneamente esta marca?','35%',EXP_C],
+   ['E','EXPERTISE','Wiki × 50%\n+ BAV K × 50%','Conocimiento validado. ¿Los motores de IA citan la marca como experta en su categoría?','15%',EXP2],
+   ['A','AUTHORITY','BAV R × 55%\n+ BAV E × 45%','Reconocimiento de mercado. ¿Es la referencia que el consumidor y los medios nombran?','25%',AUTH_C],
+   ['T','TRUST','BAV D × 50%\n+ CX × 50%','Diferenciación + experiencia real. ¿Hay razón concreta para elegirla sobre la competencia?','25%',TRST]
+  ].forEach(([let_,name,formula,desc,wt,color],i)=>{
+    const x=0.38+i*3.24,w=3.08;
+    R(s3,x,1.85,w,4.85,GRAY);
+    R(s3,x,1.85,w,0.07,color);
+    T(s3,let_,x+0.12,1.96,0.75,0.88,{sz:48,bold:true,color});
+    T(s3,name,x+0.88,2.2,w-1.0,0.42,{sz:11,bold:true});
+    R(s3,x+0.12,2.95,w-0.22,0.015,'444444');
+    T(s3,formula,x+0.12,3.05,w-0.22,0.52,{sz:10,bold:true,color});
+    T(s3,desc,x+0.12,3.6,w-0.22,1.5,{sz:9.5,color:LGRAY});
+    R(s3,x+0.12,6.3,1.55,0.28,color);
+    T(s3,`Peso: ${wt}`,x+0.12,6.3,1.55,0.28,{sz:9,bold:true,color:BLK,align:'center'});
+  });
+  R(s3,0.38,6.65,12.6,0.8,'1A1A1A');
+  T(s3,'EEAT SCORE  =  Experience × 35%  +  Expertise × 15%  +  Authority × 25%  +  Trust × 25%',0.55,6.75,12.1,0.42,{sz:11,bold:true});
+  PGN(s3,3);
+
+  // SLIDE 4 — SCORE DASHBOARD
+  const s4=ns();
+  HDR(s4,'03 / DIAGNÓSTICO '+b.id.toUpperCase(),`Perfil E-E-A-T 2026: ${STR.k} como fortaleza, ${W1.k} como brecha.`,
+    `${STR.k} = ${STR.v.toFixed(1)} (fortaleza) · ${W1.k} = ${W1.v.toFixed(1)} (brecha prioritaria)${gap>20?' · Search Gap crítico: +'+(gap.toFixed(1)):''}`,BURG);
+  [[`E`,`EXPERIENCE`,e.experience,EXP_C],[`E`,`EXPERTISE`,e.expertise,EXP2],[`A`,`AUTHORITY`,e.authority,AUTH_C],[`T`,`TRUST`,e.trust,TRST]].forEach(([let_,name,score,color],i)=>{
+    const x=0.38+i*3.08,w=2.92;
+    R(s4,x,1.88,w,4.65,GRAY);
+    R(s4,x,1.88,w,0.07,color);
+    T(s4,let_,x+0.1,2.0,0.6,0.72,{sz:36,bold:true,color});
+    T(s4,name,x+0.68,2.18,w-0.75,0.35,{sz:10,bold:true});
+    T(s4,score.toFixed(1),x+0.1,2.78,w-0.15,0.92,{sz:54,bold:true,color:stCol(score)});
+    T(s4,'/100',x+0.1,3.62,w-0.15,0.28,{sz:10,color:MGRAY});
+    BAR(s4,x+0.1,4.0,w-0.2,score,color,0.18);
+    R(s4,x+0.1,4.28,1.65,0.28,stCol(score));
+    T(s4,stLbl(score),x+0.1,4.28,1.65,0.28,{sz:9,bold:true,color:BLK,align:'center'});
+  });
+  R(s4,0.38,6.48,8.9,1.0,'1C1C1C');
+  R(s4,0.38,6.48,0.05,1.0,BURG);
+  T(s4,'EEAT SCORE TOTAL',0.55,6.6,3.5,0.3,{sz:9,bold:true,color:MGRAY});
+  T(s4,`${e.score.toFixed(1)} / 100  ·  ${stLbl(e.score)}`,0.55,6.83,7.5,0.42,{sz:18,bold:true,color:stCol(e.score)});
+  R(s4,9.52,1.88,3.45,5.6,gap>20?'220808':'081820');
+  R(s4,9.52,1.88,3.45,0.07,gapCol);
+  T(s4,(gap>20?'⚠  ':'📐  ')+'SEARCH GAP',9.65,2.03,3.2,0.35,{sz:11,bold:true,color:gapCol});
+  T(s4,(gap>=0?'+':'')+gap.toFixed(1),9.55,2.35,3.42,1.4,{sz:70,bold:true,color:gapCol,align:'center'});
+  T(s4,'puntos',9.55,3.65,3.42,0.3,{sz:12,color:MGRAY,align:'center'});
+  R(s4,9.72,4.05,2.8,0.015,MGRAY);
+  T(s4,`BAV R (${b.R.toFixed(1)}) − BAV D (${b.D.toFixed(1)})`,9.65,4.18,3.2,0.3,{sz:9,color:LGRAY});
+  T(s4,gap>20?`⚠  La IA puede sugerir\ncompetidores antes que ${b.id}`:gap<-15?'🎯  Oportunidad:\nescalar visibilidad digital':'→  Gap bajo control',9.65,4.65,3.2,0.55,{sz:9,bold:true,color:gapCol});
+  PGN(s4,4);
+
+  // SLIDES 5–8 — una por dimensión
+  function dimSlide(secLbl,headline,score,color,diagTxt,actionTxt,sig1,v1,sig2,v2,pgN) {
+    const s=ns();
+    R(s,0,0,13.33,0.06,color);
+    T(s,secLbl,0.5,0.15,8,0.3,{sz:8,bold:true,color});
+    T(s,headline,0.5,0.44,9,0.9,{sz:28,bold:true});
+    R(s,0.5,1.38,2.15,0.35,stCol(score));
+    T(s,`SCORE  ${score.toFixed(1)} / 100  —  ${stLbl(score)}`,0.5,1.38,3.8,0.35,{sz:11,bold:true,color:BLK});
+    R(s,0.5,1.82,12.3,0.015,MGRAY);
+    R(s,0.38,2.0,5.35,5.4,GRAY);
+    T(s,'Composición del Score de '+b.id,0.52,2.12,5.0,0.32,{sz:10,bold:true});
+    R(s,0.52,2.48,4.9,0.015,'444444');
+    T(s,sig1+`  ·  Peso ${pgN===5?'60%':'50%'}`,0.52,2.6,4.9,0.28,{sz:9.5,color:LGRAY});
+    BAR(s,0.52,2.88,4.5,v1,color,0.28);
+    T(s,v1.toFixed(0),4.72,2.9,0.65,0.25,{sz:9,bold:true,color});
+    T(s,sig2+`  ·  Peso ${pgN===5?'40%':'50%'}`,0.52,3.38,4.9,0.28,{sz:9.5,color:LGRAY});
+    BAR(s,0.52,3.66,4.5,v2,color,0.28);
+    T(s,v2.toFixed(0),4.72,3.68,0.65,0.25,{sz:9,bold:true,color});
+    R(s,0.52,4.16,4.9,0.015,'444444');
+    T(s,score.toFixed(1),0.52,5.35,2.8,0.9,{sz:56,bold:true,color:stCol(score)});
+    IBOX(s,5.88,2.0,7.12,2.65,'DIAGNÓSTICO',diagTxt,color);
+    IBOX(s,5.88,4.75,7.12,2.65,'QUÉ HACER — ACCIÓN CONCRETA',actionTxt,OK_C);
+    PGN(s,pgN);
+  }
+  dimSlide('04 / E-E-A-T · EXPERIENCE',
+    e.experience<40?`La vitrina digital de ${b.id} está apagada.`:`${b.id} tiene presencia activa. Hora de amplificarla.`,
+    e.experience,EXP_C,expDiag(),expAction(),'Google Trends (GT)',b.gt_score,'Social Search (IG + TikTok)',b.social_score,5);
+  dimSlide('05 / E-E-A-T · EXPERTISE',
+    e.expertise<40?`La IA sabe que ${b.id} existe. No la cita como experta.`:`${b.id} tiene base editorial. Convertirla en citación IA.`,
+    e.expertise,EXP2,exp2Diag(),exp2Action(),'Wikipedia / Knowledge Graph',b.wiki_score,'BAV Conocimiento (K)',b.K,6);
+  dimSlide('06 / E-E-A-T · AUTHORITY',
+    e.authority>65?`Alta autoridad de ${b.id}. La demanda digital debe acompañarla.`:`${b.id} construye su posición de referencia.`,
+    e.authority,AUTH_C,authDiag(),authAction(),'BAV Relevancia (R)',b.R,'BAV Estima (E)',b.E,7);
+  dimSlide('07 / E-E-A-T · TRUST',
+    e.trust<40?`${b.id} se conoce. Aún no hay razón emocional para elegirla.`:`${b.id} tiene diferenciación. Activarla digitalmente.`,
+    e.trust,TRST,trustDiag(),trustAction(),'BAV Diferenciación (D)',b.D,'CX Score',b.CX,8);
+
+  // SLIDE 9 — BENCHMARK
+  const s9=ns();
+  HDR(s9,'08 / BENCHMARK · SEARCH GAP',`${b.id} vs. el ecosistema retail colombiano.`,
+    `Search Gap de ${b.id}: ${(gap>=0?'+':'')+gap.toFixed(1)} pts · EEAT Score: ${e.score.toFixed(1)} / 100 · Posición #${rankN} de ${allSrt.length}`,DANGER);
+  R(s9,0.38,2.0,8.0,0.44,'2E2E2E');
+  const cXs=[0.45,2.55,3.65,4.75,5.85,6.9],cWs=[2.0,1.0,1.0,1.0,0.95,0.95];
+  ['MARCA','EEAT','EXP','AUTH','TRUST','GAP R-D'].forEach((h,ci)=>{ T(s9,h,cXs[ci],2.06,cWs[ci],0.36,{sz:9,bold:true,color:LGRAY}); });
+  let bench;
+  if(rankN<=3) bench=allSrt.slice(0,5);
+  else if(rankN>=allSrt.length-1) bench=[...allSrt.slice(0,2),...allSrt.slice(-3)];
+  else bench=[...allSrt.slice(0,2),allSrt[rankN-2],allSrt[rankN-1],allSrt[rankN]].filter((x,i,a)=>a.findIndex(y=>y.id===x.id)===i).slice(0,5);
+  bench.forEach((br,ri)=>{
+    const be=eeat(br),y=2.48+ri*0.65,isCur=br.id===b.id;
+    R(s9,0.38,y,8.0,0.6,isCur?'280808':ri%2===0?GRAY:GRAY2);
+    if(isCur) R(s9,0.38,y,0.05,0.6,DANGER);
+    [br.id,be.score.toFixed(1),be.experience.toFixed(0),be.authority.toFixed(0),be.trust.toFixed(0),(br.search_gap>=0?'+':'')+br.search_gap.toFixed(1)].forEach((v,ci)=>{
+      T(s9,v,cXs[ci],y+0.1,cWs[ci],0.42,{sz:isCur?11:10,bold:isCur,color:ci===0?(isCur?WHT:LGRAY):(isCur?stCol(be.score):MGRAY)});
+    });
+  });
+  R(s9,0.38,5.72,8.0,1.72,'1E1E1E');
+  R(s9,0.38,5.72,0.05,1.72,BURG);
+  T(s9,'KEY INSIGHT',0.55,5.85,7.5,0.3,{sz:9,bold:true,color:BURG});
+  const wt4={Experience:0.35,Expertise:0.15,Authority:0.25,Trust:0.25};
+  T(s9,`${b.id} ocupa la posición #${rankN} de ${allSrt.length} marcas (EEAT ${e.score.toFixed(1)}). La dimensión más débil es ${W1.k} (${W1.v.toFixed(1)}) — una mejora de 25 pts en ${W1.k} elevaría el EEAT total a ~${(e.score+25*(wt4[W1.k]||0.25)).toFixed(0)}. ${gap>20?`Con Search Gap de +${gap.toFixed(0)}, la IA puede posicionar competidores antes que ${b.id} en búsquedas de la categoría.`:gap<-15?`El Gap negativo (${gap.toFixed(0)}) indica diferenciación sin amplificación digital — oportunidad sin explotar.`:'Search Gap equilibrado — foco en elevar dimensiones clave.'}`,
+    0.55,6.18,7.5,1.1,{sz:10});
+  R(s9,8.58,2.0,4.72,5.44,GRAY);
+  T(s9,'SEARCH GAP '+b.id.toUpperCase()+' — R vs D',8.75,2.14,4.35,0.32,{sz:10,bold:true});
+  R(s9,8.75,2.5,4.2,0.015,'444444');
+  T(s9,`BAV Relevancia (R) = ${b.R.toFixed(1)}`,8.75,2.62,3.5,0.28,{sz:9,color:LGRAY});
+  BAR(s9,8.75,2.9,4.1,b.R,AUTH_C,0.3);
+  T(s9,b.R.toFixed(1),12.6,2.91,0.6,0.28,{sz:9,bold:true,color:AUTH_C});
+  T(s9,`BAV Diferenciación (D) = ${b.D.toFixed(1)}`,8.75,3.4,3.5,0.28,{sz:9,color:LGRAY});
+  BAR(s9,8.75,3.68,4.1,b.D,gapCol,0.3);
+  T(s9,b.D.toFixed(1),8.75+(b.D/100)*4.1+0.1,3.69,0.65,0.28,{sz:9,bold:true,color:gapCol});
+  R(s9,8.75,4.18,4.1,0.015,MGRAY);
+  T(s9,'BRECHA',8.75,4.3,1.3,0.42,{sz:11,bold:true,color:gapCol});
+  T(s9,(gap>=0?'+':'')+gap.toFixed(1)+' puntos',10.0,4.24,2.8,0.52,{sz:24,bold:true,color:gapCol});
+  R(s9,8.75,4.88,4.1,0.015,'444444');
+  T(s9,gap>20?`Gap > 20 = riesgo de sustitución:\nla IA puede citar competidores primero.`:gap<-15?`D > R: diferenciación sin amplificar.\nActivar digital es la palanca.`:`Gap equilibrado.\nMonitorear trimestralmente.`,8.75,5.0,4.2,0.88,{sz:9,color:WHT});
+  PGN(s9,9);
+
+  // SLIDE 10 — PLAN DE ACCIÓN
+  const s10=ns();
+  const tgt=Math.min(e.score+18,95);
+  HDR(s10,'09 / PLAN DE ACCIÓN',`De ${e.score.toFixed(1)} → +${tgt.toFixed(0)} en EEAT. Hoja de ruta 90 días.`,
+    `Prioridad 1: ${W1.k} (${W1.v.toFixed(1)}) · Prioridad 2: ${W2.k} (${W2.v.toFixed(1)}) · 3 fases · 15 acciones`,OK_C);
+  [[`FASE 1`,'Días 1–30','ACTIVACIÓN',EXP_C,f1Acts],[`FASE 2`,'Días 31–60','CONTENIDO GEO',AUTH_C,f2Acts],[`FASE 3`,'Días 61–90','CONSOLIDACIÓN',OK_C,f3Acts]].forEach(([phase,period,label,color,acts],ci)=>{
+    const x=0.38+ci*4.35,w=4.18;
+    R(s10,x,2.0,w,4.95,GRAY);
+    R(s10,x,2.0,w,0.07,color);
+    R(s10,x+0.12,2.1,2.0,0.3,color);
+    T(s10,label,x+0.12,2.1,2.0,0.3,{sz:9,bold:true,color:BLK,align:'center'});
+    T(s10,phase,x+2.2,2.1,1.8,0.32,{sz:12,bold:true,color});
+    T(s10,period,x+0.12,2.44,w-0.2,0.25,{sz:8.5,color:MGRAY});
+    R(s10,x+0.12,2.72,w-0.25,0.015,MGRAY);
+    acts.slice(0,5).forEach((act,ai)=>{ T(s10,`→  ${act}`,x+0.12,2.85+ai*0.62,w-0.2,0.58,{sz:9.5}); });
+  });
+  R(s10,0.38,7.08,12.6,0.38,'181818');
+  [[`${W1.k}: ${W1.v.toFixed(0)} → ${Math.min(W1.v+25,100).toFixed(0)}`,EXP_C],[`${W2.k}: ${W2.v.toFixed(0)} → ${Math.min(W2.v+20,100).toFixed(0)}`,EXP2],[`EEAT: ${e.score.toFixed(1)} → ${tgt.toFixed(0)}+`,OK_C],[`Gap: ${(gap>=0?'+':'')+gap.toFixed(0)} → ${Math.max(gap-20,0).toFixed(0)}`,DANGER]].forEach(([kpi,kc],ki)=>{
+    T(s10,`●  ${kpi}`,0.55+ki*3.15,7.1,3.0,0.3,{sz:9,bold:true,color:kc});
+  });
+  PGN(s10,10);
+
+  // ── Save ────────────────────────────────────────────────
+  await pptx.writeFile({fileName:`TotalSearch_EEAT_${b.id.replace(/[^a-zA-Z0-9]/g,'_')}_2026.pptx`});
+  btn.textContent='✓ Descargado';
+  btn.style.background='linear-gradient(135deg,#065F46,#10B981)';
+  btn.style.opacity='1';
+  setTimeout(()=>{
+    btn.textContent='↓ Descargar PPT';
+    btn.style.background='linear-gradient(135deg,#1D4ED8,#3B82F6)';
+  },3000);
+}
 </script>
 </body>
 </html>
