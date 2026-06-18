@@ -1037,6 +1037,10 @@ function updateDashboard(brandId) {
   // Insight
   document.getElementById('insight-brand-name').textContent = b.id;
   document.getElementById('insight-text').innerHTML = generateInsight(b);
+
+  // PPT subtitle
+  const sub = document.getElementById('ppt-subtitle');
+  if (sub) sub.textContent = `10 slides · Total Search® · E-E-A-T · Colombia 2026 · ${b.id}`;
 }
 
 // ── Init ──────────────────────────────────────────────────
@@ -1048,15 +1052,6 @@ SORTED_EEAT.forEach(b => {
   sel.appendChild(opt);
 });
 sel.value = 'Falabella';
-updateDashboard('Falabella');
-
-// ── Update PPT subtitle when brand changes ─────────────────
-const _origUpdate = updateDashboard;
-function updateDashboard(brandId) {
-  _origUpdate(brandId);
-  const sub = document.getElementById('ppt-subtitle');
-  if (sub && brandId) sub.textContent = `10 slides · Total Search® · E-E-A-T · Colombia 2026 · ${brandId}`;
-}
 updateDashboard('Falabella');
 
 // ── generatePPT ───────────────────────────────────────────
