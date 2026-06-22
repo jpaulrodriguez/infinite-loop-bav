@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Capital Intangible · WPP Enterprise Solutions · Colombia 2026</title>
+<style>
+  :root {
+    --bg:      #0d1117;
+    --surface: #161b22;
+    --card:    #1c2333;
+    --border:  rgba(255,255,255,.08);
+    --text:    #e6edf3;
+    --muted:   #7d8590;
+    --muted2:  #8b949e;
+
+    --bx:      #a855f7;   /* Capital Cultural   — púrpura */
+    --bx-lt:   #d8b4fe;
+    --bx-bg:   rgba(168,85,247,.10);
+    --bx-bdr:  rgba(168,85,247,.25);
+
+    --co:      #3b82f6;   /* Capital Transaccional — azul */
+    --co-lt:   #93c5fd;
+    --co-bg:   rgba(59,130,246,.10);
+    --co-bdr:  rgba(59,130,246,.25);
+
+    --cx:      #f59e0b;   /* Capital Relacional  — ámbar */
+    --cx-lt:   #fcd34d;
+    --cx-bg:   rgba(245,158,11,.10);
+    --cx-bdr:  rgba(245,158,11,.25);
+
+    --paris:   #ef4444;
+    --ok:      #22c55e;
+    --warn:    #f59e0b;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; min-height:100vh; }
+
+  /* ── NAV ─────────────────────────────────────────────── */
+  nav {
+    display:flex; align-items:center; gap:8px;
+    padding:14px 40px;
+    border-bottom:1px solid var(--border);
+    background:rgba(13,17,23,.9);
+    backdrop-filter:blur(12px);
+    position:sticky; top:0; z-index:100;
+  }
+  .nav-logo { font-size:11px; font-weight:800; letter-spacing:.12em; color:var(--muted); text-transform:uppercase; }
+  .nav-sep  { color:var(--border); font-size:18px; }
+  .nav-title{ font-size:12px; font-weight:700; color:var(--text); }
+  .nav-tab  { margin-left:auto; display:flex; gap:6px; }
+  .nav-tab a {
+    font-size:11px; font-weight:600; padding:6px 14px; border-radius:8px;
+    text-decoration:none; color:var(--muted); transition:.15s;
+  }
+  .nav-tab a:hover { background:rgba(255,255,255,.06); color:var(--text); }
+  .nav-tab a.active { background:rgba(168,85,247,.15); color:var(--bx-lt); border:1px solid var(--bx-bdr); }
+
+  /* ── HERO HEADER ──────────────────────────────────────── */
+  .hero {
+    max-width:1200px; margin:0 auto; padding:48px 40px 20px;
+    display:flex; align-items:flex-end; justify-content:space-between; gap:24px;
+    flex-wrap:wrap;
+  }
+  .hero-left h1 { font-size:28px; font-weight:900; letter-spacing:-.5px; line-height:1.1; }
+  .hero-left h1 span.bx { color:var(--bx-lt); }
+  .hero-left h1 span.co { color:var(--co-lt); }
+  .hero-left h1 span.cx { color:var(--cx-lt); }
+  .hero-sub { font-size:12px; color:var(--muted); margin-top:6px; line-height:1.6; max-width:520px; }
+  .hero-sel-wrap { display:flex; flex-direction:column; gap:6px; align-items:flex-end; }
+  .hero-sel-label { font-size:10px; font-weight:700; letter-spacing:.1em; color:var(--muted); text-transform:uppercase; }
+  #brand-sel {
+    background:var(--card); border:1px solid var(--border); color:var(--text);
+    padding:10px 18px; border-radius:10px; font-size:13px; font-weight:600;
+    cursor:pointer; min-width:240px; appearance:none;
+  }
+  #brand-sel:focus { outline:none; border-color:var(--bx); }
+
+  /* ── TRIANGLE SECTION ─────────────────────────────────── */
+  .triangle-section {
+    max-width:1200px; margin:0 auto; padding:32px 40px;
+    display:grid; grid-template-columns:1fr 380px 1fr; gap:24px; align-items:start;
+  }
+
+  /* Capital card lateral */
+  .cap-card {
+    border-radius:16px; padding:24px 20px;
+    border:1px solid;
+    position:relative; overflow:hidden;
+  }
+  .cap-card.bx { background:var(--bx-bg); border-color:var(--bx-bdr); }
+  .cap-card.co { background:var(--co-bg); border-color:var(--co-bdr); }
+  .cap-card.cx { background:var(--cx-bg); border-color:var(--cx-bdr); }
+
+  .cap-label { font-size:9px; font-weight:800; letter-spacing:.15em; text-transform:uppercase; margin-bottom:4px; }
+  .bx .cap-label { color:var(--bx-lt); }
+  .co .cap-label { color:var(--co-lt); }
+  .cx .cap-label { color:var(--cx-lt); }
+
+  .cap-name { font-size:15px; font-weight:800; color:var(--text); margin-bottom:2px; }
+  .cap-def  { font-size:11px; color:var(--muted); line-height:1.5; margin-bottom:16px; }
+
+  .cap-score-big { font-size:52px; font-weight:900; letter-spacing:-2px; line-height:1; margin-bottom:12px; }
+  .bx .cap-score-big { color:var(--bx-lt); }
+  .co .cap-score-big { color:var(--co-lt); }
+  .cx .cap-score-big { color:var(--cx-lt); }
+
+  .cap-kpi-label { font-size:9px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:8px; }
+  .cap-kpi { font-size:10px; color:var(--muted2); font-style:italic; margin-bottom:16px; line-height:1.5; }
+
+  .sub-metrics { display:flex; flex-direction:column; gap:6px; }
+  .sub-row { display:flex; align-items:center; gap:8px; }
+  .sub-name { font-size:10px; color:var(--muted); width:90px; flex-shrink:0; }
+  .sub-bar-wrap { flex:1; height:4px; background:rgba(255,255,255,.08); border-radius:2px; }
+  .sub-bar { height:4px; border-radius:2px; transition:width .6s ease; }
+  .bx .sub-bar { background:var(--bx); }
+  .co .sub-bar { background:var(--co); }
+  .cx .sub-bar { background:var(--cx); }
+  .sub-val { font-size:10px; font-weight:700; width:30px; text-align:right; }
+  .bx .sub-val { color:var(--bx-lt); }
+  .co .sub-val { color:var(--co-lt); }
+  .cx .sub-val { color:var(--cx-lt); }
+
+  .cap-diag { font-size:11px; color:var(--muted2); line-height:1.6; margin-top:14px; padding-top:14px; border-top:1px solid rgba(255,255,255,.06); }
+
+  /* Triangle SVG center */
+  .triangle-center { display:flex; flex-direction:column; align-items:center; gap:16px; }
+  #tri-svg { width:100%; max-width:360px; }
+
+  .intangible-total {
+    width:100%; background:var(--card); border:1px solid var(--border);
+    border-radius:14px; padding:20px; text-align:center;
+  }
+  .intangible-label { font-size:9px; font-weight:800; letter-spacing:.15em; text-transform:uppercase; color:var(--muted); margin-bottom:4px; }
+  .intangible-score { font-size:48px; font-weight:900; letter-spacing:-2px; color:var(--text); line-height:1; }
+  .intangible-rank  { font-size:11px; color:var(--muted); margin-top:4px; }
+
+  /* ── PARIS SYNDROME ───────────────────────────────────── */
+  .paris-section {
+    max-width:1200px; margin:0 auto; padding:0 40px 32px;
+  }
+  .paris-card {
+    background:var(--card); border:1px solid var(--border); border-radius:16px;
+    padding:24px 28px; display:flex; align-items:center; gap:32px; flex-wrap:wrap;
+  }
+  .paris-left { flex:1; min-width:200px; }
+  .paris-tag { font-size:9px; font-weight:800; letter-spacing:.12em; color:var(--paris); text-transform:uppercase; margin-bottom:4px; }
+  .paris-title { font-size:16px; font-weight:800; color:var(--text); margin-bottom:4px; }
+  .paris-desc { font-size:11px; color:var(--muted); line-height:1.6; max-width:400px; }
+  .paris-meter { flex:1; min-width:280px; }
+  .paris-gauge-wrap { display:flex; align-items:center; gap:12px; margin-bottom:8px; }
+  .paris-gauge-label { font-size:10px; color:var(--muted); width:60px; }
+  .paris-gauge-bar { flex:1; height:8px; background:rgba(255,255,255,.06); border-radius:4px; position:relative; }
+  .paris-gauge-fill { height:8px; border-radius:4px; transition:width .6s ease; }
+  .paris-gauge-val { font-size:12px; font-weight:700; width:40px; text-align:right; }
+  .paris-score-big { font-size:40px; font-weight:900; letter-spacing:-2px; text-align:center; }
+  .paris-score-label { font-size:10px; color:var(--muted); text-align:center; }
+  .paris-insight { font-size:11px; color:var(--muted2); line-height:1.6; flex:2; min-width:200px; padding:12px 16px; background:rgba(239,68,68,.04); border:1px solid rgba(239,68,68,.12); border-radius:10px; }
+
+  /* ── DIAGNÓSTICO POR INDUSTRIA ────────────────────────── */
+  .industry-section {
+    max-width:1200px; margin:0 auto; padding:0 40px 32px;
+  }
+  .section-header { font-size:10px; font-weight:800; letter-spacing:.12em; color:var(--muted); text-transform:uppercase; margin-bottom:16px; }
+
+  /* ── RANKING TABLE ────────────────────────────────────── */
+  .ranking-section {
+    max-width:1200px; margin:0 auto; padding:0 40px 60px;
+  }
+  .rank-table { width:100%; border-collapse:collapse; }
+  .rank-table th {
+    font-size:9px; font-weight:800; letter-spacing:.1em; color:var(--muted);
+    text-transform:uppercase; padding:10px 12px; text-align:left;
+    border-bottom:1px solid var(--border);
+  }
+  .rank-table th.r { text-align:right; }
+  .rank-table td { padding:9px 12px; font-size:12px; border-bottom:1px solid rgba(255,255,255,.03); }
+  .rank-table tr:hover td { background:rgba(255,255,255,.02); }
+  .rank-table tr.current td { background:rgba(168,85,247,.06); }
+
+  .rank-num { font-size:11px; color:var(--muted); font-weight:600; }
+  .rank-brand { font-weight:700; color:var(--text); }
+  .rank-sector { font-size:10px; color:var(--muted); }
+  .rank-pill {
+    display:inline-block; padding:2px 7px; border-radius:4px;
+    font-size:9px; font-weight:700; letter-spacing:.05em;
+  }
+  .pill-bx { background:var(--bx-bg); color:var(--bx-lt); border:1px solid var(--bx-bdr); }
+  .pill-co { background:var(--co-bg); color:var(--co-lt); border:1px solid var(--co-bdr); }
+  .pill-cx { background:var(--cx-bg); color:var(--cx-lt); border:1px solid var(--cx-bdr); }
+
+  .mini-bar-row { display:flex; align-items:center; gap:4px; }
+  .mini-bar-bg  { width:60px; height:4px; background:rgba(255,255,255,.06); border-radius:2px; }
+  .mini-bar-fill{ height:4px; border-radius:2px; }
+  .mini-val { font-size:10px; font-weight:700; }
+
+  .rank-total { font-size:14px; font-weight:800; text-align:right; }
+  .rank-paris { font-size:11px; text-align:right; font-weight:600; }
+
+  /* Industry bubbles */
+  .industry-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:12px; }
+  .ind-card {
+    background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px;
+  }
+  .ind-name { font-size:11px; font-weight:800; color:var(--text); margin-bottom:10px; }
+  .ind-bar-row { display:flex; align-items:center; gap:6px; margin-bottom:4px; }
+  .ind-bar-label{ font-size:9px; color:var(--muted); width:20px; flex-shrink:0; }
+  .ind-bar-bg   { flex:1; height:5px; background:rgba(255,255,255,.06); border-radius:3px; }
+  .ind-bar-fill { height:5px; border-radius:3px; }
+  .ind-bar-val  { font-size:9px; font-weight:700; width:26px; text-align:right; }
+
+  .status-chip {
+    display:inline-flex; align-items:center; gap:4px;
+    padding:3px 8px; border-radius:5px; font-size:9px; font-weight:700; margin-top:8px;
+  }
+  .chip-balanced { background:rgba(34,197,94,.12); color:#86efac; border:1px solid rgba(34,197,94,.2); }
+  .chip-bx-heavy { background:var(--bx-bg); color:var(--bx-lt); border:1px solid var(--bx-bdr); }
+  .chip-co-heavy { background:var(--co-bg); color:var(--co-lt); border:1px solid var(--co-bdr); }
+  .chip-cx-heavy { background:var(--cx-bg); color:var(--cx-lt); border:1px solid var(--cx-bdr); }
+  .chip-weak { background:rgba(239,68,68,.10); color:#fca5a5; border:1px solid rgba(239,68,68,.2); }
+
+  /* Divider */
+  .divider { max-width:1200px; margin:0 auto 24px; padding:0 40px; }
+  .divider hr { border:none; border-top:1px solid var(--border); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <span class="nav-logo">WPP Enterprise Solutions</span>
+  <span class="nav-sep">·</span>
+  <span class="nav-title">Capital Intangible · Colombia 2026</span>
+  <div class="nav-tab">
+    <a href="index.html">BAV</a>
+    <a href="brandconomics.html">Brandconomics</a>
+    <a href="totalsearch.html">Total Search</a>
+    <a href="capital-intangible.html" class="active">Capital Intangible</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-left">
+    <h1>Capital<br><span class="bx">Cultural</span> · <span class="co">Transaccional</span> · <span class="cx">Relacional</span></h1>
+    <p class="hero-sub">El capital intangible vive en tres lugares simultáneamente: en la cultura (BX), en la transacción (CO) y en la relación (CX). El 83% del valor intangible global no aparece en ningún balance sheet.</p>
+  </div>
+  <div class="hero-sel-wrap">
+    <span class="hero-sel-label">Analizar marca</span>
+    <select id="brand-sel" onchange="updateCapital(this.value)"></select>
+  </div>
+</div>
+
+<!-- TRIANGLE SECTION -->
+<div class="triangle-section">
+
+  <!-- BX Card -->
+  <div class="cap-card bx" id="bx-card">
+    <div class="cap-label">BX · Capital Cultural</div>
+    <div class="cap-name">Brand Experience</div>
+    <div class="cap-def">Lo que la marca significa para la sociedad — antes de la primera compra.</div>
+    <div class="cap-score-big" id="bx-score">—</div>
+    <div class="cap-kpi-label">KPI del Capital</div>
+    <div class="cap-kpi">Brand Equity Score · Price Premium · Share of Mind</div>
+    <div class="sub-metrics">
+      <div class="sub-row">
+        <span class="sub-name">Relevancia</span>
+        <div class="sub-bar-wrap"><div class="sub-bar" id="bar-R" style="width:0%"></div></div>
+        <span class="sub-val" id="val-R">—</span>
+      </div>
+      <div class="sub-row">
+        <span class="sub-name">Diferenciación</span>
+        <div class="sub-bar-wrap"><div class="sub-bar" id="bar-D" style="width:0%"></div></div>
+        <span class="sub-val" id="val-D">—</span>
+      </div>
+      <div class="sub-row">
+        <span class="sub-name">Estima</span>
+        <div class="sub-bar-wrap"><div class="sub-bar" id="bar-E" style="width:0%"></div></div>
+        <span class="sub-val" id="val-E">—</span>
+      </div>
+      <div class="sub-row">
+        <span class="sub-name">Conocimiento</span>
+        <div class="sub-bar-wrap"><div class="sub-bar" id="bar-K" style="width:0%"></div></div>
+        <span class="sub-val" id="val-K">—</span>
+      </div>
+    </div>
+    <div class="cap-diag" id="bx-diag">—</div>
+  </div>
+
+  <!-- Triangle center -->
+  <div class="triangle-center">
+
+    <svg id="tri-svg" viewBox="0 0 340 300" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="gBX" cx="50%" cy="0%" r="80%">
+          <stop offset="0%" stop-color="#a855f7" stop-opacity=".35"/>
+          <stop offset="100%" stop-color="#a855f7" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="gCO" cx="0%" cy="100%" r="80%">
+          <stop offset="0%" stop-color="#3b82f6" stop-opacity=".35"/>
+          <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="gCX" cx="100%" cy="100%" r="80%">
+          <stop offset="0%" stop-color="#f59e0b" stop-opacity=".35"/>
+          <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+        </radialGradient>
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="3" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+
+      <!-- BG gradients -->
+      <circle cx="170" cy="100" r="140" fill="url(#gBX)"/>
+      <circle cx="60"  cy="240" r="140" fill="url(#gCO)"/>
+      <circle cx="280" cy="240" r="140" fill="url(#gCX)"/>
+
+      <!-- Triangle outline -->
+      <polygon id="tri-outline" points="170,28 32,258 308,258"
+        fill="none" stroke="rgba(255,255,255,.08)" stroke-width="1"/>
+
+      <!-- Dynamic inner triangle (data) -->
+      <polygon id="tri-data" points="170,28 32,258 308,258"
+        fill="rgba(168,85,247,.08)" stroke="rgba(168,85,247,.4)" stroke-width="1.5"/>
+
+      <!-- Axis lines -->
+      <line x1="170" y1="28" x2="170" y2="258" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
+      <line x1="32"  y1="258" x2="308" y2="258" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
+      <line x1="170" y1="28"  x2="32"  y2="258" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
+      <line x1="170" y1="28"  x2="308" y2="258" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
+
+      <!-- Corner labels -->
+      <text x="170" y="16" text-anchor="middle" font-size="11" font-weight="800" fill="#d8b4fe" font-family="-apple-system,sans-serif">BX</text>
+      <text x="20"  y="275" text-anchor="middle" font-size="11" font-weight="800" fill="#93c5fd" font-family="-apple-system,sans-serif">CO</text>
+      <text x="320" y="275" text-anchor="middle" font-size="11" font-weight="800" fill="#fcd34d" font-family="-apple-system,sans-serif">CX</text>
+
+      <!-- Score nodes -->
+      <circle id="node-bx" cx="170" cy="28" r="0" fill="#a855f7" filter="url(#glow)"/>
+      <circle id="node-co" cx="32"  cy="258" r="0" fill="#3b82f6" filter="url(#glow)"/>
+      <circle id="node-cx" cx="308" cy="258" r="0" fill="#f59e0b" filter="url(#glow)"/>
+
+      <!-- Score text on nodes -->
+      <text id="node-bx-txt" x="170" y="28" text-anchor="middle" font-size="9" font-weight="700" fill="#fff" font-family="-apple-system,sans-serif" dy="-12"></text>
+      <text id="node-co-txt" x="32"  y="258" text-anchor="middle" font-size="9" font-weight="700" fill="#fff" font-family="-apple-system,sans-serif" dy="18"></text>
+      <text id="node-cx-txt" x="308" y="258" text-anchor="middle" font-size="9" font-weight="700" fill="#fff" font-family="-apple-system,sans-serif" dy="18"></text>
+
+      <!-- Center brand name -->
+      <text id="tri-brand" x="170" y="143" text-anchor="middle" font-size="13" font-weight="900" fill="#e6edf3" font-family="-apple-system,sans-serif">—</text>
+      <text x="170" y="158" text-anchor="middle" font-size="9" fill="#7d8590" font-family="-apple-system,sans-serif">Capital Intangible Total</text>
+    </svg>
+
+    <div class="intangible-total">
+      <div class="intangible-label">Valor Total de Capital Intangible</div>
+      <div class="intangible-score" id="total-score">—</div>
+      <div class="intangible-rank" id="total-rank">—</div>
+    </div>
+
+  </div>
+
+  <!-- CX Card -->
+  <div class="cap-card cx" id="cx-card">
+    <div class="cap-label">CX · Capital Relacional</div>
+    <div class="cap-name">Customer Experience</div>
+    <div class="cap-def">Lo que un cliente vale no en esta transacción, sino en todas las que vendrán.</div>
+    <div class="cap-score-big" id="cx-score">—</div>
+    <div class="cap-kpi-label">KPI del Capital</div>
+    <div class="cap-kpi">Customer Lifetime Value · NPS · Repeat Purchase Rate</div>
+    <div class="sub-metrics">
+      <div class="sub-row">
+        <span class="sub-name">Exp. Cliente</span>
+        <div class="sub-bar-wrap"><div class="sub-bar" id="bar-CX" style="width:0%"></div></div>
+        <span class="sub-val" id="val-CX">—</span>
+      </div>
+      <div class="sub-row">
+        <span class="sub-name">Loop Score</span>
+        <div class="sub-bar-wrap"><div class="sub-bar" id="bar-loop" style="width:0%"></div></div>
+        <span class="sub-val" id="val-loop">—</span>
+      </div>
+      <div class="sub-row">
+        <span class="sub-name">Promesa vs Entrega</span>
+        <div class="sub-bar-wrap"><div class="sub-bar" id="bar-delivery" style="width:0%"></div></div>
+        <span class="sub-val" id="val-delivery">—</span>
+      </div>
+    </div>
+    <div class="cap-diag" id="cx-diag">—</div>
+  </div>
+
+</div>
+
+<!-- CO Card (full width below) -->
+<div style="max-width:1200px;margin:0 auto;padding:0 40px 24px;">
+  <div class="cap-card co" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;align-items:start;">
+    <div>
+      <div class="cap-label">CO · Capital Transaccional</div>
+      <div class="cap-name">Commerce & Conversion</div>
+      <div class="cap-def">El momento donde el significado de marca se convierte en caja. La prueba de que la promesa cultural tiene tracción en el punto de decisión.</div>
+      <div class="cap-kpi-label">KPI del Capital</div>
+      <div class="cap-kpi">Ingreso Operativo · EBITDA · Conversion Rate</div>
+    </div>
+    <div style="display:flex;flex-direction:column;justify-content:center;gap:12px;">
+      <div class="cap-score-big co" id="co-score" style="font-size:52px;font-weight:900;letter-spacing:-2px;color:var(--co-lt);">—</div>
+      <div class="sub-metrics">
+        <div class="sub-row">
+          <span class="sub-name">Total Search</span>
+          <div class="sub-bar-wrap"><div class="sub-bar" id="bar-ts" style="width:0%"></div></div>
+          <span class="sub-val" id="val-ts">—</span>
+        </div>
+        <div class="sub-row">
+          <span class="sub-name">Google Trends</span>
+          <div class="sub-bar-wrap"><div class="sub-bar" id="bar-gt" style="width:0%"></div></div>
+          <span class="sub-val" id="val-gt">—</span>
+        </div>
+        <div class="sub-row">
+          <span class="sub-name">Ciclo de Marca</span>
+          <div class="sub-bar-wrap"><div class="sub-bar" id="bar-loop2" style="width:0%"></div></div>
+          <span class="sub-val" id="val-loop2">—</span>
+        </div>
+      </div>
+    </div>
+    <div class="cap-diag" id="co-diag" style="margin-top:0;">—</div>
+  </div>
+</div>
+
+<!-- PARIS SYNDROME -->
+<div class="paris-section">
+  <div class="paris-card">
+    <div class="paris-left">
+      <div class="paris-tag">⚠ Paris Syndrome · BX vs CX</div>
+      <div class="paris-title" id="paris-title">—</div>
+      <div class="paris-desc">La brecha entre lo que la marca promete culturalmente (BX) y lo que entrega en la experiencia real (CX). Un Paris Syndrome alto indica que las expectativas superan la experiencia — vulnerabilidad estructural ante IA comparativa.</div>
+    </div>
+    <div class="paris-meter">
+      <div class="paris-gauge-wrap">
+        <span class="paris-gauge-label" style="color:var(--bx-lt);">BX</span>
+        <div class="paris-gauge-bar">
+          <div class="paris-gauge-fill" id="paris-bx-bar" style="width:0%;background:var(--bx);"></div>
+        </div>
+        <span class="paris-gauge-val" id="paris-bx-val" style="color:var(--bx-lt);">—</span>
+      </div>
+      <div class="paris-gauge-wrap">
+        <span class="paris-gauge-label" style="color:var(--cx-lt);">CX</span>
+        <div class="paris-gauge-bar">
+          <div class="paris-gauge-fill" id="paris-cx-bar" style="width:0%;background:var(--cx);"></div>
+        </div>
+        <span class="paris-gauge-val" id="paris-cx-val" style="color:var(--cx-lt);">—</span>
+      </div>
+      <div style="margin-top:12px;text-align:center;">
+        <div class="paris-score-big" id="paris-score">—</div>
+        <div class="paris-score-label">Paris Syndrome Score</div>
+      </div>
+    </div>
+    <div class="paris-insight" id="paris-insight">—</div>
+  </div>
+</div>
+
+<div class="divider"><hr></div>
+
+<!-- INDUSTRY DIAGNOSTIC -->
+<div class="industry-section">
+  <div class="section-header">Diagnóstico por Industria · BX · CO · CX</div>
+  <div class="industry-grid" id="industry-grid"></div>
+</div>
+
+<div class="divider"><hr></div>
+
+<!-- RANKING -->
+<div class="ranking-section">
+  <div class="section-header">Ranking · Capital Intangible Total · 46 Marcas Colombia</div>
+  <table class="rank-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Marca</th>
+        <th>Sector</th>
+        <th>BX <span style="font-weight:400;color:var(--bx-lt)">Cultural</span></th>
+        <th>CO <span style="font-weight:400;color:var(--co-lt)">Transaccional</span></th>
+        <th>CX <span style="font-weight:400;color:var(--cx-lt)">Relacional</span></th>
+        <th class="r">Paris Syndrome</th>
+        <th class="r">Total Intangible</th>
+      </tr>
+    </thead>
+    <tbody id="rank-body"></tbody>
+  </table>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────
+const TS_DATA = [{"id":"McDonald's","ts_score":80.8,"gt_score":100,"wiki_score":95,"social_score":61.6,"R":55.2,"D":75.1,"E":65.0,"K":60.0,"CX":62.5,"loop":63.6,"search_gap":-19.9,"brand_architecture":70.0,"paris_syndrome":87},{"id":"Rappi","ts_score":78.8,"gt_score":100,"wiki_score":50,"social_score":63.6,"R":78.3,"D":93.8,"E":82.0,"K":80.0,"CX":81.0,"loop":83.0,"search_gap":-15.5,"brand_architecture":87.9,"paris_syndrome":87},{"id":"Falabella","ts_score":77.8,"gt_score":100,"wiki_score":55,"social_score":55.6,"R":83.9,"D":95.1,"E":85.0,"K":88.0,"CX":86.5,"loop":87.7,"search_gap":-11.2,"brand_architecture":90.0,"paris_syndrome":91},{"id":"Toyota","ts_score":76.6,"gt_score":100,"wiki_score":90,"social_score":34.4,"R":85.3,"D":92.7,"E":90.0,"K":88.0,"CX":89.0,"loop":89.0,"search_gap":-7.4,"brand_architecture":91.3,"paris_syndrome":96},{"id":"Renault","ts_score":76.3,"gt_score":100,"wiki_score":80,"social_score":48.0,"R":81.9,"D":67.0,"E":75.0,"K":82.0,"CX":78.5,"loop":76.9,"search_gap":14.9,"brand_architecture":71.0,"paris_syndrome":88},{"id":"H&M","ts_score":74.7,"gt_score":100,"wiki_score":85,"social_score":40.0,"R":67.4,"D":82.5,"E":72.0,"K":68.0,"CX":70.0,"loop":72.0,"search_gap":-15.1,"brand_architecture":77.2,"paris_syndrome":88},{"id":"Suzuki","ts_score":74.4,"gt_score":100,"wiki_score":75,"social_score":42.0,"R":71.5,"D":83.6,"E":76.0,"K":72.0,"CX":74.0,"loop":75.0,"search_gap":-12.1,"brand_architecture":79.8,"paris_syndrome":90},{"id":"Nissan","ts_score":74.3,"gt_score":100,"wiki_score":80,"social_score":38.0,"R":66.4,"D":92.8,"E":75.0,"K":68.0,"CX":71.5,"loop":74.7,"search_gap":-26.4,"brand_architecture":83.9,"paris_syndrome":79},{"id":"Chevrolet","ts_score":71.6,"gt_score":100,"wiki_score":85,"social_score":46.0,"R":75.5,"D":25.0,"E":60.0,"K":78.0,"CX":69.0,"loop":61.5,"search_gap":50.5,"brand_architecture":42.5,"paris_syndrome":56},{"id":"Mazda","ts_score":70.9,"gt_score":100,"wiki_score":75,"social_score":30.4,"R":70.5,"D":84.9,"E":78.0,"K":72.0,"CX":75.0,"loop":75.7,"search_gap":-14.4,"brand_architecture":81.5,"paris_syndrome":90},{"id":"Hyundai","ts_score":69.7,"gt_score":100,"wiki_score":80,"social_score":32.0,"R":59.8,"D":71.1,"E":65.0,"K":65.0,"CX":65.0,"loop":65.2,"search_gap":-11.3,"brand_architecture":68.0,"paris_syndrome":94},{"id":"Sura","ts_score":66.8,"gt_score":100,"wiki_score":40,"social_score":38.0,"R":83.8,"D":60.0,"E":72.0,"K":80.0,"CX":76.0,"loop":74.4,"search_gap":23.8,"brand_architecture":66.0,"paris_syndrome":84},{"id":"American Airlines","ts_score":66.1,"gt_score":100,"wiki_score":65,"social_score":51.6,"R":36.8,"D":22.2,"E":30.0,"K":40.0,"CX":35.0,"loop":32.8,"search_gap":14.6,"brand_architecture":26.1,"paris_syndrome":87},{"id":"Coca-Cola","ts_score":64.0,"gt_score":61.0,"wiki_score":100,"social_score":36.0,"R":71.9,"D":96.3,"E":88.0,"K":78.0,"CX":83.0,"loop":83.4,"search_gap":-24.4,"brand_architecture":92.2,"paris_syndrome":87},{"id":"OXXO","ts_score":63.6,"gt_score":100,"wiki_score":50,"social_score":22.8,"R":62.8,"D":79.8,"E":60.0,"K":72.0,"CX":66.0,"loop":68.1,"search_gap":-17.0,"brand_architecture":69.9,"paris_syndrome":86},{"id":"Ara","ts_score":62.2,"gt_score":87.0,"wiki_score":15,"social_score":37.2,"R":92.8,"D":90.8,"E":88.0,"K":90.0,"CX":89.0,"loop":90.1,"search_gap":2.0,"brand_architecture":89.4,"paris_syndrome":98},{"id":"Decameron","ts_score":62.1,"gt_score":100,"wiki_score":20,"social_score":33.2,"R":69.5,"D":71.5,"E":70.0,"K":72.0,"CX":71.0,"loop":70.8,"search_gap":-2.0,"brand_architecture":70.8,"paris_syndrome":100},{"id":"Cruz Verde","ts_score":60.1,"gt_score":100,"wiki_score":15,"social_score":33.2,"R":84.1,"D":44.4,"E":70.0,"K":82.0,"CX":76.0,"loop":71.3,"search_gap":39.7,"brand_architecture":57.2,"paris_syndrome":68},{"id":"Terpel","ts_score":58.8,"gt_score":100,"wiki_score":40,"social_score":18.8,"R":70.7,"D":50.7,"E":62.0,"K":72.0,"CX":67.0,"loop":64.5,"search_gap":20.0,"brand_architecture":56.4,"paris_syndrome":84},{"id":"Farmatodo","ts_score":57.4,"gt_score":100,"wiki_score":20,"social_score":18.0,"R":87.2,"D":53.0,"E":75.0,"K":85.0,"CX":80.0,"loop":76.0,"search_gap":34.2,"brand_architecture":64.0,"paris_syndrome":73},{"id":"Poker","ts_score":57.3,"gt_score":100,"wiki_score":15,"social_score":46.4,"R":21.7,"D":39.5,"E":32.0,"K":28.0,"CX":30.0,"loop":30.2,"search_gap":-17.8,"brand_architecture":35.8,"paris_syndrome":90},{"id":"Club Colombia","ts_score":56.9,"gt_score":74.1,"wiki_score":25,"social_score":38.0,"R":80.7,"D":77.0,"E":78.0,"K":80.0,"CX":79.0,"loop":78.9,"search_gap":3.7,"brand_architecture":77.5,"paris_syndrome":98},{"id":"Tigo","ts_score":56.7,"gt_score":100,"wiki_score":40,"social_score":26.8,"R":44.3,"D":32.0,"E":38.0,"K":48.0,"CX":43.0,"loop":41.1,"search_gap":12.3,"brand_architecture":35.0,"paris_syndrome":89},{"id":"Tigo UNE","ts_score":56.3,"gt_score":100,"wiki_score":20,"social_score":36.0,"R":37.3,"D":38.2,"E":35.0,"K":42.0,"CX":38.5,"loop":38.2,"search_gap":-0.9,"brand_architecture":36.6,"paris_syndrome":100},{"id":"WOM","ts_score":54.5,"gt_score":100,"wiki_score":20,"social_score":38.8,"R":11.5,"D":37.4,"E":22.0,"K":18.0,"CX":20.0,"loop":21.8,"search_gap":-25.9,"brand_architecture":29.7,"paris_syndrome":83},{"id":"Seguros Bolivar","ts_score":51.3,"gt_score":100,"wiki_score":20,"social_score":23.2,"R":52.8,"D":10.5,"E":40.0,"K":55.0,"CX":47.5,"loop":41.2,"search_gap":42.3,"brand_architecture":25.2,"paris_syndrome":63},{"id":"Avianca","ts_score":50.2,"gt_score":57.8,"wiki_score":65,"social_score":30.8,"R":70.3,"D":39.6,"E":60.0,"K":75.0,"CX":67.5,"loop":62.5,"search_gap":30.7,"brand_architecture":49.8,"paris_syndrome":72},{"id":"Aguila","ts_score":50.0,"gt_score":52.1,"wiki_score":25,"social_score":51.6,"R":54.6,"D":70.5,"E":65.0,"K":60.0,"CX":62.5,"loop":62.5,"search_gap":-15.9,"brand_architecture":67.8,"paris_syndrome":92},{"id":"Cencosud","ts_score":48.7,"gt_score":83.4,"wiki_score":55,"social_score":16.8,"R":41.4,"D":21.1,"E":35.0,"K":45.0,"CX":40.0,"loop":36.5,"search_gap":20.3,"brand_architecture":28.1,"paris_syndrome":81},{"id":"Colpatria","ts_score":46.6,"gt_score":100,"wiki_score":20,"social_score":19.2,"R":24.0,"D":4.1,"E":18.0,"K":26.0,"CX":22.0,"loop":18.8,"search_gap":19.9,"brand_architecture":11.1,"paris_syndrome":82},{"id":"Primax","ts_score":45.7,"gt_score":85.3,"wiki_score":20,"social_score":28.0,"R":37.5,"D":7.2,"E":28.0,"K":40.0,"CX":34.0,"loop":29.3,"search_gap":30.3,"brand_architecture":17.6,"paris_syndrome":73},{"id":"D1","ts_score":44.3,"gt_score":48.4,"wiki_score":15,"social_score":24.8,"R":99.0,"D":77.4,"E":89.0,"K":95.0,"CX":92.0,"loop":90.5,"search_gap":21.6,"brand_architecture":83.2,"paris_syndrome":85},{"id":"Corona","ts_score":39.8,"gt_score":0.9,"wiki_score":70,"social_score":42.8,"R":71.4,"D":90.4,"E":80.0,"K":72.0,"CX":76.0,"loop":77.9,"search_gap":-19.0,"brand_architecture":85.2,"paris_syndrome":86},{"id":"United Airlines","ts_score":36.5,"gt_score":35.7,"wiki_score":60,"social_score":24.0,"R":36.9,"D":41.1,"E":38.0,"K":42.0,"CX":40.0,"loop":39.6,"search_gap":-4.2,"brand_architecture":39.5,"paris_syndrome":99},{"id":"Exito","ts_score":35.7,"gt_score":3.1,"wiki_score":35,"social_score":53.6,"R":85.4,"D":47.5,"E":72.0,"K":88.0,"CX":80.0,"loop":74.6,"search_gap":37.9,"brand_architecture":59.8,"paris_syndrome":68},{"id":"Makro","ts_score":35.7,"gt_score":29.7,"wiki_score":50,"social_score":25.2,"R":74.3,"D":28.1,"E":55.0,"K":70.0,"CX":62.5,"loop":58.0,"search_gap":46.2,"brand_architecture":41.5,"paris_syndrome":66},{"id":"Frisby","ts_score":34.7,"gt_score":7.6,"wiki_score":15,"social_score":35.2,"R":95.2,"D":97.3,"E":92.0,"K":90.0,"CX":91.0,"loop":93.1,"search_gap":-2.1,"brand_architecture":94.7,"paris_syndrome":94},{"id":"Movistar","ts_score":33.8,"gt_score":4.3,"wiki_score":55,"social_score":52.8,"R":51.9,"D":30.6,"E":45.0,"K":55.0,"CX":50.0,"loop":46.5,"search_gap":21.3,"brand_architecture":37.8,"paris_syndrome":81},{"id":"Olímpica","ts_score":33.1,"gt_score":13.8,"wiki_score":35,"social_score":34.8,"R":84.0,"D":41.6,"E":68.0,"K":85.0,"CX":76.5,"loop":71.0,"search_gap":42.4,"brand_architecture":54.8,"paris_syndrome":65},{"id":"Postobón","ts_score":29.2,"gt_score":0.5,"wiki_score":30,"social_score":30.4,"R":76.5,"D":77.8,"E":78.0,"K":80.0,"CX":79.0,"loop":78.3,"search_gap":-1.3,"brand_architecture":77.9,"paris_syndrome":99},{"id":"Grupo Aval","ts_score":28.5,"gt_score":28.5,"wiki_score":45,"social_score":26.0,"R":19.1,"D":21.0,"E":22.0,"K":25.0,"CX":23.5,"loop":22.1,"search_gap":-1.9,"brand_architecture":21.5,"paris_syndrome":98},{"id":"Arturo Calle","ts_score":27.4,"gt_score":4.5,"wiki_score":15,"social_score":25.6,"R":72.8,"D":86.5,"E":80.0,"K":70.0,"CX":75.0,"loop":76.9,"search_gap":-13.7,"brand_architecture":83.2,"paris_syndrome":88},{"id":"Tennis","ts_score":22.1,"gt_score":0.4,"wiki_score":10,"social_score":24.0,"R":58.0,"D":74.7,"E":65.0,"K":60.0,"CX":62.5,"loop":64.0,"search_gap":-16.7,"brand_architecture":69.8,"paris_syndrome":88},{"id":"Zapatoca","ts_score":20.7,"gt_score":14.2,"wiki_score":10,"social_score":21.2,"R":31.7,"D":46.8,"E":38.0,"K":35.0,"CX":36.5,"loop":37.6,"search_gap":-15.1,"brand_architecture":42.4,"paris_syndrome":90},{"id":"Petrobras","ts_score":14.1,"gt_score":3.6,"wiki_score":45,"social_score":10.8,"R":20.2,"D":8.4,"E":15.0,"K":22.0,"CX":18.5,"loop":16.8,"search_gap":11.8,"brand_architecture":11.7,"paris_syndrome":90},{"id":"Biomax","ts_score":12.8,"gt_score":0.0,"wiki_score":15,"social_score":19.2,"R":32.5,"D":15.5,"E":25.0,"K":35.0,"CX":30.0,"loop":27.6,"search_gap":17.0,"brand_architecture":20.2,"paris_syndrome":86}];
+
+const SECTOR_MAP = {
+  "McDonald's":'QSR',Rappi:'E-commerce',Falabella:'Retail',Toyota:'Autos',
+  Renault:'Autos','H&M':'Moda',Suzuki:'Autos',Nissan:'Autos',Chevrolet:'Autos',
+  Mazda:'Autos',Hyundai:'Autos',Sura:'Seguros','American Airlines':'Aerolíneas',
+  'Coca-Cola':'Bebidas',OXXO:'Conveniencia',Ara:'Supermercados',Decameron:'Hoteles',
+  'Cruz Verde':'Farmacias',Terpel:'Combustibles',Farmatodo:'Farmacias',Poker:'Cervezas',
+  'Club Colombia':'Cervezas',Tigo:'Telecom','Tigo UNE':'Telecom',WOM:'Telecom',
+  'Seguros Bolivar':'Seguros',Avianca:'Aerolíneas',Aguila:'Cervezas',Cencosud:'Retail',
+  Colpatria:'Bancos',Primax:'Combustibles',D1:'Supermercados',Corona:'Construcción',
+  'United Airlines':'Aerolíneas',Exito:'Supermercados',Makro:'Mayorista',Frisby:'QSR',
+  Movistar:'Telecom','Olímpica':'Supermercados','Postobón':'Bebidas','Grupo Aval':'Bancos',
+  'Arturo Calle':'Moda',Tennis:'Moda',Zapatoca:'Supermercados',Petrobras:'Combustibles',
+  Biomax:'Combustibles',
+};
+
+// ── SCORING FUNCTIONS ──────────────────────────────────────
+function bxScore(b) {
+  // Capital Cultural = lo que la marca significa para la sociedad (BAV)
+  // R(25%) + D(30%) + E(25%) + K(20%)
+  return +(b.R*0.25 + b.D*0.30 + b.E*0.25 + b.K*0.20).toFixed(1);
+}
+function coScore(b) {
+  // Capital Transaccional = qué convierte en caja hoy (Total Search + Loop)
+  // ts_score(40%) + gt_score(30%) + loop(30%)
+  return +(b.ts_score*0.40 + b.gt_score*0.30 + b.loop*0.30).toFixed(1);
+}
+function cxScore(b) {
+  // Capital Relacional = valor futuro del cliente (CX + Loop + Promesa cumplida)
+  // CX(50%) + loop(30%) + (100-paris_syndrome)(20%)
+  return +(b.CX*0.50 + b.loop*0.30 + (100-b.paris_syndrome)*0.20).toFixed(1);
+}
+function totalScore(b) {
+  // Capital Intangible Total = BX(40%) + CO(30%) + CX(30%)
+  return +(bxScore(b)*0.40 + coScore(b)*0.30 + cxScore(b)*0.30).toFixed(1);
+}
+
+// Precompute and sort
+const RANKED = [...TS_DATA].sort((a,z) => totalScore(z) - totalScore(a));
+
+// ── DIAGNÓSTICO BX ────────────────────────────────────────
+function diagBX(b) {
+  const bx = bxScore(b);
+  const gap = b.D - b.R;
+  if (b.R > 85 && b.D > 85)
+    return `${b.id} tiene uno de los perfiles BAV más sólidos del estudio: alta Relevancia (${b.R.toFixed(0)}) y alta Diferenciación (${b.D.toFixed(0)}). El mercado la conoce, la prefiere y la distingue. Este es el capital cultural más valioso — difícil de construir y lento de erosionar.`;
+  if (b.D < 20)
+    return `Diferenciación crítica (D=${b.D.toFixed(0)}): ${b.id} es conocida (R=${b.R.toFixed(0)}) pero el mercado no identifica ningún atributo que la haga única. Sin diferenciación, el capital cultural no genera price premium — la marca se vuelve intercambiable y vulnerable a competidores diferenciados.`;
+  if (b.R > 80 && b.D < 50)
+    return `${b.id} tiene alta Relevancia (R=${b.R.toFixed(0)}) pero baja Diferenciación (D=${b.D.toFixed(0)}). El mercado la conoce y la usa, pero no por una razón emocional específica. Este perfil genera demanda por inercia — no por convicción — y es la definición de una marca con Search Gap positivo (${b.search_gap > 0 ? '+' : ''}${b.search_gap.toFixed(0)}).`;
+  if (gap > 20)
+    return `${b.id} tiene más Diferenciación (D=${b.D.toFixed(0)}) que Relevancia (R=${b.R.toFixed(0)}): tiene personalidad de marca fuerte pero no está llegando a suficiente mercado. Es un challenger con identidad — el reto es escala, no identidad.`;
+  if (bx > 70)
+    return `Capital Cultural sólido (BX=${bx}): ${b.id} combina reconocimiento (R=${b.R.toFixed(0)}) con Diferenciación (D=${b.D.toFixed(0)}) y Estima alta (E=${b.E.toFixed(0)}). Es una marca que el mercado no solo conoce sino que admira — el activo más escaso y más valioso del capital intangible.`;
+  return `Capital Cultural en construcción (BX=${bx}): ${b.id} tiene espacio de crecimiento en todas las dimensiones BAV. La Estima (E=${b.E.toFixed(0)}) y el Conocimiento (K=${b.K.toFixed(0)}) son las señales más lentas de mover — requieren consistencia de marca sostenida, no campañas puntuales.`;
+}
+
+// ── DIAGNÓSTICO CO ────────────────────────────────────────
+function diagCO(b) {
+  const co = coScore(b);
+  if (b.ts_score > 70 && b.loop > 80)
+    return `${b.id} tiene el motor transaccional más eficiente del estudio: alta visibilidad de búsqueda (TS=${b.ts_score.toFixed(0)}) y ciclo de marca virtuoso (Loop=${b.loop.toFixed(0)}). El capital cultural se convierte en caja de forma consistente — la definición de un sistema de crecimiento predecible.`;
+  if (b.gt_score > 85 && b.loop < 50)
+    return `Alta demanda activa (GT=${b.gt_score.toFixed(0)}) pero ciclo de conversión roto (Loop=${b.loop.toFixed(0)}): ${b.id} genera interés pero no lo capitaliza completamente. La brecha entre búsqueda y lealtad es la oportunidad más inmediata de revenue incremental.`;
+  if (b.ts_score < 30 && b.R > 70)
+    return `Paradoja transaccional: ${b.id} tiene alto capital cultural (R=${b.R.toFixed(0)}) pero baja visibilidad de búsqueda (TS=${b.ts_score.toFixed(0)}). El mercado la prefiere pero no la busca digitalmente — lo que significa que está dejando dinero sobre la mesa en el canal donde más se decide la compra hoy.`;
+  if (co > 65)
+    return `Capital Transaccional fuerte (CO=${co}): ${b.id} convierte su presencia de marca en demanda activa. GT=${b.gt_score.toFixed(0)} indica señal de búsqueda robusta y Loop=${b.loop.toFixed(0)} muestra que esa demanda se retroalimenta.`;
+  return `Capital Transaccional en desarrollo (CO=${co}): hay oportunidad de mejorar la conversión entre equity de marca y punto de decisión. GT=${b.gt_score.toFixed(0)} y Loop=${b.loop.toFixed(0)} son las palancas más directas — más búsqueda activa y mejor cierre del ciclo.`;
+}
+
+// ── DIAGNÓSTICO CX ────────────────────────────────────────
+function diagCX(b) {
+  const cx = cxScore(b);
+  const delivery = +(100 - b.paris_syndrome).toFixed(0);
+  if (b.CX > 85 && b.loop > 85 && delivery > 15)
+    return `${b.id} tiene el perfil relacional más sólido posible: CX=${b.CX.toFixed(0)}, Loop=${b.loop.toFixed(0)}. La experiencia es excelente y el cliente vuelve — el activo que ningún balance sheet registra pero que el mercado paga con creces. Paris Syndrome=${b.paris_syndrome} es el único riesgo: las expectativas son muy altas.`;
+  if (b.paris_syndrome > 95 && b.CX < 80)
+    return `Paris Syndrome crítico (${b.paris_syndrome}): ${b.id} genera expectativas muy altas a través de su capital cultural, pero la experiencia real (CX=${b.CX.toFixed(0)}) no las satisface completamente. Esta brecha promesa-entrega genera reseñas mixtas y lealtad frágil — las señales que los algoritmos de IA penalizan al comparar marcas.`;
+  if (b.loop < 40 && b.CX < 50)
+    return `Capital Relacional débil (CX=${cx}): ${b.id} no está construyendo la relación que convierte clientes en activos de largo plazo. CX=${b.CX.toFixed(0)} y Loop=${b.loop.toFixed(0)} indican que el cliente compra pero no vuelve con convicción — lo más caro que le puede pasar a una marca en un mercado donde el CLTV es la métrica que más correlaciona con valor bursátil.`;
+  if (cx > 60)
+    return `Capital Relacional sólido (CX=${cx}): la experiencia de ${b.id} (CX=${b.CX.toFixed(0)}) genera lealtad activa (Loop=${b.loop.toFixed(0)}). ${delivery < 10 ? 'El Paris Syndrome alto ('+b.paris_syndrome+') es una señal de alerta: las expectativas creadas por el capital cultural presionan la experiencia — cualquier fallo se amplifica.' : 'La brecha promesa-entrega está manejada — señal de ejecución consistente.'}`;
+  return `Capital Relacional en desarrollo (CX=${cx}): ${b.id} tiene espacio para mejorar la experiencia post-compra y el ciclo de lealtad. Loop=${b.loop.toFixed(0)} es la palanca más directa — cada punto adicional de loop es CLTV acumulado.`;
+}
+
+// ── PARIS SYNDROME INSIGHT ────────────────────────────────
+function parisDiag(b) {
+  const ps = b.paris_syndrome;
+  const bx = bxScore(b); const cx = cxScore(b);
+  if (ps > 95 && cx < 55)
+    return `Crisis de Paris Syndrome en ${b.id}: las expectativas culturales (BX=${bx}) superan masivamente lo que la experiencia entrega (CX Score=${cx}). Cuando la IA compara marcas de la categoría, las reseñas mixtas y el gap expectativa-realidad hacen que ${b.id} sea recomendada con caveats — exactamente el escenario que reduce conversión en canales generativos.`;
+  if (ps > 85)
+    return `Paris Syndrome alto (${ps}): ${b.id} genera mucha expectativa. El reto no es el producto — es asegurarse de que cada touchpoint cumpla la promesa que el capital cultural ya hizo. Un consumidor decepcionado con una marca de alto BX es más ruidoso que uno decepcionado con una marca de bajo BX.`;
+  if (ps < 70)
+    return `Paris Syndrome bajo (${ps}) — señal positiva: ${b.id} entrega lo que promete. Esto es raro y valioso: significa que la inversión en BX no está generando expectativas que el producto no puede cumplir. Esta coherencia promesa-entrega es la base del capital relacional más sólido.`;
+  return `Paris Syndrome moderado (${ps}): ${b.id} está en zona manejable — hay algo de brecha entre expectativa y entrega, pero no al nivel de generar crisis de confianza sistemática. La oportunidad está en cerrar ese gap reduciendo las expectativas infladas o mejorando los puntos de fricción más visibles en la experiencia.`;
+}
+
+// ── TRIANGLE GEOMETRY ─────────────────────────────────────
+// Triangle vertices: BX=top(170,28), CO=bottom-left(32,258), CX=bottom-right(308,258)
+const V = { bx:[170,28], co:[32,258], cx:[308,258] };
+const CENTER = [170,143];
+
+function triPoint(vertex, pct) {
+  const t = pct / 100;
+  return [
+    CENTER[0] + (V[vertex][0] - CENTER[0]) * t,
+    CENTER[1] + (V[vertex][1] - CENTER[1]) * t,
+  ];
+}
+
+function updateTriangle(bx, co, cx) {
+  const pb = triPoint('bx', bx);
+  const pc = triPoint('co', co);
+  const px = triPoint('cx', cx);
+  document.getElementById('tri-data').setAttribute('points', `${pb[0]},${pb[1]} ${pc[0]},${pc[1]} ${px[0]},${px[1]}`);
+
+  // Nodes
+  const setNode = (id, pos, score) => {
+    document.getElementById('node-'+id).setAttribute('cx', pos[0]);
+    document.getElementById('node-'+id).setAttribute('cy', pos[1]);
+    document.getElementById('node-'+id).setAttribute('r', 5);
+    document.getElementById('node-'+id+'-txt').setAttribute('x', pos[0]);
+    document.getElementById('node-'+id+'-txt').setAttribute('y', pos[1]);
+    document.getElementById('node-'+id+'-txt').textContent = score.toFixed(0);
+  };
+  setNode('bx', pb, bx); setNode('co', pc, co); setNode('cx', px, cx);
+}
+
+// ── MAIN UPDATE ───────────────────────────────────────────
+function updateCapital(brandId) {
+  const b = TS_DATA.find(x => x.id === brandId);
+  if (!b) return;
+
+  const bx = bxScore(b);
+  const co = coScore(b);
+  const cx = cxScore(b);
+  const tot = totalScore(b);
+  const rank = RANKED.findIndex(x => x.id === b.id) + 1;
+
+  // Triangle
+  document.getElementById('tri-brand').textContent = b.id;
+  updateTriangle(bx, co, cx);
+
+  // Total
+  document.getElementById('total-score').textContent = tot.toFixed(1);
+  document.getElementById('total-rank').textContent = `#${rank} de 46 marcas · ${SECTOR_MAP[b.id]||''}`;
+
+  // BX card
+  document.getElementById('bx-score').textContent = bx.toFixed(1);
+  ['R','D','E','K'].forEach(k => {
+    document.getElementById('bar-'+k).style.width = b[k]+'%';
+    document.getElementById('val-'+k).textContent = b[k].toFixed(0);
+  });
+  document.getElementById('bx-diag').textContent = diagBX(b);
+
+  // CO card
+  document.getElementById('co-score').textContent = co.toFixed(1);
+  document.getElementById('bar-ts').style.width = b.ts_score+'%';
+  document.getElementById('val-ts').textContent = b.ts_score.toFixed(0);
+  document.getElementById('bar-gt').style.width = b.gt_score+'%';
+  document.getElementById('val-gt').textContent = b.gt_score.toFixed(0);
+  document.getElementById('bar-loop2').style.width = b.loop+'%';
+  document.getElementById('val-loop2').textContent = b.loop.toFixed(0);
+  document.getElementById('co-diag').textContent = diagCO(b);
+
+  // CX card
+  document.getElementById('cx-score').textContent = cx.toFixed(1);
+  document.getElementById('bar-CX').style.width = b.CX+'%';
+  document.getElementById('val-CX').textContent = b.CX.toFixed(0);
+  document.getElementById('bar-loop').style.width = b.loop+'%';
+  document.getElementById('val-loop').textContent = b.loop.toFixed(0);
+  const delivery = 100 - b.paris_syndrome;
+  document.getElementById('bar-delivery').style.width = delivery+'%';
+  document.getElementById('val-delivery').textContent = delivery.toFixed(0);
+  document.getElementById('cx-diag').textContent = diagCX(b);
+
+  // Paris Syndrome
+  document.getElementById('paris-title').textContent = `${b.id} · Paris Syndrome ${b.paris_syndrome}`;
+  document.getElementById('paris-bx-bar').style.width = Math.min(bx,100)+'%';
+  document.getElementById('paris-bx-val').textContent = bx.toFixed(0);
+  document.getElementById('paris-cx-bar').style.width = Math.min(cx,100)+'%';
+  document.getElementById('paris-cx-val').textContent = cx.toFixed(0);
+  const ps = b.paris_syndrome;
+  const psColor = ps > 90 ? '#ef4444' : ps > 75 ? '#f59e0b' : '#22c55e';
+  document.getElementById('paris-score').style.color = psColor;
+  document.getElementById('paris-score').textContent = ps;
+  document.getElementById('paris-insight').textContent = parisDiag(b);
+
+  // Highlight row in ranking
+  document.querySelectorAll('.rank-table tr.current').forEach(r => r.classList.remove('current'));
+  const row = document.getElementById('row-'+b.id.replace(/[^a-zA-Z0-9]/g,'_'));
+  if (row) row.classList.add('current');
+}
+
+// ── INIT DROPDOWN ─────────────────────────────────────────
+const sel = document.getElementById('brand-sel');
+RANKED.forEach(b => {
+  const opt = document.createElement('option');
+  opt.value = b.id;
+  opt.textContent = `${b.id}  ·  Total ${totalScore(b).toFixed(1)}`;
+  sel.appendChild(opt);
+});
+
+// ── BUILD INDUSTRY GRID ───────────────────────────────────
+function buildIndustry() {
+  const sectors = {};
+  TS_DATA.forEach(b => {
+    const s = SECTOR_MAP[b.id] || 'Otros';
+    if (!sectors[s]) sectors[s] = [];
+    sectors[s].push(b);
+  });
+
+  const grid = document.getElementById('industry-grid');
+  Object.keys(sectors).sort().forEach(sec => {
+    const brands = sectors[sec];
+    const avgBX = +(brands.reduce((s,b)=>s+bxScore(b),0)/brands.length).toFixed(0);
+    const avgCO = +(brands.reduce((s,b)=>s+coScore(b),0)/brands.length).toFixed(0);
+    const avgCX = +(brands.reduce((s,b)=>s+cxScore(b),0)/brands.length).toFixed(0);
+    const maxV  = Math.max(avgBX, avgCO, avgCX);
+    const dominant = maxV===avgBX ? 'bx' : maxV===avgCO ? 'co' : 'cx';
+    const diff = Math.max(avgBX,avgCO,avgCX) - Math.min(avgBX,avgCO,avgCX);
+    let chipClass = 'chip-balanced', chipLabel = 'Balanceado';
+    if (diff > 20) {
+      if (dominant==='bx')  { chipClass='chip-bx-heavy'; chipLabel='BX dominante'; }
+      if (dominant==='co')  { chipClass='chip-co-heavy'; chipLabel='CO dominante'; }
+      if (dominant==='cx')  { chipClass='chip-cx-heavy'; chipLabel='CX dominante'; }
+    }
+    if (Math.max(avgBX,avgCO,avgCX) < 45) { chipClass='chip-weak'; chipLabel='Capital débil'; }
+
+    const card = document.createElement('div');
+    card.className = 'ind-card';
+    card.innerHTML = `
+      <div class="ind-name">${sec} <span style="font-size:9px;color:var(--muted);font-weight:400">(${brands.length})</span></div>
+      <div class="ind-bar-row">
+        <span class="ind-bar-label" style="color:var(--bx-lt)">BX</span>
+        <div class="ind-bar-bg"><div class="ind-bar-fill" style="width:${avgBX}%;background:var(--bx)"></div></div>
+        <span class="ind-bar-val" style="color:var(--bx-lt)">${avgBX}</span>
+      </div>
+      <div class="ind-bar-row">
+        <span class="ind-bar-label" style="color:var(--co-lt)">CO</span>
+        <div class="ind-bar-bg"><div class="ind-bar-fill" style="width:${avgCO}%;background:var(--co)"></div></div>
+        <span class="ind-bar-val" style="color:var(--co-lt)">${avgCO}</span>
+      </div>
+      <div class="ind-bar-row">
+        <span class="ind-bar-label" style="color:var(--cx-lt)">CX</span>
+        <div class="ind-bar-bg"><div class="ind-bar-fill" style="width:${avgCX}%;background:var(--cx)"></div></div>
+        <span class="ind-bar-val" style="color:var(--cx-lt)">${avgCX}</span>
+      </div>
+      <span class="status-chip ${chipClass}">${chipLabel}</span>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+// ── BUILD RANKING TABLE ───────────────────────────────────
+function buildRanking() {
+  const tbody = document.getElementById('rank-body');
+  RANKED.forEach((b, i) => {
+    const bx = bxScore(b), co = coScore(b), cx = cxScore(b), tot = totalScore(b);
+    const ps = b.paris_syndrome;
+    const psColor = ps > 90 ? '#ef4444' : ps > 75 ? '#f59e0b' : '#22c55e';
+    const rowId = 'row-'+b.id.replace(/[^a-zA-Z0-9]/g,'_');
+    const tr = document.createElement('tr');
+    tr.id = rowId;
+    tr.style.cursor = 'pointer';
+    tr.onclick = () => { sel.value = b.id; updateCapital(b.id); };
+    tr.innerHTML = `
+      <td><span class="rank-num">${i+1}</span></td>
+      <td><span class="rank-brand">${b.id}</span></td>
+      <td><span class="rank-sector">${SECTOR_MAP[b.id]||'—'}</span></td>
+      <td>
+        <div class="mini-bar-row">
+          <div class="mini-bar-bg"><div class="mini-bar-fill" style="width:${Math.min(bx,100)}%;background:var(--bx)"></div></div>
+          <span class="mini-val" style="color:var(--bx-lt)">${bx.toFixed(0)}</span>
+        </div>
+      </td>
+      <td>
+        <div class="mini-bar-row">
+          <div class="mini-bar-bg"><div class="mini-bar-fill" style="width:${Math.min(co,100)}%;background:var(--co)"></div></div>
+          <span class="mini-val" style="color:var(--co-lt)">${co.toFixed(0)}</span>
+        </div>
+      </td>
+      <td>
+        <div class="mini-bar-row">
+          <div class="mini-bar-bg"><div class="mini-bar-fill" style="width:${Math.min(cx,100)}%;background:var(--cx)"></div></div>
+          <span class="mini-val" style="color:var(--cx-lt)">${cx.toFixed(0)}</span>
+        </div>
+      </td>
+      <td class="rank-paris" style="color:${psColor}">${ps}</td>
+      <td class="rank-total" style="color:var(--text)">${tot.toFixed(1)}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// ── RUN ───────────────────────────────────────────────────
+buildIndustry();
+buildRanking();
+sel.value = 'Falabella';
+updateCapital('Falabella');
+</script>
+</body>
+</html>
