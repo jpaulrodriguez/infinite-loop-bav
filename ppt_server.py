@@ -25,6 +25,18 @@ def health():
 def brands():
     return jsonify(sorted(VALID_BRANDS))
 
+@app.route("/download-base")
+def download_base():
+    path = os.path.join(os.path.dirname(__file__), "BAV_Brand_Intelligence_Colombia_2026_Base_Maestra.xlsx")
+    if not os.path.exists(path):
+        return jsonify({"error": "Archivo no encontrado."}), 404
+    return send_file(
+        path,
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        as_attachment=True,
+        download_name="BAV_Brand_Intelligence_Colombia_2026_Base_Maestra.xlsx"
+    )
+
 @app.route("/generate-ppt")
 def generate():
     nombre = request.args.get("brand", "").strip()
