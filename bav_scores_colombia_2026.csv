@@ -1,0 +1,82 @@
+Categoria,Marca,Tensity_Diferenciacion,TotalSearch_Relevancia,Brandconomics_Estima,GrowthStrategy_CX,LoyaltyStrategy_Conocimiento,BavPulse_IndiceGlobal,BavScore_x10,Ranking_Categoria,Patron
+Supermercados,D1,82.4,91.0,78.5,77.2,73.0,80.4,80.4,1,Líder integral
+Supermercados,Ara,79.0,88.5,76.0,75.5,71.0,78.0,78.0,2,Líder integral
+Supermercados,Jumbo,68.0,84.0,75.0,76.5,73.0,75.3,75.3,3,Fuerza sin entrega
+Supermercados,Alkosto,64.5,82.0,72.0,75.0,72.0,73.1,73.1,4,Fuerza sin entrega
+Supermercados,Éxito,58.0,80.5,70.5,76.0,76.0,72.2,72.2,5,Erosión activa
+Supermercados,Olímpica,52.0,72.0,64.0,68.5,68.0,64.9,64.9,6,Medio
+Supermercados,Cafam,48.0,66.0,60.5,64.0,62.0,60.1,60.1,7,Medio
+Supermercados,Colsubsidio,45.0,63.0,58.0,62.5,61.0,57.9,57.9,8,Medio
+Supermercados,Metro,40.0,58.0,53.0,57.5,56.0,52.9,52.9,9,Débil
+Supermercados,Carulla,36.0,55.0,51.0,57.0,56.0,51.0,51.0,10,Débil
+Supermercados,OXXO,32.0,52.0,48.0,52.0,50.0,47.0,47.0,11,Débil
+Supermercados,Makro,28.1,74.3,47.3,60.3,73.2,56.6,56.6,12,Erosión activa
+Supermercados,Cencosud,24.0,40.0,38.0,42.0,40.0,36.8,36.8,13,Crítico
+Supermercados,Surtifruver,22.0,36.0,36.0,40.0,38.0,34.4,34.4,14,Crítico
+Supermercados,Zapatoca,18.0,32.0,32.0,35.0,34.0,29.8,29.8,15,Crítico
+Supermercados,T. Isimo,16.0,30.0,30.0,33.0,32.0,27.9,27.9,16,Crítico
+Bancos,Bancolombia,76.0,92.0,80.0,79.5,86.0,81.2,81.2,1,Líder integral
+Bancos,Davivienda,68.0,86.0,74.0,75.0,80.0,75.0,75.0,2,Líder integral
+Bancos,BBVA Colombia,60.0,80.0,68.0,70.0,76.0,68.6,68.6,3,Fuerza sin entrega
+Bancos,Banco de Bogotá,55.0,76.0,65.0,68.0,74.0,65.4,65.4,4,Medio
+Bancos,Nu Colombia,84.0,78.0,70.0,72.0,55.0,71.3,71.3,5,Potencial no realizado
+Bancos,Lulo Bank,80.0,68.0,62.0,64.0,48.0,63.2,63.2,6,Potencial no realizado
+Bancos,Banco Popular,42.0,60.0,54.0,58.0,62.0,53.9,53.9,7,Débil
+Bancos,Scotiabank Colpatria,38.0,55.0,50.0,55.0,58.0,50.0,50.0,8,Débil
+Telecomunicaciones,Claro,58.0,90.0,72.0,70.0,88.0,73.0,73.0,1,Erosión activa
+Telecomunicaciones,Movistar,52.0,82.0,66.0,66.0,82.0,66.6,66.6,2,Erosión activa
+Telecomunicaciones,Tigo,55.0,78.0,64.0,65.0,78.0,65.0,65.0,3,Medio
+Telecomunicaciones,WOM,72.0,68.0,52.0,55.0,48.0,57.6,57.6,4,Potencial no realizado
+Telecomunicaciones,ETB,34.0,48.0,44.0,48.0,52.0,44.4,44.4,5,Débil
+Telecomunicaciones,Virgin Mobile,46.0,42.0,38.0,42.0,30.0,38.6,38.6,6,Débil
+Aerolíneas,Avianca,62.0,88.0,72.0,72.0,82.0,73.0,73.0,1,Erosión activa
+Aerolíneas,LATAM Colombia,58.0,84.0,70.0,70.0,80.0,70.4,70.4,2,Erosión activa
+Aerolíneas,Wingo,68.0,66.0,56.0,56.0,50.0,58.6,58.6,3,Potencial no realizado
+Aerolíneas,JetSMART,64.0,58.0,50.0,52.0,40.0,52.4,52.4,4,Potencial no realizado
+Aerolíneas,EasyFly,40.0,42.0,42.0,44.0,38.0,40.8,40.8,5,Débil
+Aerolíneas,Satena,28.0,32.0,34.0,36.0,34.0,32.6,32.6,6,Crítico
+Retail Moda,Studio F,54.0,68.0,58.0,60.0,62.0,59.6,59.6,1,Medio
+Retail Moda,Arturo Calle,50.0,72.0,62.0,62.0,70.0,62.4,62.4,2,Medio
+Retail Moda,Leonisa,58.0,70.0,64.0,65.0,72.0,64.5,64.5,3,Medio
+Retail Moda,Vélez,52.0,62.0,60.0,60.0,64.0,59.0,59.0,4,Medio
+Retail Moda,Tennis,46.0,58.0,52.0,54.0,56.0,52.5,52.5,5,Débil
+Retail Moda,Chevignon,48.0,60.0,54.0,56.0,58.0,54.7,54.7,6,Débil
+Retail Moda,Falabella,44.0,66.0,56.0,58.0,62.0,57.0,57.0,7,Débil
+Bebidas,Postobón,60.0,84.0,72.0,72.0,84.0,73.7,73.7,1,Erosión activa
+Bebidas,Coca-Cola Colombia,56.0,90.0,78.0,76.0,90.0,77.4,77.4,2,Erosión activa
+Bebidas,Hatsu,70.0,62.0,54.0,55.0,42.0,57.7,57.7,3,Potencial no realizado
+Bebidas,Tutti,42.0,50.0,46.0,48.0,46.0,46.5,46.5,4,Débil
+Cervezas,Águila,58.0,86.0,74.0,73.0,86.0,75.0,75.0,1,Erosión activa
+Cervezas,Poker,56.0,82.0,70.0,70.0,82.0,71.7,71.7,2,Erosión activa
+Cervezas,Club Colombia,64.0,78.0,72.0,71.0,76.0,71.9,71.9,3,Medio
+Cervezas,Corona,52.0,72.0,66.0,66.0,68.0,64.6,64.6,4,Medio
+Cervezas,BBC,68.0,52.0,56.0,55.0,38.0,53.8,53.8,5,Potencial no realizado
+Automóviles,Chevrolet,54.0,78.0,68.0,68.0,80.0,68.9,68.9,1,Erosión activa
+Automóviles,Renault,50.0,74.0,64.0,65.0,76.0,65.6,65.6,2,Erosión activa
+Automóviles,Mazda,62.0,68.0,66.0,66.0,62.0,64.6,64.6,3,Medio
+Automóviles,Kia,58.0,66.0,62.0,63.0,60.0,61.5,61.5,4,Medio
+Automóviles,Toyota,56.0,72.0,68.0,68.0,70.0,66.6,66.6,5,Medio
+Automóviles,BYD,82.0,70.0,58.0,60.0,32.0,62.5,62.5,6,Potencial no realizado
+E-commerce,Mercado Libre,72.0,92.0,76.0,75.0,86.0,79.2,79.2,1,Líder integral
+E-commerce,Rappi,70.0,90.0,68.0,68.0,84.0,74.5,74.5,2,Fuerza sin entrega
+E-commerce,Amazon Colombia,60.0,80.0,72.0,70.0,76.0,71.5,71.5,3,Medio
+E-commerce,Falabella.com,46.0,64.0,54.0,56.0,60.0,55.8,55.8,4,Débil
+E-commerce,Linio,30.0,38.0,34.0,36.0,38.0,35.0,35.0,5,Crítico
+Seguros,Sura,56.0,76.0,68.0,68.0,78.0,68.9,68.9,1,Medio
+Seguros,Seguros Bolívar,52.0,70.0,64.0,64.0,72.0,64.0,64.0,2,Medio
+Seguros,Mapfre,46.0,62.0,58.0,58.0,64.0,57.5,57.5,3,Débil
+Seguros,Allianz,44.0,58.0,56.0,57.0,58.0,54.6,54.6,4,Débil
+Combustibles,Terpel,58.0,82.0,70.0,70.0,84.0,72.1,72.1,1,Erosión activa
+Combustibles,Primax,50.0,72.0,62.0,63.0,72.0,63.9,63.9,2,Medio
+Combustibles,Esso/Biomax,42.0,58.0,52.0,54.0,58.0,52.7,52.7,3,Débil
+Farmacias,Farmatodo,56.0,80.0,68.0,68.0,80.0,70.3,70.3,1,Medio
+Farmacias,Cruz Verde,52.0,76.0,64.0,65.0,78.0,67.0,67.0,2,Medio
+Farmacias,La Rebaja,44.0,62.0,56.0,58.0,64.0,56.7,56.7,3,Débil
+Restaurantes QSR,McDonald's,52.0,86.0,68.0,68.0,84.0,71.4,71.4,1,Erosión activa
+Restaurantes QSR,Frisby,68.0,82.0,74.0,73.0,82.0,75.8,75.8,2,Líder integral
+Restaurantes QSR,KFC,48.0,74.0,62.0,63.0,72.0,63.6,63.6,3,Medio
+Restaurantes QSR,El Corral,62.0,78.0,70.0,70.0,76.0,71.3,71.3,4,Medio
+Restaurantes QSR,Subway,40.0,60.0,50.0,52.0,58.0,52.0,52.0,5,Débil
+Hoteles,Decameron,58.0,76.0,68.0,67.0,72.0,68.2,68.2,1,Medio
+Hoteles,GHL Hoteles,50.0,62.0,58.0,58.0,60.0,57.6,57.6,2,Débil
+Hoteles,Estelar,46.0,58.0,56.0,56.0,58.0,54.8,54.8,3,Débil

@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Brand Intelligence Loop · Capital Intangible</title>
+<style>
+/* ── RESET & BASE ──────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#070B19;
+  --surface:#121A2F;
+  --surface-2:#121A2F;
+  --border:rgba(255,255,255,.07);
+  --border-hover:rgba(255,255,255,.18);
+  --text-1:#FFFFFF;
+  --text-2:#A3A8B8;
+  --text-3:rgba(163,168,184,.45);
+  --accent:#FF7A00;
+  --red:#FF3B30;
+  --yellow:#f4a261;
+  --green:#00D26A;
+  --red-glow:rgba(255,59,48,.18);
+  --yellow-glow:rgba(244,162,97,.18);
+  --green-glow:rgba(0,210,106,.18);
+  --radius-sm:8px;
+  --radius-md:12px;
+  --radius-lg:16px;
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px;
+  --sp-5:20px; --sp-6:24px; --sp-8:32px;
+}
+html,body{
+  width:100%;min-height:100vh;
+  background:var(--bg);
+  background-image:
+    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(255,122,0,.06) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 90%, rgba(0,210,106,.04) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 50% 50%, rgba(18,26,47,.8) 0%, transparent 100%);
+  color:var(--text-1);
+  font-family:-apple-system,'SF Pro Display',Helvetica Neue,sans-serif;
+  font-size:14px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ── LAYOUT SHELL ─────────────────────────────────────────── */
+#app{
+  display:grid;
+  grid-template-rows:56px auto auto auto;
+  max-width:1280px;
+  margin:0 auto;
+  padding:0 var(--sp-8);
+}
+
+/* ── HEADER ───────────────────────────────────────────────── */
+#header{
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border);
+  gap:var(--sp-4);
+}
+.header-brand{
+  display:flex;align-items:center;gap:var(--sp-3);
+}
+.header-brand-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--accent);box-shadow:0 0 8px var(--accent);
+}
+.header-brand-name{
+  font-size:11px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--text-2);
+}
+.header-brand-name span{color:var(--accent);}
+
+.selector-wrap{display:flex;align-items:center;gap:var(--sp-3);}
+.selector-label{
+  font-size:11px;font-weight:600;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--text-3);
+}
+#brand-select{
+  background:var(--surface-2);
+  border:1px solid var(--border-hover);
+  border-radius:var(--radius-sm);
+  color:var(--text-1);
+  font-size:13px;font-weight:600;
+  padding:6px 32px 6px 12px;
+  appearance:none;cursor:pointer;outline:none;
+  min-width:200px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='rgba(255,255,255,.4)' d='M5 7L1 3h8z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 10px center;
+  transition:border-color .15s,background .15s;
+}
+#brand-select:hover{border-color:rgba(255,255,255,.3);background-color:#152040;}
+#brand-select option{background:#0d1428;}
+
+/* ── BOTÓN DESCARGAR PPT ─────────────────────────────────── */
+#btn-download-ppt{
+  display:flex;align-items:center;gap:6px;
+  padding:6px 14px;
+  background:var(--accent);
+  border:none;border-radius:var(--radius-sm);
+  color:#fff;font-size:12px;font-weight:700;
+  letter-spacing:.04em;cursor:pointer;
+  transition:opacity .15s,transform .1s,background .15s;
+  white-space:nowrap;
+}
+#btn-download-ppt:hover:not(:disabled){background:#e86e00;transform:translateY(-1px);}
+#btn-download-ppt:active:not(:disabled){transform:translateY(0);}
+#btn-download-ppt:disabled{
+  background:rgba(255,122,0,.2);
+  color:rgba(255,255,255,.35);
+  cursor:not-allowed;
+}
+#btn-download-ppt.loading{
+  background:rgba(255,122,0,.5);
+  pointer-events:none;
+}
+#btn-download-ppt svg{flex-shrink:0;}
+
+/* ── LOOP SECTION ─────────────────────────────────────────── */
+#loop-section{
+  display:flex;flex-direction:column;align-items:center;
+  padding:var(--sp-8) var(--sp-8) 0;
+}
+#loop-wrap{width:100%;max-width:860px;}
+#loop-wrap svg{display:block;width:100%;overflow:visible;}
+
+/* ── AREA SCORE BRIDGE ────────────────────────────────────── */
+#area-scores{
+  display:flex;align-items:stretch;gap:0;
+  width:100%;max-width:920px;
+  margin-top:var(--sp-4);
+  background:rgba(18,26,47,.45);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:var(--radius-md);
+  overflow:hidden;
+  box-shadow:0 4px 24px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.06);
+}
+.area-score-cell{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:var(--sp-3) var(--sp-4);gap:var(--sp-1);
+  border-right:1px solid var(--border);
+  transition:background .3s;
+  position:relative;overflow:hidden;
+}
+.area-score-cell:last-child{border-right:none;}
+.area-score-cell::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--area-color,var(--border));
+  transition:background .3s;
+}
+.area-label{
+  font-size:10px;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--text-3);
+}
+.area-name{
+  font-size:11px;font-weight:500;color:var(--text-2);
+  white-space:nowrap;
+}
+.area-val{
+  font-size:28px;font-weight:900;letter-spacing:-1px;
+  color:var(--area-color,var(--text-3));
+  transition:color .3s;line-height:1;
+}
+.area-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--area-color,var(--text-3));
+  background:rgba(255,255,255,.05);border-radius:4px;
+  padding:2px 6px;
+}
+
+/* ── KPI SECTION ──────────────────────────────────────────── */
+#kpi-section{
+  padding:var(--sp-4) 0 var(--sp-6);
+}
+#kpi-row{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:var(--sp-3);
+}
+
+/* KPI CARD */
+.kpi-card{
+  background:rgba(18,26,47,.5);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:var(--radius-md);
+  padding:var(--sp-4) var(--sp-4) var(--sp-3);
+  position:relative;overflow:hidden;
+  transition:border-color .3s,box-shadow .3s,transform .18s;
+  display:flex;flex-direction:column;gap:var(--sp-2);
+  cursor:pointer;
+  box-shadow:0 4px 20px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.07);
+}
+.kpi-card:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.1);}
+.kpi-card-hint{
+  font-size:8px;color:var(--text-3);letter-spacing:.06em;text-align:right;
+  margin-top:2px;opacity:.6;
+}
+
+/* ── KPI MODAL ───────────────────────────────────────────── */
+#kpi-modal-backdrop{
+  position:fixed;inset:0;z-index:1000;
+  background:rgba(7,11,25,.72);backdrop-filter:blur(6px);
+  display:none;align-items:center;justify-content:center;
+}
+#kpi-modal-backdrop.open{display:flex;}
+#kpi-modal{
+  background:rgba(18,26,47,.72);
+  backdrop-filter:blur(32px);-webkit-backdrop-filter:blur(32px);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:16px;padding:28px 32px 24px;
+  max-width:420px;width:90%;position:relative;
+  box-shadow:0 32px 80px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.1);
+  animation:modal-in .22s cubic-bezier(.4,0,.2,1);
+}
+@keyframes modal-in{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:none}}
+#kpi-modal-close{
+  position:absolute;top:14px;right:16px;
+  background:none;border:none;color:var(--text-3);
+  font-size:18px;cursor:pointer;line-height:1;padding:4px;
+}
+#kpi-modal-close:hover{color:var(--text-1);}
+#kpi-modal-tag{
+  font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--modal-color,#888);margin-bottom:4px;
+}
+#kpi-modal-title{
+  font-size:20px;font-weight:800;color:var(--text-1);margin-bottom:16px;
+}
+#kpi-modal-score-row{
+  display:flex;align-items:center;gap:12px;margin-bottom:20px;
+}
+#kpi-modal-score{
+  font-size:48px;font-weight:900;letter-spacing:-2px;line-height:1;
+  color:var(--modal-color,var(--text-1));
+}
+#kpi-modal-badge{
+  padding:4px 10px;border-radius:6px;
+  font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  background:rgba(255,255,255,.06);color:var(--modal-color,var(--text-2));
+  border:1px solid var(--modal-color,var(--border));
+}
+#kpi-modal-bar-track{
+  height:4px;border-radius:999px;background:rgba(255,255,255,.07);
+  overflow:hidden;margin-bottom:20px;
+}
+#kpi-modal-bar-fill{
+  height:100%;border-radius:999px;
+  background:var(--modal-color,rgba(255,255,255,.2));
+  transition:width .5s cubic-bezier(.4,0,.2,1);
+}
+#kpi-modal-divider{height:1px;background:rgba(255,255,255,.06);margin-bottom:16px;}
+#kpi-modal-label{
+  font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--text-3);margin-bottom:8px;
+}
+#kpi-modal-text{
+  font-size:13px;color:var(--text-2);line-height:1.6;
+}
+#kpi-modal-action{
+  margin-top:18px;padding:10px 14px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:8px;
+}
+#kpi-modal-action-label{
+  font-size:8px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--modal-color,var(--text-3));margin-bottom:4px;
+}
+#kpi-modal-action-text{
+  font-size:12px;font-weight:600;color:var(--text-1);line-height:1.4;
+}
+.kpi-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--kpi-color,var(--border));
+  transition:background .3s;
+}
+.kpi-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--sp-2);}
+.kpi-card-meta{display:flex;flex-direction:column;gap:3px;flex:1;min-width:0;}
+.kpi-area-tag{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--kpi-color,var(--text-3));
+}
+.kpi-area-dot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}
+.kpi-card-name{
+  font-size:11px;font-weight:500;color:var(--text-2);
+  line-height:1.3;
+}
+.kpi-score-badge{
+  display:flex;align-items:center;justify-content:center;
+  width:44px;height:44px;border-radius:8px;flex-shrink:0;
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--kpi-color,var(--border));
+  transition:border-color .3s;
+}
+.kpi-score-num{
+  font-size:20px;font-weight:900;letter-spacing:-1px;line-height:1;
+  color:var(--kpi-color,var(--text-3));
+  transition:color .3s;
+}
+.kpi-score-num.empty{font-size:14px;color:var(--text-3);}
+.kpi-bottom{display:flex;flex-direction:column;gap:var(--sp-1);}
+.kpi-bar-track{
+  height:3px;border-radius:999px;
+  background:rgba(255,255,255,.06);overflow:hidden;
+}
+.kpi-bar-fill{
+  height:100%;border-radius:999px;width:0%;
+  background:var(--kpi-color,rgba(255,255,255,.15));
+  transition:width .55s cubic-bezier(.4,0,.2,1),background .3s;
+}
+.kpi-status-row{display:flex;align-items:center;justify-content:space-between;}
+.kpi-status{
+  font-size:9px;font-weight:600;letter-spacing:.05em;
+  color:var(--kpi-color,var(--text-3));
+  transition:color .3s;
+}
+.kpi-pct{
+  font-size:9px;color:var(--text-3);font-weight:500;
+}
+
+/* ── INSIGHT PANEL ───────────────────────────────────────── */
+#insight-panel{
+  width:100%;max-width:920px;
+  margin-top:var(--sp-3);
+  margin-left:auto;margin-right:auto;
+  background:rgba(18,26,47,.45);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:var(--radius-md);
+  padding:var(--sp-4) var(--sp-5);
+  display:none;
+  gap:var(--sp-3);
+  flex-direction:column;
+  align-items:center;
+  box-shadow:0 4px 24px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.06);
+}
+#insight-panel.visible{display:flex;}
+.insight-header{
+  display:flex;align-items:center;gap:var(--sp-2);
+}
+.insight-tag{
+  font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--accent);background:rgba(255,107,0,.1);border-radius:4px;
+  padding:2px 7px;
+}
+.insight-dominant{
+  font-size:12px;font-weight:600;color:var(--text-1);line-height:1.55;
+  border-left:2px solid var(--accent);padding-left:var(--sp-3);
+  text-align:center;border-left:none;padding-left:0;
+}
+.insight-bullets{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:var(--sp-2);
+  width:100%;opacity:.65;
+}
+.insight-bullet{
+  display:flex;flex-direction:column;gap:2px;
+}
+.insight-bullet-label{
+  font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text-3);
+}
+.insight-bullet-text{
+  font-size:10px;color:var(--text-2);line-height:1.35;
+}
+
+/* ── LEGEND ───────────────────────────────────────────────── */
+#legend-bar{
+  display:flex;align-items:center;gap:var(--sp-5);
+  padding:var(--sp-3) 0;
+  border-top:1px solid var(--border);
+  margin-top:var(--sp-2);
+}
+.legend-title{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);}
+.leg{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-2);}
+.leg-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.leg-range{color:var(--text-3);font-size:10px;margin-left:2px;}
+
+/* ── SVG ANIMATIONS ───────────────────────────────────────── */
+@keyframes scan{0%{transform:translateY(-100%)}100%{transform:translateY(600%)}}
+@keyframes gOval{
+  0%,100%{filter:drop-shadow(0 0 5px rgba(200,220,255,.5)) drop-shadow(0 0 18px rgba(160,200,255,.2))}
+  50%     {filter:drop-shadow(0 0 11px rgba(220,235,255,.8)) drop-shadow(0 0 32px rgba(180,215,255,.4))}
+}
+@keyframes gBX{
+  0%,100%{filter:drop-shadow(0 0 5px var(--bx-glow-a)) drop-shadow(0 0 16px var(--bx-glow-b))}
+  50%     {filter:drop-shadow(0 0 12px var(--bx-glow-c)) drop-shadow(0 0 30px var(--bx-glow-d))}
+}
+@keyframes gCX{
+  0%,100%{filter:drop-shadow(0 0 5px var(--cx-glow-a)) drop-shadow(0 0 16px var(--cx-glow-b))}
+  50%     {filter:drop-shadow(0 0 12px var(--cx-glow-c)) drop-shadow(0 0 30px var(--cx-glow-d))}
+}
+@keyframes gCO{
+  0%,100%{filter:drop-shadow(0 0 4px var(--co-glow-a))}
+  50%     {filter:drop-shadow(0 0 9px var(--co-glow-b)) drop-shadow(0 0 22px var(--co-glow-c))}
+}
+.scan-line{animation:scan 7s linear infinite}
+#shape-outer{animation:gOval 4s ease-in-out infinite}
+#arc-bx     {animation:gBX  3.5s ease-in-out infinite}
+#arc-cx     {animation:gCX  3.5s ease-in-out infinite 1.75s}
+#co-grp     {animation:gCO  2.5s ease-in-out infinite}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ── HEADER ── -->
+  <header id="header">
+    <div class="header-brand">
+      <div class="header-brand-dot"></div>
+      <div class="header-brand-name"><span>Capital Intangible</span> · Brand Intelligence Loop</div>
+    </div>
+    <div class="selector-wrap">
+      <span class="selector-label">Marca</span>
+      <select id="brand-select"><option value="">— Selecciona —</option></select>
+      <button id="btn-download-ppt" title="Descargar presentación PPT de esta marca" disabled>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span id="btn-ppt-label">Descargar PPT</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ── LOOP ── -->
+  <section id="loop-section">
+    <div id="loop-wrap">
+      <svg viewBox="-80 -30 1140 520" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="fGl" x="-25%" y="-25%" width="150%" height="150%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="fNd" x="-100%" y="-100%" width="300%" height="300%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="fTx" x="-5%" y="-5%" width="110%" height="110%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="1.6" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <clipPath id="cAll"><rect width="980" height="460"/></clipPath>
+        </defs>
+        <g opacity=".035" clip-path="url(#cAll)">
+          <line x1="0" y1="92" x2="980" y2="92" stroke="#80cfff" stroke-width=".5"/>
+          <line x1="0" y1="231" x2="980" y2="231" stroke="#80cfff" stroke-width=".5"/>
+          <line x1="0" y1="370" x2="980" y2="370" stroke="#80cfff" stroke-width=".5"/>
+          <line x1="98" y1="0" x2="98" y2="460" stroke="#80cfff" stroke-width=".5"/>
+          <line x1="490" y1="0" x2="490" y2="460" stroke="#80cfff" stroke-width=".5"/>
+          <line x1="882" y1="0" x2="882" y2="460" stroke="#80cfff" stroke-width=".5"/>
+        </g>
+        <g clip-path="url(#cAll)">
+          <rect class="scan-line" x="0" y="0" width="980" height="3" fill="rgba(130,215,255,.04)"/>
+        </g>
+        <path id="shape-outer"
+          d="M 222,3 L 758,3 A 228,228 0 0 1 758,459 L 222,459 A 228,228 0 0 1 222,3 Z"
+          fill="none" stroke="rgba(255,255,255,.92)" stroke-width="3"/>
+        <path id="arc-bx" d="M 320,89 A 172,172 0 1 0 320,373"
+          fill="none" stroke="rgba(255,255,255,.88)" stroke-width="3"/>
+        <path id="arc-cx" d="M 660,89 A 172,172 0 1 1 660,373"
+          fill="none" stroke="rgba(255,255,255,.88)" stroke-width="3"/>
+        <circle cx="490" cy="231" r="222" fill="none" stroke="#ff6b00"
+          stroke-width="1.7" stroke-dasharray="7,5" opacity=".78"/>
+        <line id="band-a" x1="320" y1="89" x2="660" y2="373" stroke="rgba(160,168,195,.72)" stroke-width="3" stroke-linecap="round"/>
+        <line id="band-b" x1="660" y1="89" x2="320" y2="373" stroke="rgba(160,168,195,.72)" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="320" cy="89"  r="22" fill="rgba(255,255,255,.18)" filter="url(#fNd)"/>
+        <circle cx="660" cy="89"  r="22" fill="rgba(255,255,255,.18)" filter="url(#fNd)"/>
+        <circle cx="320" cy="373" r="22" fill="rgba(255,255,255,.18)" filter="url(#fNd)"/>
+        <circle cx="660" cy="373" r="22" fill="rgba(255,255,255,.18)" filter="url(#fNd)"/>
+        <circle cx="320" cy="89"  r="17" fill="white"/>
+        <circle cx="660" cy="89"  r="17" fill="white"/>
+        <circle cx="320" cy="373" r="17" fill="white"/>
+        <circle cx="660" cy="373" r="17" fill="white"/>
+        <text x="344" y="93" font-size="13.5" font-weight="500" fill="rgba(255,255,255,.88)" font-family="-apple-system,Helvetica Neue,sans-serif">Comms Strategy</text>
+        <text x="636" y="93" text-anchor="end" font-size="13.5" font-weight="500" fill="rgba(255,255,255,.88)" font-family="-apple-system,Helvetica Neue,sans-serif">1PD, CRM. Loyalty</text>
+        <text x="344" y="393" font-size="13.5" font-weight="500" fill="rgba(255,255,255,.88)" font-family="-apple-system,Helvetica Neue,sans-serif">Brand Strategy</text>
+        <text x="636" y="393" text-anchor="end" font-size="13.5" font-weight="500" fill="rgba(255,255,255,.88)" font-family="-apple-system,Helvetica Neue,sans-serif">CX Strategy</text>
+        <text x="235" y="247" text-anchor="middle" font-size="88" font-weight="900" letter-spacing="-3"
+          fill="#ffffff" font-family="-apple-system,Helvetica Neue,sans-serif" filter="url(#fTx)">BX</text>
+        <g id="co-grp">
+          <text x="490" y="247" text-anchor="middle" font-size="88" font-weight="900" letter-spacing="-3"
+            fill="#ffffff" font-family="-apple-system,Helvetica Neue,sans-serif" filter="url(#fTx)">CO</text>
+        </g>
+        <text x="745" y="247" text-anchor="middle" font-size="88" font-weight="900" letter-spacing="-3"
+          fill="#ffffff" font-family="-apple-system,Helvetica Neue,sans-serif" filter="url(#fTx)">CX</text>
+        <line x1="-55" y1="265" x2="-55" y2="210" stroke="rgba(255,255,255,.5)" stroke-width="1.5"/>
+        <polyline points="-61,220 -55,210 -49,220" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="1.5" stroke-linejoin="round"/>
+        <text x="-55" y="286" text-anchor="middle" font-size="11" font-weight="500" fill="rgba(255,255,255,.62)" font-family="-apple-system,Helvetica Neue,sans-serif">Content</text>
+        <text x="-55" y="300" text-anchor="middle" font-size="11" font-weight="500" fill="rgba(255,255,255,.62)" font-family="-apple-system,Helvetica Neue,sans-serif">Transformation</text>
+        <line x1="1035" y1="210" x2="1035" y2="265" stroke="rgba(255,255,255,.5)" stroke-width="1.5"/>
+        <polyline points="1029,255 1035,265 1041,255" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="1.5" stroke-linejoin="round"/>
+        <text x="1035" y="286" text-anchor="middle" font-size="11" font-weight="500" fill="rgba(255,255,255,.62)" font-family="-apple-system,Helvetica Neue,sans-serif">Engineering</text>
+        <text x="1035" y="300" text-anchor="middle" font-size="11" font-weight="500" fill="rgba(255,255,255,.62)" font-family="-apple-system,Helvetica Neue,sans-serif">and Platforms</text>
+        <text x="490" y="-8" text-anchor="middle" font-size="23" font-weight="700" font-style="italic"
+          fill="#ff6b00" font-family="Georgia,'Times New Roman',serif" filter="url(#fGl)">Consulting</text>
+        <g stroke="rgba(80,175,255,.25)" stroke-width="1" fill="none">
+          <path d="M50,58 L36,58 L36,74"/><path d="M50,402 L36,402 L36,386"/>
+          <path d="M930,58 L944,58 L944,74"/><path d="M930,402 L944,402 L944,386"/>
+        </g>
+      </svg>
+    </div>
+
+    <!-- Area Score Bridge -->
+    <div id="area-scores">
+      <div class="area-score-cell" id="cell-bx" style="--area-color:rgba(255,255,255,.2)">
+        <div class="area-label">Frente BX</div>
+        <div class="area-val" id="aval-bx">—</div>
+        <div class="area-name">Brand Experience</div>
+        <div class="area-badge" id="abadge-bx">Sin selección</div>
+      </div>
+      <div class="area-score-cell" id="cell-co" style="--area-color:rgba(255,255,255,.2)">
+        <div class="area-label">Frente CO</div>
+        <div class="area-val" id="aval-co">—</div>
+        <div class="area-name">Commerce</div>
+        <div class="area-badge" id="abadge-co">Sin selección</div>
+      </div>
+      <div class="area-score-cell" id="cell-cx" style="--area-color:rgba(255,255,255,.2)">
+        <div class="area-label">Frente CX</div>
+        <div class="area-val" id="aval-cx">—</div>
+        <div class="area-name">Customer Experience</div>
+        <div class="area-badge" id="abadge-cx">Sin selección</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── INSIGHT PANEL ── -->
+  <div id="insight-panel">
+    <div class="insight-header">
+      <span class="insight-tag">Idea Dominante</span>
+    </div>
+    <div class="insight-dominant" id="insight-dominant"></div>
+    <div class="insight-bullets">
+      <div class="insight-bullet">
+        <div class="insight-bullet-label">BX · Brand Experience</div>
+        <div class="insight-bullet-text" id="insight-bx"></div>
+      </div>
+      <div class="insight-bullet">
+        <div class="insight-bullet-label">CO · Commerce</div>
+        <div class="insight-bullet-text" id="insight-co"></div>
+      </div>
+      <div class="insight-bullet">
+        <div class="insight-bullet-label">CX · Customer Experience</div>
+        <div class="insight-bullet-text" id="insight-cx"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── KPI CARDS ── -->
+  <div id="kpi-section">
+    <div id="kpi-row">
+
+      <div class="kpi-card" id="card-brand-asset">
+        <div class="kpi-card-top">
+          <div class="kpi-card-meta">
+            <div class="kpi-area-tag"><span class="kpi-area-dot"></span>BX · Brand Strategy</div>
+            <div class="kpi-card-name">Brand Asset</div>
+          </div>
+          <div class="kpi-score-badge"><div class="kpi-score-num empty" id="score-brand-asset">—</div></div>
+        </div>
+        <div class="kpi-bottom">
+          <div class="kpi-bar-track"><div class="kpi-bar-fill" id="bar-brand-asset"></div></div>
+          <div class="kpi-status-row">
+            <div class="kpi-status" id="status-brand-asset">Sin datos</div>
+            <div class="kpi-pct" id="pct-brand-asset"></div>
+          </div>
+        </div>
+        <div class="kpi-card-hint">Ver análisis ↗</div>
+      </div>
+
+      <div class="kpi-card" id="card-bav-pulse">
+        <div class="kpi-card-top">
+          <div class="kpi-card-meta">
+            <div class="kpi-area-tag"><span class="kpi-area-dot"></span>BX · Comms</div>
+            <div class="kpi-card-name">BAV Pulse Digital</div>
+          </div>
+          <div class="kpi-score-badge"><div class="kpi-score-num empty" id="score-bav-pulse">—</div></div>
+        </div>
+        <div class="kpi-bottom">
+          <div class="kpi-bar-track"><div class="kpi-bar-fill" id="bar-bav-pulse"></div></div>
+          <div class="kpi-status-row">
+            <div class="kpi-status" id="status-bav-pulse">Sin datos</div>
+            <div class="kpi-pct" id="pct-bav-pulse"></div>
+          </div>
+        </div>
+        <div class="kpi-card-hint">Ver análisis ↗</div>
+      </div>
+
+      <div class="kpi-card" id="card-commerce">
+        <div class="kpi-card-top">
+          <div class="kpi-card-meta">
+            <div class="kpi-area-tag"><span class="kpi-area-dot"></span>CO · Commerce</div>
+            <div class="kpi-card-name">Commerce Score</div>
+          </div>
+          <div class="kpi-score-badge"><div class="kpi-score-num empty" id="score-commerce">—</div></div>
+        </div>
+        <div class="kpi-bottom">
+          <div class="kpi-bar-track"><div class="kpi-bar-fill" id="bar-commerce"></div></div>
+          <div class="kpi-status-row">
+            <div class="kpi-status" id="status-commerce">Sin datos</div>
+            <div class="kpi-pct" id="pct-commerce"></div>
+          </div>
+        </div>
+        <div class="kpi-card-hint">Ver análisis ↗</div>
+      </div>
+
+      <div class="kpi-card" id="card-cx">
+        <div class="kpi-card-top">
+          <div class="kpi-card-meta">
+            <div class="kpi-area-tag"><span class="kpi-area-dot"></span>CX · Síndrome París</div>
+            <div class="kpi-card-name">CX Score</div>
+          </div>
+          <div class="kpi-score-badge"><div class="kpi-score-num empty" id="score-cx">—</div></div>
+        </div>
+        <div class="kpi-bottom">
+          <div class="kpi-bar-track"><div class="kpi-bar-fill" id="bar-cx"></div></div>
+          <div class="kpi-status-row">
+            <div class="kpi-status" id="status-cx">Sin datos</div>
+            <div class="kpi-pct" id="pct-cx"></div>
+          </div>
+        </div>
+        <div class="kpi-card-hint">Ver análisis ↗</div>
+      </div>
+
+      <div class="kpi-card" id="card-loyalty">
+        <div class="kpi-card-top">
+          <div class="kpi-card-meta">
+            <div class="kpi-area-tag"><span class="kpi-area-dot"></span>CX · Loyalty</div>
+            <div class="kpi-card-name">Loyalty / NPS</div>
+          </div>
+          <div class="kpi-score-badge"><div class="kpi-score-num empty" id="score-loyalty">—</div></div>
+        </div>
+        <div class="kpi-bottom">
+          <div class="kpi-bar-track"><div class="kpi-bar-fill" id="bar-loyalty"></div></div>
+          <div class="kpi-status-row">
+            <div class="kpi-status" id="status-loyalty">Sin datos</div>
+            <div class="kpi-pct" id="pct-loyalty"></div>
+          </div>
+        </div>
+        <div class="kpi-card-hint">Ver análisis ↗</div>
+      </div>
+
+    </div><!-- /kpi-row -->
+
+    <div id="legend-bar">
+      <span class="legend-title">Semáforo</span>
+      <span class="leg"><span class="leg-dot" style="background:#e63946"></span>Bajo <span class="leg-range">0–33</span></span>
+      <span class="leg"><span class="leg-dot" style="background:#f4a261"></span>Medio <span class="leg-range">34–66</span></span>
+      <span class="leg"><span class="leg-dot" style="background:#2dc653"></span>Alto <span class="leg-range">67–100</span></span>
+    </div>
+  </div><!-- /kpi-section -->
+
+</div><!-- /app -->
+
+<!-- KPI MODAL -->
+<div id="kpi-modal-backdrop">
+  <div id="kpi-modal">
+    <button id="kpi-modal-close">✕</button>
+    <div id="kpi-modal-tag"></div>
+    <div id="kpi-modal-title"></div>
+    <div id="kpi-modal-score-row">
+      <div id="kpi-modal-score"></div>
+      <div id="kpi-modal-badge"></div>
+    </div>
+    <div id="kpi-modal-bar-track"><div id="kpi-modal-bar-fill"></div></div>
+    <div id="kpi-modal-divider"></div>
+    <div id="kpi-modal-label">Síntesis del indicador</div>
+    <div id="kpi-modal-text"></div>
+    <div id="kpi-modal-action">
+      <div id="kpi-modal-action-label">Acción prioritaria</div>
+      <div id="kpi-modal-action-text"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const BRANDS = [{"marca": "Aguila", "bx": 58.4, "co": 38.3, "cx": 56.6, "brand_asset": 57.7, "bav_pulse": 59.0, "commerce": 38.3, "cx_kpi": 78.7, "loyalty": 51.9}, {"marca": "Alkosto", "bx": 64.2, "co": 79.0, "cx": 39.1, "brand_asset": 84.6, "bav_pulse": 43.8, "commerce": 79.0, "cx_kpi": 48.9, "loyalty": 53.2}, {"marca": "American Airlines", "bx": 48.3, "co": 96.3, "cx": 34.8, "brand_asset": 26.9, "bav_pulse": 69.8, "commerce": 96.3, "cx_kpi": 18.2, "loyalty": 59.5}, {"marca": "Andina (beer)", "bx": 14.0, "co": 56.8, "cx": 37.0, "brand_asset": 6.4, "bav_pulse": 21.6, "commerce": 56.8, "cx_kpi": 63.0, "loyalty": 19.0}, {"marca": "Arturo Calle", "bx": 65.7, "co": 76.5, "cx": 40.5, "brand_asset": 91.0, "bav_pulse": 40.4, "commerce": 76.5, "cx_kpi": 41.7, "loyalty": 72.2}, {"marca": "Avianca", "bx": 60.1, "co": 23.5, "cx": 71.1, "brand_asset": 60.3, "bav_pulse": 59.9, "commerce": 23.5, "cx_kpi": 51.4, "loyalty": 75.9}, {"marca": "BMW", "bx": 73.7, "co": 45.7, "cx": 47.9, "brand_asset": 71.8, "bav_pulse": 75.6, "commerce": 45.7, "cx_kpi": 55.3, "loyalty": 62.0}, {"marca": "Bavaria", "bx": 41.6, "co": 14.8, "cx": 91.2, "brand_asset": null, "bav_pulse": 41.6, "commerce": 14.8, "cx_kpi": 63.0, "loyalty": null}, {"marca": "Biomax", "bx": 18.4, "co": 84.0, "cx": 66.5, "brand_asset": 7.7, "bav_pulse": 29.0, "commerce": 84.0, "cx_kpi": 91.3, "loyalty": 35.4}, {"marca": "Budweiser", "bx": 58.8, "co": 14.8, "cx": 42.0, "brand_asset": 50.0, "bav_pulse": 67.6, "commerce": 14.8, "cx_kpi": 45.5, "loyalty": 27.8}, {"marca": "Carulla", "bx": 34.8, "co": 48.1, "cx": 9.5, "brand_asset": 33.3, "bav_pulse": 36.4, "commerce": 48.1, "cx_kpi": 17.4, "loyalty": 16.5}, {"marca": "Cencosud", "bx": 40.2, "co": 27.2, "cx": 25.1, "brand_asset": 21.8, "bav_pulse": 58.6, "commerce": 27.2, "cx_kpi": 22.1, "loyalty": 7.6}, {"marca": "Cerveza BBC", "bx": 44.6, "co": 14.8, "cx": 44.5, "brand_asset": 42.3, "bav_pulse": 46.9, "commerce": 14.8, "cx_kpi": 44.0, "loyalty": 26.6}, {"marca": "Chevignon", "bx": 37.1, "co": 25.9, "cx": 40.9, "brand_asset": 44.9, "bav_pulse": 29.3, "commerce": 25.9, "cx_kpi": 63.0, "loyalty": 50.6}, {"marca": "Chevrolet", "bx": 68.2, "co": 42.0, "cx": 80.5, "brand_asset": 52.6, "bav_pulse": 83.9, "commerce": 42.0, "cx_kpi": 58.9, "loyalty": 74.7}, {"marca": "Claro", "bx": 40.5, "co": 13.6, "cx": 33.5, "brand_asset": 29.5, "bav_pulse": 51.6, "commerce": 13.6, "cx_kpi": 34.9, "loyalty": 63.3}, {"marca": "Club Colombia", "bx": 74.5, "co": 14.8, "cx": 73.7, "brand_asset": 78.2, "bav_pulse": 70.7, "commerce": 14.8, "cx_kpi": 41.7, "loyalty": 94.9}, {"marca": "Coca-Cola", "bx": 86.2, "co": 75.3, "cx": 86.1, "brand_asset": 96.2, "bav_pulse": 76.2, "commerce": 75.3, "cx_kpi": 63.0, "loyalty": 77.2}, {"marca": "Colombiana Postobón", "bx": 57.8, "co": 32.1, "cx": 41.5, "brand_asset": 83.3, "bav_pulse": 32.4, "commerce": 32.1, "cx_kpi": 41.7, "loyalty": 54.4}, {"marca": "Colpatria", "bx": 17.8, "co": 3.7, "cx": 46.4, "brand_asset": 5.1, "bav_pulse": 30.5, "commerce": 3.7, "cx_kpi": 15.3, "loyalty": 17.7}, {"marca": "Copa Airlines", "bx": 45.9, "co": 59.3, "cx": 31.5, "brand_asset": 43.6, "bav_pulse": 48.1, "commerce": 59.3, "cx_kpi": 27.0, "loyalty": 41.8}, {"marca": "Corona (beer)", "bx": 81.2, "co": 14.8, "cx": 74.2, "brand_asset": 87.2, "bav_pulse": 75.3, "commerce": 14.8, "cx_kpi": 96.7, "loyalty": 79.7}, {"marca": "Cruz Verde", "bx": 54.8, "co": 63.0, "cx": 71.0, "brand_asset": 66.7, "bav_pulse": 42.9, "commerce": 63.0, "cx_kpi": 63.0, "loyalty": 57.0}, {"marca": "D1", "bx": 70.1, "co": 88.9, "cx": 49.4, "brand_asset": 93.6, "bav_pulse": 46.6, "commerce": 88.9, "cx_kpi": 27.0, "loyalty": 98.7}, {"marca": "Decameron", "bx": 60.2, "co": 4.9, "cx": 71.7, "brand_asset": 61.5, "bav_pulse": 59.0, "commerce": 4.9, "cx_kpi": 82.1, "loyalty": 67.1}, {"marca": "Droguerías Olímpica", "bx": 24.1, "co": 51.9, "cx": 61.5, "brand_asset": 38.5, "bav_pulse": 9.8, "commerce": 51.9, "cx_kpi": 95.7, "loyalty": 24.1}, {"marca": "ETB", "bx": 24.2, "co": 7.4, "cx": 20.7, "brand_asset": 19.2, "bav_pulse": 29.3, "commerce": 7.4, "cx_kpi": 71.1, "loyalty": 11.4}, {"marca": "Easy Fly", "bx": 18.6, "co": 30.9, "cx": 26.2, "brand_asset": 9.0, "bav_pulse": 28.1, "commerce": 30.9, "cx_kpi": 39.4, "loyalty": 6.3}, {"marca": "El Corral", "bx": 53.6, "co": 72.8, "cx": 36.1, "brand_asset": 56.4, "bav_pulse": 50.9, "commerce": 72.8, "cx_kpi": 7.0, "loyalty": 70.9}, {"marca": "Esso", "bx": 24.2, "co": 90.1, "cx": 50.2, "brand_asset": 15.4, "bav_pulse": 33.0, "commerce": 90.1, "cx_kpi": 86.9, "loyalty": 32.9}, {"marca": "Exito", "bx": 66.7, "co": 48.1, "cx": 86.8, "brand_asset": 74.4, "bav_pulse": 58.9, "commerce": 48.1, "cx_kpi": 63.0, "loyalty": 84.8}, {"marca": "Falabella", "bx": 85.9, "co": 65.4, "cx": 88.7, "brand_asset": 97.4, "bav_pulse": 74.4, "commerce": 65.4, "cx_kpi": 78.7, "loyalty": 83.5}, {"marca": "Farmacia Pasteur", "bx": 18.6, "co": 81.5, "cx": 26.9, "brand_asset": 2.6, "bav_pulse": 34.6, "commerce": 81.5, "cx_kpi": 21.3, "loyalty": 3.8}, {"marca": "Farmatodo", "bx": 58.1, "co": 70.4, "cx": 55.0, "brand_asset": 76.9, "bav_pulse": 39.2, "commerce": 70.4, "cx_kpi": 29.8, "loyalty": 93.7}, {"marca": "Ford", "bx": 70.0, "co": 80.2, "cx": 65.3, "brand_asset": 73.1, "bav_pulse": 67.0, "commerce": 80.2, "cx_kpi": 94.3, "loyalty": 46.8}, {"marca": "Frisby", "bx": 74.2, "co": 67.9, "cx": 80.6, "brand_asset": 100.0, "bav_pulse": 48.4, "commerce": 67.9, "cx_kpi": 63.0, "loyalty": 89.9}, {"marca": "Grupo Aval", "bx": 28.8, "co": 1.2, "cx": 18.1, "brand_asset": 16.7, "bav_pulse": 40.8, "commerce": 1.2, "cx_kpi": 45.5, "loyalty": 10.1}, {"marca": "H&M", "bx": 54.8, "co": 50.6, "cx": 61.6, "brand_asset": 35.9, "bav_pulse": 73.8, "commerce": 50.6, "cx_kpi": 18.2, "loyalty": 49.4}, {"marca": "Hatsu", "bx": 35.6, "co": 32.1, "cx": 32.7, "brand_asset": 37.2, "bav_pulse": 34.0, "commerce": 32.1, "cx_kpi": 29.6, "loyalty": 30.4}, {"marca": "Heineken", "bx": 55.0, "co": 56.8, "cx": 57.3, "brand_asset": 53.8, "bav_pulse": 56.2, "commerce": 56.8, "cx_kpi": 24.5, "loyalty": 65.8}, {"marca": "Honda", "bx": 74.4, "co": 39.5, "cx": 30.3, "brand_asset": 69.2, "bav_pulse": 79.6, "commerce": 39.5, "cx_kpi": 91.8, "loyalty": 45.6}, {"marca": "Hyundai", "bx": 64.1, "co": 92.6, "cx": 72.9, "brand_asset": 59.0, "bav_pulse": 69.2, "commerce": 92.6, "cx_kpi": 70.3, "loyalty": 64.6}, {"marca": "JetSmart", "bx": 21.4, "co": 71.6, "cx": 38.9, "brand_asset": 12.8, "bav_pulse": 29.9, "commerce": 71.6, "cx_kpi": 31.9, "loyalty": 20.3}, {"marca": "Jumbo", "bx": 68.0, "co": 27.2, "cx": 66.8, "brand_asset": 89.7, "bav_pulse": 46.3, "commerce": 27.2, "cx_kpi": 48.3, "loyalty": 88.6}, {"marca": "KFC", "bx": 60.5, "co": 55.6, "cx": null, "brand_asset": null, "bav_pulse": 60.5, "commerce": 55.6, "cx_kpi": null, "loyalty": null}, {"marca": "Kia", "bx": 72.3, "co": 69.1, "cx": 66.8, "brand_asset": 75.6, "bav_pulse": 69.1, "commerce": 69.1, "cx_kpi": 38.3, "loyalty": 78.5}, {"marca": "Koaj", "bx": 43.0, "co": 82.7, "cx": 48.0, "brand_asset": 55.1, "bav_pulse": 30.9, "commerce": 82.7, "cx_kpi": 0.9, "loyalty": 68.4}, {"marca": "Makro", "bx": 45.3, "co": 44.4, "cx": 10.1, "brand_asset": 39.7, "bav_pulse": 50.9, "commerce": 44.4, "cx_kpi": 6.8, "loyalty": 13.9}, {"marca": "Manzana Postobón", "bx": 51.2, "co": 32.1, "cx": 24.0, "brand_asset": 67.9, "bav_pulse": 34.6, "commerce": 32.1, "cx_kpi": 13.8, "loyalty": 34.2}, {"marca": "Mazda", "bx": 82.2, "co": 87.7, "cx": 44.9, "brand_asset": 79.5, "bav_pulse": 84.9, "commerce": 87.7, "cx_kpi": 48.9, "loyalty": 82.3}, {"marca": "McDonald's", "bx": 82.2, "co": 66.7, "cx": 59.0, "brand_asset": 65.4, "bav_pulse": 99.1, "commerce": 66.7, "cx_kpi": 81.3, "loyalty": 39.2}, {"marca": "Mercado Libre", "bx": 89.6, "co": 86.4, "cx": 51.8, "brand_asset": 94.9, "bav_pulse": 84.3, "commerce": 86.4, "cx_kpi": 44.0, "loyalty": 91.1}, {"marca": "Mercado Zapatoca", "bx": 18.4, "co": 85.2, "cx": 18.8, "brand_asset": 14.1, "bav_pulse": 22.8, "commerce": 85.2, "cx_kpi": 2.4, "loyalty": 0.0}, {"marca": "Metro", "bx": 39.0, "co": 27.2, "cx": 64.6, "brand_asset": 51.3, "bav_pulse": 26.8, "commerce": 27.2, "cx_kpi": 83.1, "loyalty": 36.7}, {"marca": "Movistar", "bx": 43.5, "co": 8.6, "cx": 47.2, "brand_asset": 41.0, "bav_pulse": 46.0, "commerce": 8.6, "cx_kpi": 42.6, "loyalty": 58.2}, {"marca": "Nissan", "bx": 79.2, "co": 64.2, "cx": 70.5, "brand_asset": 82.1, "bav_pulse": 76.2, "commerce": 64.2, "cx_kpi": 63.0, "loyalty": 81.0}, {"marca": "OXXO", "bx": 62.0, "co": 43.2, "cx": 48.9, "brand_asset": 48.7, "bav_pulse": 75.3, "commerce": 43.2, "cx_kpi": 83.7, "loyalty": 15.2}, {"marca": "Olímpica", "bx": 46.0, "co": 51.9, "cx": 21.5, "brand_asset": 62.8, "bav_pulse": 29.3, "commerce": 51.9, "cx_kpi": 95.7, "loyalty": 38.0}, {"marca": "Petrobras", "bx": 24.2, "co": 98.8, "cx": 50.1, "brand_asset": 1.3, "bav_pulse": 47.2, "commerce": 98.8, "cx_kpi": 83.1, "loyalty": 12.7}, {"marca": "Poker (beer)", "bx": 42.4, "co": 14.8, "cx": 40.9, "brand_asset": 28.2, "bav_pulse": 56.5, "commerce": 14.8, "cx_kpi": 24.5, "loyalty": 43.0}, {"marca": "Postobón", "bx": 70.5, "co": 32.1, "cx": 65.4, "brand_asset": 92.3, "bav_pulse": 48.8, "commerce": 32.1, "cx_kpi": 55.3, "loyalty": 60.8}, {"marca": "Primax", "bx": 27.9, "co": 97.5, "cx": 42.3, "brand_asset": 11.5, "bav_pulse": 44.4, "commerce": 97.5, "cx_kpi": 7.6, "loyalty": 73.4}, {"marca": "Quatro", "bx": 35.6, "co": 32.1, "cx": 54.6, "brand_asset": 46.2, "bav_pulse": 25.0, "commerce": 32.1, "cx_kpi": 78.7, "loyalty": 44.3}, {"marca": "Rappi", "bx": 79.5, "co": 40.7, "cx": 69.0, "brand_asset": 85.9, "bav_pulse": 73.1, "commerce": 40.7, "cx_kpi": 86.9, "loyalty": 48.1}, {"marca": "Renault", "bx": 88.5, "co": 77.8, "cx": 69.3, "brand_asset": 88.5, "bav_pulse": 88.6, "commerce": 77.8, "cx_kpi": 52.5, "loyalty": 97.5}, {"marca": "Satena", "bx": 23.0, "co": 74.1, "cx": 40.8, "brand_asset": 17.9, "bav_pulse": 28.1, "commerce": 74.1, "cx_kpi": 50.3, "loyalty": 22.8}, {"marca": "Seguros Bolivar", "bx": 31.0, "co": 2.5, "cx": 39.1, "brand_asset": 25.6, "bav_pulse": 36.4, "commerce": 2.5, "cx_kpi": 24.5, "loyalty": 55.7}, {"marca": "Stella Artois", "bx": 48.4, "co": 14.8, "cx": 35.1, "brand_asset": 30.8, "bav_pulse": 66.0, "commerce": 14.8, "cx_kpi": 81.3, "loyalty": 21.5}, {"marca": "Sura", "bx": 70.0, "co": 0.0, "cx": 54.2, "brand_asset": 80.8, "bav_pulse": 59.3, "commerce": 0.0, "cx_kpi": 97.7, "loyalty": 87.3}, {"marca": "Suzuki", "bx": 76.0, "co": 46.9, "cx": 74.8, "brand_asset": 70.5, "bav_pulse": 81.5, "commerce": 46.9, "cx_kpi": 88.7, "loyalty": 69.6}, {"marca": "Telefónica", "bx": 28.3, "co": 8.6, "cx": 17.5, "brand_asset": 20.5, "bav_pulse": 36.1, "commerce": 8.6, "cx_kpi": 22.1, "loyalty": 1.3}, {"marca": "Tennis (clothing)", "bx": 35.8, "co": 24.7, "cx": 32.1, "brand_asset": 47.4, "bav_pulse": 24.1, "commerce": 24.7, "cx_kpi": 4.7, "loyalty": 40.5}, {"marca": "Terpel", "bx": 66.3, "co": 90.1, "cx": 86.2, "brand_asset": 64.1, "bav_pulse": 68.5, "commerce": 90.1, "cx_kpi": 76.5, "loyalty": 100.0}, {"marca": "Texaco", "bx": 21.5, "co": 93.8, "cx": 98.1, "brand_asset": 3.8, "bav_pulse": 39.2, "commerce": 93.8, "cx_kpi": 91.8, "loyalty": 96.2}, {"marca": "Tiendas Isimo", "bx": 10.6, "co": 51.9, "cx": 10.7, "brand_asset": 10.3, "bav_pulse": 10.8, "commerce": 51.9, "cx_kpi": 15.3, "loyalty": 2.5}, {"marca": "Tigo", "bx": 41.7, "co": 11.1, "cx": 68.7, "brand_asset": 32.1, "bav_pulse": 51.2, "commerce": 11.1, "cx_kpi": 47.8, "loyalty": 86.1}, {"marca": "Tigo UNE", "bx": 38.5, "co": 12.3, "cx": 35.8, "brand_asset": 34.6, "bav_pulse": 42.3, "commerce": 12.3, "cx_kpi": 27.0, "loyalty": 31.6}, {"marca": "Totto", "bx": 43.5, "co": 61.7, "cx": 44.5, "brand_asset": null, "bav_pulse": 43.5, "commerce": 61.7, "cx_kpi": 68.6, "loyalty": 25.3}, {"marca": "Toyota", "bx": 92.2, "co": 95.1, "cx": 94.3, "brand_asset": 98.7, "bav_pulse": 85.8, "commerce": 95.1, "cx_kpi": 73.0, "loyalty": 92.4}, {"marca": "United Airlines", "bx": 38.4, "co": 100.0, "cx": 24.4, "brand_asset": 23.1, "bav_pulse": 53.7, "commerce": 100.0, "cx_kpi": 63.0, "loyalty": 5.1}, {"marca": "WOM", "bx": 26.2, "co": 6.2, "cx": 13.2, "brand_asset": 0.0, "bav_pulse": 52.5, "commerce": 6.2, "cx_kpi": 32.3, "loyalty": 8.9}, {"marca": "Wingo", "bx": 27.1, "co": 59.3, "cx": 53.3, "brand_asset": 24.4, "bav_pulse": 29.9, "commerce": 59.3, "cx_kpi": 83.7, "loyalty": 29.1}];
+
+const SEMA = {
+  red:    {color:'#e63946', glow:'rgba(230,57,70,.18)',  label:'Alerta',      actionBX:'Reconstruir equity de marca',       actionCO:'Activar canales de venta',         actionCX:'Intervención urgente en experiencia', glowA:'rgba(230,57,70,.45)',  glowB:'rgba(230,57,70,.18)',  glowC:'rgba(230,57,70,.85)',  glowD:'rgba(200,40,50,.38)'},
+  yellow: {color:'#f4a261', glow:'rgba(244,162,97,.18)', label:'Activar',     actionBX:'Fortalecer diferenciación y comms', actionCO:'Escalar tracción comercial',        actionCX:'Cerrar gap de expectativa vs realidad', glowA:'rgba(244,162,97,.45)', glowB:'rgba(244,162,97,.18)', glowC:'rgba(244,162,97,.85)', glowD:'rgba(220,140,60,.38)'},
+  green:  {color:'#2dc653', glow:'rgba(45,198,83,.18)',  label:'Capitalizar', actionBX:'Sostener y monetizar el equity',    actionCO:'Expandir y defender posición',      actionCX:'Convertir lealtad en advocacy',        glowA:'rgba(45,198,83,.45)',  glowB:'rgba(0,170,70,.18)',   glowC:'rgba(0,240,110,.85)',  glowD:'rgba(0,200,85,.38)'},
+  none:   {color:'rgba(255,255,255,.2)', glow:'transparent', label:'—', actionBX:'—', actionCO:'—', actionCX:'—', glowA:'rgba(255,255,255,.3)', glowB:'rgba(255,255,255,.12)', glowC:'rgba(255,255,255,.6)', glowD:'rgba(255,255,255,.2)'}
+};
+
+// ── EPIC: Motor de análisis real por marca ────────────────
+function getInsight(b) {
+  const {marca} = b;
+  const bx = b.bx, co = b.co, cx = b.cx;
+  const ba = b.brand_asset, bp = b.bav_pulse, cm = b.commerce, cxk = b.cx_kpi, ly = b.loyalty;
+
+  const frentes = [
+    {id:'BX', val:bx}, {id:'CO', val:co}, {id:'CX', val:cx}
+  ].filter(f=>f.val!==null).sort((a,b)=>b.val-a.val);
+
+  const top = frentes[0], bot = frentes[frentes.length-1];
+  const gap = top && bot ? top.val - bot.val : 0;
+
+  const allKPIs = [
+    {name:'Brand Asset', val:ba, frente:'BX'},
+    {name:'BAV Pulse', val:bp, frente:'BX'},
+    {name:'Commerce', val:cm, frente:'CO'},
+    {name:'CX Score', val:cxk, frente:'CX'},
+    {name:'Loyalty/NPS', val:ly, frente:'CX'},
+  ].filter(k=>k.val!==null).sort((a,b)=>a.val-b.val);
+
+  const weakestKPI = allKPIs[0];
+  const strongestKPI = [...allKPIs].sort((a,b)=>b.val-a.val)[0];
+
+  // Caso 1: gap amplio → tensión estratégica clara
+  if (gap >= 35 && top && bot) {
+    if (top.id==='BX' && bot.id==='CX')
+      return `La promesa de marca supera la experiencia real. Prioridad: cerrar CX antes de seguir invirtiendo en comunicación.`;
+
+    if (top.id==='CO' && bot.id==='BX')
+      return `El volumen comercial no tiene respaldo de marca. Sin diferenciación, el negocio compite solo por precio.`;
+
+    if (top.id==='CO' && bot.id==='CX')
+      return `Atrae pero no retiene. El mayor impacto está en mejorar la experiencia post-compra para no pagar siempre por adquirir.`;
+
+    if (top.id==='BX' && bot.id==='CO')
+      return `La marca tiene demanda latente que no se convierte. Prioridad: activar el canal comercial sobre el equity ya construido.`;
+
+    if (top.id==='CX' && bot.id==='BX')
+      return `La experiencia fideliza pero la marca no genera demanda nueva. Prioridad: visibilizar lo que ya funciona para atraer.`;
+
+    if (top.id==='CX' && bot.id==='CO')
+      return `Alta satisfacción que no escala en volumen. Usar la lealtad existente como motor de adquisición y distribución.`;
+  }
+
+  // Caso 2: los 3 frentes en rojo
+  if (bx!==null && co!==null && cx!==null && bx<34 && co<34 && cx<34)
+    return `Perfil crítico en los tres frentes. Antes de activar, estabilizar: concentrar esfuerzos en ${top?.id} como punto de partida.`;
+
+  // Caso 3: los 3 frentes en verde
+  if (bx!==null && bx>=67 && co>=67 && cx>=67)
+    return `Liderazgo consolidado en los tres frentes. La prioridad es profundizar, no expandir: defender ${weakestKPI?.frente} para sostener el loop completo.`;
+
+  // Caso 4: gap moderado
+  if (gap >= 15 && weakestKPI)
+    return `El frente ${bot?.id} es el eslabón más débil del loop. Intervenir ahí tiene más impacto que reforzar donde ya se lidera.`;
+
+  // Caso 5: equilibrado en amarillo
+  return `Perfil en construcción sin un frente que lidere. Elegir uno y concentrar: la dispersión de esfuerzos en zona media no consolida ningún activo.`;
+}
+
+function getBullets(b) {
+  const ba = b.brand_asset, bp = b.bav_pulse, cm = b.commerce, cxk = b.cx_kpi, ly = b.loyalty;
+  const bxSt = scoreToState(b.bx), coSt = scoreToState(b.co), cxSt = scoreToState(b.cx);
+
+  // BX bullet
+  let bxText = '—';
+  if (ba!==null && bp!==null) {
+    if (ba>bp+20) bxText = `Equity de marca sin respaldo en comunicación digital. Activar comms para convertir el activo en presencia.`;
+    else if (bp>ba+20) bxText = `Alta presencia digital sin profundidad de marca. Riesgo de ruido sin conversión real.`;
+    else if (bxSt==='green') bxText = `Marca y presencia digital alineadas. Monetizar el equity antes de que la competencia lo erosione.`;
+    else if (bxSt==='red') bxText = `Señales débiles en marca y comunicación. Reconstruir desde propósito y diferenciación clara.`;
+    else bxText = `Potencial de marca sin consolidar. Fortalecer la narrativa para pasar de zona media a liderazgo.`;
+  } else if (bp!==null) bxText = `Solo disponible presencia digital. Completar con Brand Asset para diagnóstico completo.`;
+
+  // CO bullet
+  let coText = '—';
+  if (cm!==null) {
+    if (coSt==='green') coText = `Motor comercial activo. Defender posición y expandir canales antes de que la competencia reaccione.`;
+    else if (coSt==='red') coText = `El volumen no justifica los activos. Revisar el modelo de venta y priorizar los canales con mayor retorno.`;
+    else coText = `Tracción comercial en construcción. Identificar el canal más eficiente y concentrar ahí la inversión.`;
+  }
+
+  // CX bullet
+  let cxText = '—';
+  if (cxk!==null && ly!==null) {
+    if (cxk>ly+20) cxText = `La experiencia no se convierte en lealtad declarada. Activar advocacy para cerrar esa brecha.`;
+    else if (ly>cxk+20) cxText = `El cliente perdona más de lo que la experiencia merece. Intervenir antes de que esa tolerancia se agote.`;
+    else if (cxSt==='green') cxText = `Experiencia y lealtad alineadas. Convertirlas en ventaja competitiva activa con programas de fidelización.`;
+    else if (cxSt==='red') cxText = `Alarma en retención. Intervenir en los momentos de verdad del journey con urgencia.`;
+    else cxText = `Experiencia en zona media con margen real de mejora. Mapear puntos de fricción y priorizar los de mayor impacto.`;
+  } else if (cxk!==null) cxText = `Sin dato de NPS disponible. Completar para diagnóstico completo de retención.`;
+
+  return {bx: bxText, co: coText, cx: cxText};
+}
+
+const root = document.documentElement;
+
+function scoreToState(v){ return v===null||v===undefined?'none':v<=33?'red':v<=66?'yellow':'green'; }
+function h2r(hex,a){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return `rgba(${r},${g},${b},${a})`;}
+
+function applyArc(el, state, prefix){
+  const s=SEMA[state];
+  el.setAttribute('stroke', s.color);
+  root.style.setProperty(`--${prefix}-glow-a`,s.glowA);
+  root.style.setProperty(`--${prefix}-glow-b`,s.glowB);
+  root.style.setProperty(`--${prefix}-glow-c`,s.glowC);
+  root.style.setProperty(`--${prefix}-glow-d`,s.glowD);
+}
+function applyCO(state){
+  const s=SEMA[state];
+  root.style.setProperty('--co-glow-a',s.glowA);
+  root.style.setProperty('--co-glow-b',s.glowC);
+  root.style.setProperty('--co-glow-c',s.glowD);
+  const fill = state==='none'?'rgba(160,168,195,.72)':h2r(s.color,.82);
+  document.getElementById('band-a').setAttribute('stroke',fill);
+  document.getElementById('band-b').setAttribute('stroke',fill);
+}
+function applyAreaCell(prefix, val){
+  const state=scoreToState(val);
+  const s=SEMA[state];
+  const cell=document.getElementById(`cell-${prefix}`);
+  cell.style.setProperty('--area-color', s.color);
+  document.getElementById(`aval-${prefix}`).textContent = val!==null&&val!==undefined ? val.toFixed(1) : '—';
+  document.getElementById(`abadge-${prefix}`).textContent = s.label==='—' ? 'Sin selección' : s.label;
+}
+// ── Análisis real por KPI ─────────────────────────────────
+const KPI_META = {
+  'brand-asset': {tag:'BX · Brand Strategy', name:'Brand Asset', area:'BX'},
+  'bav-pulse':   {tag:'BX · Comms',          name:'BAV Pulse Digital', area:'BX'},
+  'commerce':    {tag:'CO · Commerce',        name:'Commerce Score', area:'CO'},
+  'cx':          {tag:'CX · Síndrome París',  name:'CX Score', area:'CX'},
+  'loyalty':     {tag:'CX · Loyalty',         name:'Loyalty / NPS', area:'CX'},
+};
+
+function getKPIInsight(id, val, b) {
+  const st = scoreToState(val);
+  const marca = b.marca;
+  const ba=b.brand_asset, bp=b.bav_pulse, cm=b.commerce, cxk=b.cx_kpi, ly=b.loyalty;
+
+  if (id==='brand-asset') {
+    const diff = ba!==null && bp!==null ? ba - bp : null;
+    if (st==='green') return {
+      text: `${marca} tiene un equity de marca consolidado — el activo más difícil de construir y el más difícil de destruir. Este score refleja que la marca tiene relevancia, diferenciación y estima en el mercado. El riesgo en este nivel no es caer, sino quedarse quieto mientras la competencia invierte.`,
+      action: 'Monetizar el equity activo con extensiones de marca o nuevos segmentos sin diluir la propuesta central.'
+    };
+    if (st==='yellow') return {
+      text: `${marca} tiene marca reconocida pero no consolidada. Hay potencial de diferenciación sin explotar. En esta zona, la marca funciona más como nombre que como activo estratégico. El riesgo es que el crecimiento dependa del precio o la distribución, no del valor percibido.`,
+      action: 'Definir y comunicar el territorio de marca con consistencia. La percepción se construye con repetición, no con campañas aisladas.'
+    };
+    return {
+      text: `${marca} muestra señales débiles de equity. La marca no está generando preferencia ni diferenciación en el mercado. En esta zona, la compra es transaccional — el cliente elige por precio o conveniencia, no por la marca en sí. Sin intervención, es difícil sostener márgenes.`,
+      action: 'Reconstruir desde propósito. Definir qué hace única a la marca y anclar la comunicación a ese territorio de forma sostenida.'
+    };
+  }
+
+  if (id==='bav-pulse') {
+    const diff = bp!==null && ba!==null ? bp - ba : null;
+    if (st==='green') return {
+      text: `La presencia digital de ${marca} está en su punto más alto. El Pulse mide el impacto de la comunicación en entornos digitales — y en este nivel, la marca logra atención, engagement y recordación en canales donde la competencia por visibilidad es intensa.`,
+      action: diff!==null && diff > 15
+        ? 'La comunicación supera el equity de marca. Redirigir parte del esfuerzo a construir percepción de valor, no solo presencia.'
+        : 'Mantener frecuencia y calidad de contenido. La presencia digital se pierde rápido si se baja el ritmo de inversión.'
+    };
+    if (st==='yellow') return {
+      text: `${marca} tiene presencia digital en construcción. Hay actividad, pero no suficiente para dominar la conversación en su categoría. En este nivel, la marca es visible pero no memorable — aparece pero no se queda.`,
+      action: 'Concentrar esfuerzo en 1-2 canales donde la audiencia está más activa. La dispersión en zona media diluye el impacto.'
+    };
+    return {
+      text: `La huella digital de ${marca} es débil. En un mercado donde la primera búsqueda ocurre en digital, una presencia baja implica pérdida de consideración antes del punto de venta. Los competidores que sí están presentes capturan esa demanda.`,
+      action: 'Activar presencia mínima viable en los canales clave de la categoría. Priorizar contenido que resuelva dudas de compra sobre contenido aspiracional.'
+    };
+  }
+
+  if (id==='commerce') {
+    if (st==='green') return {
+      text: `El motor comercial de ${marca} está operando en su nivel óptimo. Este indicador mide la eficiencia con la que la marca convierte su presencia en ingresos reales. Un score alto en Commerce indica que los canales de venta, la distribución y la propuesta comercial están alineados.`,
+      action: 'Defender posición ante la presión competitiva. Explorar expansión de canales o geografías antes de que el mercado se consolide.'
+    };
+    if (st==='yellow') return {
+      text: `${marca} tiene tracción comercial pero no está capturando todo su potencial de venta. Puede haber fricción en el proceso de compra, cobertura insuficiente o una propuesta de valor comercial que no se diferencia lo suficiente para acelerar la decisión.`,
+      action: 'Identificar el canal con mejor tasa de conversión y concentrar allí la inversión. Optimizar el proceso de cierre antes de ampliar cobertura.'
+    };
+    return {
+      text: `El desempeño comercial de ${marca} está por debajo del umbral crítico. El volumen generado no justifica los activos de marca y distribución disponibles. Esto puede indicar un modelo de venta desalineado con cómo el cliente realmente compra en la categoría.`,
+      action: 'Auditar el journey de compra completo para identificar dónde se pierde la intención. Replantear el mix de canales desde el comportamiento real del consumidor.'
+    };
+  }
+
+  if (id==='cx') {
+    const diff = cxk!==null && ly!==null ? cxk - ly : null;
+    if (st==='green') return {
+      text: `${marca} está cumpliendo — y posiblemente superando — las expectativas del cliente en los momentos clave. El Síndrome París mide exactamente eso: la distancia entre lo que la marca promete y lo que entrega. Un score alto indica que esa distancia es mínima o positiva.`,
+      action: diff!==null && diff > 15
+        ? 'La experiencia supera la lealtad declarada. Activar mecanismos de advocacy para que los clientes satisfechos generen nuevos clientes.'
+        : 'Sostener los estándares de servicio actuales. La experiencia se erosiona por descuido operativo, no siempre por falta de inversión.'
+    };
+    if (st==='yellow') return {
+      text: `La experiencia de cliente de ${marca} está en zona de riesgo moderado. Hay clientes que salen satisfechos y clientes que no. Esta inconsistencia es costosa: el cliente insatisfecho no solo no vuelve — activamente lo cuenta. La experiencia en zona media no genera advocacy.`,
+      action: 'Mapear los puntos de mayor fricción en el journey y resolver los 2-3 más frecuentes. La consistencia importa más que la excelencia puntual.'
+    };
+    return {
+      text: `El CX de ${marca} está en zona de alerta — lo que se llama Síndrome París: el cliente llegó con una expectativa (construida por la comunicación y la reputación) y la experiencia real no la cumplió. Este gap es el más dañino porque genera decepción activa, no solo insatisfacción pasiva.`,
+      action: 'Intervención inmediata en los momentos de verdad del journey. Auditar los touchpoints donde ocurre el mayor volumen de interacciones.'
+    };
+  }
+
+  if (id==='loyalty') {
+    const diff = ly!==null && cxk!==null ? ly - cxk : null;
+    if (st==='green') return {
+      text: `${marca} genera lealtad real — el indicador más valioso y más difícil de falsificar. Un NPS alto indica que los clientes no solo vuelven, sino que recomiendan. En mercados de alta competencia, la lealtad es el único moat sostenible a largo plazo.`,
+      action: diff!==null && diff > 15
+        ? 'La lealtad supera la experiencia medida. Investigar qué factores emocionales generan esa adhesión para replicarlos sistemáticamente.'
+        : 'Convertir clientes leales en embajadores activos. Diseñar un programa de referidos que capitalice el NPS existente.'
+    };
+    if (st==='yellow') return {
+      text: `${marca} tiene clientes que vuelven pero que no recomiendan de forma activa. La lealtad en zona media es frágil: está sujeta a la inercia o a la ausencia de mejores alternativas, no a un vínculo genuino con la marca. Un competidor con mejor propuesta puede captarlos.`,
+      action: 'Identificar qué retiene a los clientes actuales y fortalecer ese factor. La lealtad pasiva se convierte en activa cuando hay una razón emocional para quedarse.'
+    };
+    return {
+      text: `Los clientes de ${marca} no están generando recomendación ni mostrando adhesión a la marca. En este nivel, la relación es puramente transaccional. El negocio depende de atraer clientes nuevos de forma continua porque los actuales no regresan ni refieren. El costo de adquisición se vuelve insostenible.`,
+      action: 'Diagnosticar por qué los clientes no vuelven. ¿Es el precio, la experiencia o la falta de razón para regresar? La respuesta define el camino.'
+    };
+  }
+
+  return {text: 'Análisis no disponible.', action: '—'};
+}
+
+// ── Modal de KPI ──────────────────────────────────────────
+const kpiInsightStore = {};
+
+function openKPIModal(id) {
+  const data = kpiInsightStore[id];
+  if (!data || data.val === null) return;
+  const meta = KPI_META[id];
+  const s = SEMA[scoreToState(data.val)];
+  const modal = document.getElementById('kpi-modal');
+  modal.style.setProperty('--modal-color', s.color);
+  document.getElementById('kpi-modal-tag').textContent = meta.tag;
+  document.getElementById('kpi-modal-title').textContent = meta.name;
+  document.getElementById('kpi-modal-score').textContent = Math.round(data.val);
+  document.getElementById('kpi-modal-badge').textContent = s.label;
+  document.getElementById('kpi-modal-bar-fill').style.width = data.val + '%';
+  document.getElementById('kpi-modal-text').textContent = data.insight.text;
+  document.getElementById('kpi-modal-action-text').textContent = data.insight.action;
+  document.getElementById('kpi-modal-backdrop').classList.add('open');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('kpi-modal-close').addEventListener('click', () =>
+    document.getElementById('kpi-modal-backdrop').classList.remove('open'));
+  document.getElementById('kpi-modal-backdrop').addEventListener('click', e => {
+    if (e.target === document.getElementById('kpi-modal-backdrop'))
+      document.getElementById('kpi-modal-backdrop').classList.remove('open');
+  });
+  Object.keys(KPI_META).forEach(id => {
+    const card = document.getElementById('card-' + id);
+    if (card) card.addEventListener('click', () => openKPIModal(id));
+  });
+});
+
+function updateKPI(id, val, areaColor, b){
+  const state=scoreToState(val);
+  const s=SEMA[state];
+  const card=document.getElementById(`card-${id}`);
+  card.style.setProperty('--kpi-color', s.color);
+  const scoreEl=document.getElementById(`score-${id}`);
+  const barEl=document.getElementById(`bar-${id}`);
+  const statusEl=document.getElementById(`status-${id}`);
+  const pctEl=document.getElementById(`pct-${id}`);
+  if(val!==null&&val!==undefined){
+    scoreEl.textContent=Math.round(val);
+    scoreEl.className='kpi-score-num';
+    barEl.style.width=val+'%';
+    statusEl.textContent=s.label;
+    pctEl.textContent=val.toFixed(1)+' / 100';
+    card.style.boxShadow=`0 0 0 1px ${s.color}22, 0 4px 20px ${s.glow}`;
+    card.style.borderColor=`${s.color}33`;
+    kpiInsightStore[id] = {val, insight: b ? getKPIInsight(id, val, b) : {text:'—',action:'—'}};
+  } else {
+    scoreEl.textContent='—';scoreEl.className='kpi-score-num empty';
+    barEl.style.width='0%';statusEl.textContent='Sin datos';pctEl.textContent='';
+    card.style.boxShadow='';card.style.borderColor='';
+    kpiInsightStore[id] = {val: null, insight: null};
+  }
+}
+function updateInsight(b) {
+  const panel = document.getElementById('insight-panel');
+  if (!b) { panel.classList.remove('visible'); return; }
+  panel.classList.add('visible');
+  document.getElementById('insight-dominant').textContent = getInsight(b);
+  const bullets = getBullets(b);
+  document.getElementById('insight-bx').textContent = bullets.bx;
+  document.getElementById('insight-co').textContent = bullets.co;
+  document.getElementById('insight-cx').textContent = bullets.cx;
+}
+
+function resetAll(){
+  const arcBX=document.getElementById('arc-bx');
+  const arcCX=document.getElementById('arc-cx');
+  applyArc(arcBX,'none','bx');
+  applyArc(arcCX,'none','cx');
+  applyCO('none');
+  ['bx','co','cx'].forEach(p=>applyAreaCell(p,null));
+  ['brand-asset','bav-pulse','commerce','cx','loyalty'].forEach(id=>updateKPI(id,null,''));
+  updateInsight(null);
+}
+
+const sel=document.getElementById('brand-select');
+BRANDS.forEach(b=>{const o=document.createElement('option');o.value=b.marca;o.textContent=b.marca;sel.appendChild(o);});
+
+sel.addEventListener('change',()=>{
+  const marca=sel.value;
+  const btn=document.getElementById('btn-download-ppt');
+  btn.disabled=!marca;
+  if(!marca){resetAll();return;}
+  const b=BRANDS.find(x=>x.marca===marca);
+  if(!b)return;
+  const arcBX=document.getElementById('arc-bx');
+  const arcCX=document.getElementById('arc-cx');
+  const bxSt=scoreToState(b.bx), cxSt=scoreToState(b.cx), coSt=scoreToState(b.co);
+  applyArc(arcBX,bxSt,'bx');
+  applyArc(arcCX,cxSt,'cx');
+  applyCO(coSt);
+  applyAreaCell('bx',b.bx);
+  applyAreaCell('co',b.co);
+  applyAreaCell('cx',b.cx);
+  const bxC=SEMA[bxSt].color, cxC=SEMA[cxSt].color, coC=SEMA[coSt].color;
+  updateKPI('brand-asset',b.brand_asset,bxC,b);
+  updateKPI('bav-pulse',b.bav_pulse,bxC,b);
+  updateKPI('commerce',b.commerce,coC,b);
+  updateKPI('cx',b.cx_kpi,cxC,b);
+  updateKPI('loyalty',b.loyalty,cxC,b);
+  updateInsight(b);
+});
+
+/* ── DESCARGA PPT ─────────────────────────────────────────── */
+const PPT_SERVER = '';
+
+document.getElementById('btn-download-ppt').addEventListener('click', async () => {
+  const marca = sel.value;
+  if (!marca) return;
+
+  const btn   = document.getElementById('btn-download-ppt');
+  const label = document.getElementById('btn-ppt-label');
+  btn.classList.add('loading');
+  label.textContent = 'Generando…';
+
+  try {
+    // Verificar que el servidor esté activo
+    const health = await fetch(`${PPT_SERVER}/health`, {signal: AbortSignal.timeout(3000)})
+      .catch(() => null);
+
+    if (!health || !health.ok) {
+      showPptError('El servidor PPT no está activo. Ejecuta: python3 ppt_server.py');
+      return;
+    }
+
+    // Solicitar el PPT
+    const resp = await fetch(`${PPT_SERVER}/generate-ppt?brand=${encodeURIComponent(marca)}`);
+
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({error: 'Error desconocido'}));
+      showPptError(err.error || 'Error generando el PPT');
+      return;
+    }
+
+    // Descargar el archivo
+    const blob = await resp.blob();
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = `${marca.replace(/\s+/g,'_')}_Brand_Intelligence_2026.pptx`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    label.textContent = '✓ Descargado';
+    setTimeout(() => { label.textContent = 'Descargar PPT'; }, 2500);
+
+  } catch (e) {
+    showPptError('Error de conexión con el servidor PPT.');
+  } finally {
+    btn.classList.remove('loading');
+  }
+});
+
+function showPptError(msg) {
+  const label = document.getElementById('btn-ppt-label');
+  label.textContent = 'Descargar PPT';
+  // Toast de error
+  const toast = document.createElement('div');
+  toast.style.cssText = `
+    position:fixed;bottom:24px;right:24px;z-index:9999;
+    background:#1E2A3E;border:1px solid rgba(255,59,48,.4);border-radius:10px;
+    padding:12px 18px;color:#FF3B30;font-size:13px;font-weight:600;
+    box-shadow:0 8px 32px rgba(0,0,0,.5);max-width:360px;line-height:1.4;
+    animation:slideUp .2s ease;
+  `;
+  toast.textContent = '⚠ ' + msg;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 5000);
+}
+
+resetAll();
+</script>
+</body>
+</html>
