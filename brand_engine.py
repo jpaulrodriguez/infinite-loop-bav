@@ -249,18 +249,27 @@ def _score_label(v) -> str:
     return "muy alto"
 
 def generate_dominant_idea(b: dict, avg: dict, sector: str) -> str:
-    """Idea dominante real basada en el perfil de tensión de la marca."""
-    bx = safe_val(b.get("bx"))
-    co = safe_val(b.get("co"))
-    cx = safe_val(b.get("cx"))
+    """
+    Idea dominante generada en dos capas:
+    1. Diagnóstico de sub-indicadores para entender el PORQUÉ del score
+    2. Cruce de tensiones entre frentes para encontrar el insight no obvio
+    La regla: nunca quedarse con el primer hallazgo (score más bajo = palanca).
+    Siempre bajar un nivel más para explicar la causa raíz.
+    """
+    bx      = safe_val(b.get("bx"))
+    co      = safe_val(b.get("co"))
+    cx      = safe_val(b.get("cx"))
+    ba      = safe_val(b.get("brand_asset"))    # sub-BX: equity percibido (D,R,E,F BAV)
+    pulse   = safe_val(b.get("bav_pulse"))       # sub-BX: presencia digital GT+Wiki+Social
+    loyalty = safe_val(b.get("loyalty"))         # sub-CX: conocimiento familiar (eFam)
+    cx_kpi  = safe_val(b.get("cx_kpi"))          # sub-CX: síndrome de París (usuarios vs no usuarios)
+    commerce= safe_val(b.get("commerce"))        # sub-CO: eficiencia ingresos/activos
 
-    avg_bx = avg.get("bx")
-    avg_co = avg.get("co")
-    avg_cx = avg.get("cx")
+    avg_bx  = avg.get("bx")
+    avg_co  = avg.get("co")
+    avg_cx  = avg.get("cx")
+    nombre  = b["marca"]
 
-    nombre = b["marca"]
-
-    # Calcular gaps vs sector (solo si hay peers)
     gaps = {}
     if bx is not None and avg_bx is not None:
         gaps["bx"] = round(bx - avg_bx, 1)
@@ -269,119 +278,283 @@ def generate_dominant_idea(b: dict, avg: dict, sector: str) -> str:
     if cx is not None and avg_cx is not None:
         gaps["cx"] = round(cx - avg_cx, 1)
 
-    # ── PATRONES ABSOLUTOS (funcionan con o sin peers) ────────────
-    # Se evalúan primero para garantizar insights basados en los scores reales.
+    # ── CAPA 1: ANÁLISIS DE SUB-INDICADORES ────────────────────────────────
+    # Antes de etiquetar un frente como "débil", examinar qué lo compone y por qué.
 
-    # Patrón A: CO crítico con BX/CX decentes — la marca existe pero no convierte
-    if co is not None and co < 15 and bx is not None and bx > 45:
-        loyalty = safe_val(b.get("loyalty"))
-        loyalty_txt = f" La lealtad ({loyalty:.0f}/100) sugiere que quien llega, vuelve — el problema es que no llegan suficientes." if loyalty and loyalty > 50 else ""
-        return (f"{nombre} tiene el reconocimiento para estar en el top of mind del consumidor "
-                f"pero un CO de {co:.0f}/100 indica que ese reconocimiento no se convierte en volumen de negocio. "
-                f"La marca ocupa espacio mental pero no espacio en la transacción.{loyalty_txt}")
+    # ─ BX Diagnóstico: distinguir si el problema es brand equity o visibilidad digital
+    bx_gap_origen = None
+    if bx is not None and ba is not None and pulse is not None:
+        if ba > 60 and pulse < 35:
+            bx_gap_origen = "digital_invisible"   # marca fuerte offline, invisible online
+        elif ba < 35 and pulse > 55:
+            bx_gap_origen = "digital_sin_sustancia"  # presencia digital sin equity real
+        elif ba < 35 and pulse < 35:
+            bx_gap_origen = "bx_doble_debilidad"   # débil en los dos frentes del BX
 
-    # Patrón B: CO crítico absoluto (<10) — independiente de todo lo demás
-    if co is not None and co < 10:
-        return (f"{nombre} registra un Commerce Score de {co:.0f}/100 — uno de los más bajos del modelo. "
-                f"Esto indica que la marca genera interés pero casi ninguna transacción directamente atribuible. "
-                f"El foco estratégico inmediato es el modelo de captación y conversión.")
+    # ─ CX Diagnóstico: distinguir si el problema es lealtad o experiencia de usuario actual
+    cx_gap_origen = None
+    if cx is not None and loyalty is not None and cx_kpi is not None:
+        if loyalty > 65 and cx_kpi < 35:
+            cx_gap_origen = "conocido_pero_no_elegido"  # lo conocen bien pero los usuarios no lo prefieren más
+        elif loyalty < 30 and cx_kpi > 60:
+            cx_gap_origen = "usuarios_fieles_poca_masa"  # usuarios actuales la adoran pero base pequeña
+        elif loyalty < 30 and cx_kpi < 35:
+            cx_gap_origen = "cx_doble_debilidad"   # ni conocimiento ni preferencia de usuarios
 
-    # Patrón C: CX muy alto + BX alto + CO muy bajo — marca querida que no se compra
-    if (cx is not None and cx > 60 and bx is not None and bx > 50
-            and co is not None and co < 30):
-        return (f"{nombre} tiene lo más difícil: clientes que la quieren ({cx:.0f}/100 en CX) "
-                f"y una marca reconocida ({bx:.0f}/100 en BX). "
-                f"El problema es que el modelo comercial (CO {co:.0f}/100) no está capturando ese afecto en ventas. "
-                f"La oportunidad está en activar la demanda existente, no en construirla desde cero.")
+    # ── CAPA 2: PATRONES CRUZADOS DE ALTA ESPECIFICIDAD ────────────────────
+    # Cada patrón cruza al menos dos dimensiones + sub-indicador para llegar al insight real.
 
-    # Patrón D: BX alto + CX alto + CO alto — liderazgo claro
-    if all(v is not None and v >= 65 for v in [bx, co, cx] if v is not None):
-        loyalty = safe_val(b.get("loyalty"))
-        loyalty_txt = f" La lealtad de {loyalty:.0f}/100 confirma que los clientes no solo compran sino que vuelven." if loyalty and loyalty > 60 else ""
-        return (f"{nombre} opera en el cuadrante de liderazgo: marca fuerte, ventas sólidas y clientes satisfechos.{loyalty_txt} "
-                f"El reto no es crecer en los tres frentes sino proteger la ventaja cuando el mercado imite.")
+    # ── LIDERAZGO Y AMENAZAS DE MARCA FUERTE ───────────────────────────────
 
-    # Patrón E: Todo rojo absoluto (<34 en los tres)
-    if all(v is not None and v < 34 for v in [bx, co, cx] if v is not None):
-        return (f"{nombre} enfrenta presión simultánea en marca, ventas y experiencia. "
-                f"Con BX {bx:.0f}, CO {co:.0f} y CX {cx:.0f}/100, no hay un frente ancla desde donde empujar. "
-                f"La prioridad es elegir uno — el que tenga mayor palanca — y concentrar recursos allí.")
+    # Liderazgo absoluto — diagnóstico de dónde está el riesgo real
+    if bx is not None and co is not None and cx is not None and bx >= 65 and co >= 65 and cx >= 65:
+        if loyalty is not None and pulse is not None:
+            if pulse < 50:
+                return (f"{nombre} lidera en los tres frentes del Capital Intangible "
+                        f"(BX {bx:.0f} · CO {co:.0f} · CX {cx:.0f}/100), pero su presencia digital "
+                        f"({pulse:.0f}/100 en BAV Pulse) está por debajo de lo que su posición de mercado exige. "
+                        f"Una marca de este calibre que no domina el espacio digital cede territorio "
+                        f"a competidores más pequeños pero más visibles en los canales donde se forma "
+                        f"la primera intención de compra.")
+            elif loyalty is not None and loyalty > 75:
+                return (f"{nombre} opera en el cuadrante de liderazgo con una base de clientes "
+                        f"que recompra (lealtad {loyalty:.0f}/100). "
+                        f"El riesgo no viene de dentro sino de afuera: en mercados maduros, "
+                        f"las marcas líderes pierden cuota no por ejecutar mal "
+                        f"sino por sobreestimar la inercia del consumidor. "
+                        f"La agenda estratégica es anticipación competitiva, no optimización del status quo.")
+        return (f"{nombre} lidera en marca, ventas y experiencia. "
+                f"El reto no es construir sino defender: los líderes pierden posición "
+                f"cuando optimizan lo que ya funciona en lugar de anticipar el siguiente movimiento del mercado.")
 
-    # Patrón F: BX muy bajo (<25) — anonimato de marca
-    if bx is not None and bx < 25:
-        return (f"Con un BX de {bx:.0f}/100, {nombre} todavía no ha construido la presencia "
-                f"que le permita competir de igual a igual. "
-                f"El reconocimiento y la diferenciación son el punto de partida antes de cualquier inversión en experiencia o ventas.")
+    # BX fuerte + CO fuerte + CX con problema de causa raíz
+    if bx is not None and co is not None and cx is not None and bx > 60 and co > 55 and cx < 50:
+        if cx_gap_origen == "conocido_pero_no_elegido":
+            return (f"{nombre} convierte bien (CO {co:.0f}/100) y tiene marca reconocida "
+                    f"(BX {bx:.0f}/100), pero el Síndrome de París revela una señal de alerta: "
+                    f"los No Usuarios valoran la marca casi igual que los Usuarios ({cx_kpi:.0f}/100 en CX Strategy). "
+                    f"Eso significa que la experiencia real no supera la expectativa — "
+                    f"el consumidor llega con una imagen fuerte y sale sin una historia que contar. "
+                    f"La palanca no es más marketing sino elevar el gap entre lo que promete y lo que entrega.")
+        if loyalty is not None and loyalty < 35:
+            return (f"{nombre} vende (CO {co:.0f}/100) pero no retiene: lealtad en {loyalty:.0f}/100. "
+                    f"Con BX {bx:.0f}/100, la marca tiene el reconocimiento para atraer — "
+                    f"el problema ocurre después de la primera compra. "
+                    f"Cada cliente que no regresa es un costo de adquisición perdido. "
+                    f"El cuello de botella está en la experiencia post-venta, no en el embudo de entrada.")
 
-    # Patrón G: Lealtad extrema + CX alto + CO bajo — base fiel pero pequeña
-    loyalty = safe_val(b.get("loyalty"))
-    if loyalty and loyalty > 75 and cx is not None and cx > 55 and co is not None and co < 40:
-        return (f"{nombre} tiene una base de clientes que la adora: lealtad de {loyalty:.0f}/100 y CX de {cx:.0f}/100. "
-                f"El problema no es la calidad de la relación sino su escala. "
-                f"CO en {co:.0f}/100 indica que esa comunidad fiel es pequeña. "
-                f"El movimiento es ampliar el embudo sin perder la intensidad de la relación.")
+    # ── PATRONES CO BAJO CON DIAGNÓSTICO DE CAUSA ─────────────────────────
 
-    # Patrón H: Lealtad muy baja + CO alto — vende pero no retiene
-    if loyalty and loyalty < 20 and co is not None and co > 55:
-        return (f"{nombre} vende bien (CO {co:.0f}/100) pero casi no retiene: lealtad en {loyalty:.0f}/100. "
-                f"Los clientes llegan, compran una vez y no vuelven. "
-                f"El crecimiento depende de adquisición constante — modelo costoso y frágil.")
-
-    # ── PATRONES RELATIVOS (requieren peers) ──────────────────────
-    # Patrón 1: Marca fuerte relativa, ventas débiles relativas
-    if gaps.get("bx", 0) > 10 and gaps.get("co", 0) < -10:
-        return (f"{nombre} tiene más reconocimiento de marca que la mayoría de su sector, "
-                f"pero ese capital no se está traduciendo en volumen de ventas. "
-                f"La marca llegó primero a la mente; ahora tiene que llegar a la transacción.")
-
-    # Patrón 2: Ventas fuertes relativas, marca débil relativa
-    if gaps.get("co", 0) > 10 and gaps.get("bx", 0) < -10:
-        return (f"{nombre} convierte mejor que su sector pero su marca no explica por qué. "
-                f"Sin identidad clara, la lealtad descansa sobre el precio "
-                f"y el precio siempre tiene un competidor dispuesto a bajarlo.")
-
-    # Patrón 3: CX fuerte relativa, CO débil relativo
-    if gaps.get("cx", 0) > 15 and gaps.get("co", 0) < -5:
-        return (f"{nombre} genera experiencias mejores que su sector ({cx:.0f}/100 en CX), "
-                f"pero el sector convierte más comercialmente. "
-                f"Hay una desconexión entre lo que la marca entrega y lo que logra capturar en ventas.")
-
-    # Patrón 4: CO fuerte relativo, CX débil absoluto
-    if gaps.get("co", 0) > 15 and cx is not None and cx < 40:
-        return (f"{nombre} convierte por encima del sector (CO {co:.0f}/100) pero la experiencia no acompaña. "
-                f"Los clientes llegan y compran, pero con CX en {cx:.0f}/100 el riesgo de no retención es real.")
-
-    # Patrón 5: Brecha dominante en un solo frente vs sector
-    sorted_gaps = sorted(gaps.items(), key=lambda x: x[1])
-    if sorted_gaps and abs(sorted_gaps[0][1]) >= 10:
-        worst_f, worst_v = sorted_gaps[0]
-        frente_names = {"bx": "fuerza de marca", "co": "conversión comercial", "cx": "experiencia del cliente"}
-        score_actual = {"bx": bx, "co": co, "cx": cx}.get(worst_f)
-        avg_frente = avg.get(worst_f)
-        return (f"La brecha más urgente de {nombre} está en {frente_names.get(worst_f,'el indicador clave')}: "
-                f"{score_actual:.0f}/100 vs {avg_frente:.0f}/100 del sector ({worst_v:.0f} pts). "
-                f"Es el frente donde una mejora moderada generaría el mayor impacto relativo.")
-
-    # Patrón 6: Perfil equilibrado (sin brecha dominante) — análisis absoluto
-    scores_disponibles = [(f, v) for f, v in [("bx", bx), ("co", co), ("cx", cx)] if v is not None]
-    if scores_disponibles:
-        min_f, min_v = min(scores_disponibles, key=lambda x: x[1])
-        max_f, max_v = max(scores_disponibles, key=lambda x: x[1])
-        frente_names = {"bx": "fuerza de marca", "co": "conversión comercial", "cx": "experiencia del cliente"}
-        if max_v - min_v >= 20:
-            return (f"{nombre} muestra una tensión interna: {frente_names.get(max_f,'su mayor fortaleza')} "
-                    f"en {max_v:.0f}/100 contrasta con {frente_names.get(min_f,'su punto más débil')} "
-                    f"en {min_v:.0f}/100. La prioridad es elevar el frente más bajo "
-                    f"para que el perfil sea coherente y la marca no mande señales contradictorias al mercado.")
+    # CO muy bajo + BX alto: marca que no convierte — ¿por qué?
+    if co is not None and co < 20 and bx is not None and bx > 50:
+        if cx is not None and cx > 60:
+            # CX también alto: el problema no es la experiencia sino el modelo comercial
+            return (f"{nombre} tiene marca reconocida (BX {bx:.0f}/100) y clientes satisfechos "
+                    f"(CX {cx:.0f}/100), pero un CO de {co:.0f}/100 señala que el modelo comercial "
+                    f"no está capturando esa demanda. "
+                    f"La marca genera deseo y la experiencia lo sostiene — lo que falla "
+                    f"es la activación: los puntos de contacto donde el interés se convierte en transacción. "
+                    f"{'La lealtad de ' + str(int(loyalty)) + '/100 confirma que quien llega, vuelve — el problema es que llegan pocos.' if loyalty and loyalty > 55 else ''}")
+        elif loyalty is not None and loyalty > 65:
+            # Clientes fieles pero pocos: embudo de entrada estrecho
+            return (f"{nombre} tiene clientes leales (lealtad {loyalty:.0f}/100) y una marca visible "
+                    f"(BX {bx:.0f}/100), pero CO en {co:.0f}/100 indica que el embudo de adquisición "
+                    f"es muy estrecho. "
+                    f"La base actual es fiel pero pequeña: la marca retiene bien a quien ya convirtió "
+                    f"pero no está atrayendo suficientes clientes nuevos. "
+                    f"La palanca es expansión de cobertura, no profundización de la relación existente.")
         else:
-            return (f"{nombre} tiene un perfil relativamente equilibrado entre sus tres frentes "
-                    f"(BX {bx:.0f if bx else '—'} · CO {co:.0f if co else '—'} · CX {cx:.0f if cx else '—'}/100). "
-                    f"La estrategia más efectiva es elegir el frente con mayor potencial de crecimiento "
-                    f"según los objetivos de negocio del próximo año y concentrar recursos allí.")
+            return (f"Con BX {bx:.0f}/100, {nombre} ocupa espacio mental en el mercado, "
+                    f"pero CO {co:.0f}/100 indica que ese espacio no se traduce en transacciones. "
+                    f"La hipótesis más probable: hay fricción entre la intención y la compra — "
+                    f"ya sea en distribución, precio, o accesibilidad del producto. "
+                    f"El siguiente paso diagnóstico es mapear dónde se rompe el journey del consumidor.")
 
-    return (f"{nombre} presenta un perfil balanceado en el sector {sector}. "
-            f"El foco estratégico debe ser identificar el indicador con mayor palanca "
-            f"de crecimiento relativo al contexto competitivo.")
+    # CO crítico absoluto + BX bajo: doble problema de origen
+    if co is not None and co < 10 and bx is not None and bx < 35:
+        return (f"{nombre} enfrenta un problema de base: CO {co:.0f}/100 y BX {bx:.0f}/100 "
+                f"indican que ni la marca ni el modelo comercial están funcionando. "
+                f"No hay un frente ancla desde el que construir — intentar activar ventas "
+                f"sin marca es costoso y frágil. "
+                f"La secuencia correcta: primero generar reconocimiento y diferenciación, "
+                f"luego activar la conversión sobre esa base.")
+
+    # ── PATRONES CX CON DIAGNÓSTICO DE CAUSA RAÍZ ─────────────────────────
+
+    # CX bajo por síndrome de París: los no usuarios la valoran igual que los usuarios
+    if cx_gap_origen == "conocido_pero_no_elegido" and cx is not None and cx < 45:
+        return (f"El Síndrome de París de {nombre} ({cx_kpi:.0f}/100) revela el problema de fondo: "
+                f"los No Usuarios valoran la marca casi igual que los Usuarios actuales. "
+                f"Eso indica que la experiencia real no genera una ventaja perceptual sobre la expectativa. "
+                f"La marca atrae pero no sorprende — y sin esa sorpresa, la lealtad se construye "
+                f"sobre precio o conveniencia, no sobre el valor diferencial de la marca misma. "
+                f"La prioridad es elevar el gap experiencial: que los clientes actuales "
+                f"tengan razones concretas para preferirla que los no-clientes no pueden imaginar.")
+
+    # CX bajo porque la base de usuarios fieles es pequeña
+    if cx_gap_origen == "usuarios_fieles_poca_masa" and cx is not None and cx < 50:
+        co_txt = f" CO {co:.0f}/100 confirma que el volumen transaccional no acompaña esa intensidad." if co is not None and co < 45 else ""
+        return (f"{nombre} tiene usuarios que la valoran intensamente (CX Strategy {cx_kpi:.0f}/100), "
+                f"pero la lealtad baja ({loyalty:.0f}/100) indica que esa base es pequeña. "
+                f"El problema no es la calidad de la experiencia sino su alcance: "
+                f"la marca no está llegando a suficientes personas.{co_txt} "
+                f"La palanca es ampliar la cobertura sin diluir lo que hace especial "
+                f"la experiencia para quienes ya la conocen.")
+
+    # CX doble debilidad — solo si CO no es el frente dominante (evita ocultar el insight CO > BX)
+    if cx_gap_origen == "cx_doble_debilidad" and cx is not None and cx < 40 and (co is None or co < 55):
+        return (f"{nombre} enfrenta presión en los dos componentes de la experiencia: "
+                f"lealtad baja ({loyalty:.0f}/100) y CX Strategy débil ({cx_kpi:.0f}/100). "
+                f"Poca masa de usuarios fieles y una experiencia que no diferencia "
+                f"a la marca de sus competidores desde la perspectiva del consumidor actual. "
+                f"La reconstrucción de CX debe empezar por identificar el momento "
+                f"del journey donde la experiencia pierde valor — no por añadir puntos de contacto.")
+
+    # ── PATRONES RELATIVOS CON EXPLICACIÓN CAUSAL ─────────────────────────
+
+    # BX fuerte + CO débil vs sector — con diagnóstico
+    if gaps.get("bx", 0) > 10 and gaps.get("co", 0) < -10:
+        if pulse is not None and pulse > 55:
+            return (f"{nombre} tiene más presencia de marca que su sector "
+                    f"(BX {bx:.0f}/100 vs {avg_bx:.0f}/100 promedio, impulso digital {pulse:.0f}/100), "
+                    f"pero ese capital no se traduce en conversión comercial "
+                    f"(CO {co:.0f}/100 vs {avg_co:.0f}/100 del sector). "
+                    f"La demanda existe y la marca la genera — el cuello de botella "
+                    f"está en la última milla: el proceso de compra tiene fricción "
+                    f"que la inversión en marca no puede resolver sola.")
+        return (f"{nombre} tiene más reconocimiento que su sector (BX {bx:.0f} vs {avg_bx:.0f}/100) "
+                f"pero menos conversión (CO {co:.0f} vs {avg_co:.0f}/100). "
+                f"La marca llegó a la mente antes que a la transacción. "
+                f"La hipótesis: el modelo de captación no está diseñado para aprovechar "
+                f"el volumen de intención que la marca genera.")
+
+    # CO fuerte + BX débil vs sector — vende sin marca
+    if gaps.get("co", 0) > 10 and gaps.get("bx", 0) < -10:
+        loyalty_txt = (f" Con lealtad de {loyalty:.0f}/100, el modelo funciona hoy — "
+                       f"pero si el precio o la conveniencia cambian, la razón de compra desaparece."
+                       if loyalty and loyalty < 40 else "")
+        return (f"{nombre} convierte por encima del sector (CO {co:.0f} vs {avg_co:.0f}/100) "
+                f"con una marca más débil que sus pares (BX {bx:.0f} vs {avg_bx:.0f}/100). "
+                f"Eso significa que las ventas actuales descansan sobre precio, distribución o conveniencia — "
+                f"no sobre preferencia de marca.{loyalty_txt} "
+                f"El riesgo: cualquier competidor con mejor ejecución en esos mismos factores "
+                f"puede erosionar el volumen sin que {nombre} tenga un activo de marca que lo defienda.")
+
+    # CX fuerte + CO débil vs sector — entrega bien pero no captura
+    if gaps.get("cx", 0) > 15 and gaps.get("co", 0) < -5:
+        cx_causa = ""
+        if cx_kpi is not None and cx_kpi > 60:
+            cx_causa = (f" El CX Strategy {cx_kpi:.0f}/100 confirma que los usuarios actuales "
+                        f"la prefieren claramente sobre quienes no la usan — "
+                        f"la experiencia diferencial existe pero no está siendo monetizada.")
+        return (f"{nombre} genera experiencias superiores a su sector (CX {cx:.0f} vs {avg_cx:.0f}/100), "
+                f"pero su conversión comercial queda por debajo (CO {co:.0f} vs {avg_co:.0f}/100).{cx_causa} "
+                f"La desconexión es estructural: la marca entrega valor pero no ha construido "
+                f"los mecanismos para capturarlo — ya sea en pricing, distribución o activación de la demanda.")
+
+    # CO fuerte + CX débil vs sector — vende pero la experiencia erosiona la base
+    if gaps.get("co", 0) > 15 and gaps.get("cx", 0) < -5:
+        return (f"{nombre} convierte por encima del sector (CO {co:.0f} vs {avg_co:.0f}/100), "
+                f"pero la experiencia del cliente queda por debajo (CX {cx:.0f} vs {avg_cx:.0f}/100). "
+                f"El modelo comercial funciona en el corto plazo — pero una experiencia "
+                f"por debajo del estándar del sector acumula insatisfacción. "
+                f"{'Con lealtad de ' + str(int(loyalty)) + '/100, la señal de alerta ya es visible.' if loyalty and loyalty < 40 else 'A medida que los competidores mejoran la experiencia, la brecha de retención se amplía.'}")
+
+    # ── PERFIL EQUILIBRADO: análisis de tensión interna con sub-indicadores ──
+
+    scores_disp = [(f, v) for f, v in [("bx", bx), ("co", co), ("cx", cx)] if v is not None]
+    if scores_disp:
+        min_f, min_v = min(scores_disp, key=lambda x: x[1])
+        max_f, max_v = max(scores_disp, key=lambda x: x[1])
+        frente_names = {"bx": "fuerza de marca", "co": "conversión comercial", "cx": "experiencia del cliente"}
+
+        if max_v - min_v >= 20:
+            # Ir al sub-indicador del frente más bajo para dar el insight real
+            if min_f == "bx" and ba is not None and pulse is not None:
+                causa = ("la presencia digital insuficiente" if pulse < ba - 15
+                         else "la percepción de valor no diferenciada" if ba < 45
+                         else "una combinación de señales mixtas entre activo y visibilidad")
+                return (f"{nombre} muestra tensión entre {frente_names[max_f]} ({max_v:.0f}/100) "
+                        f"y fuerza de marca ({min_v:.0f}/100). "
+                        f"El análisis de componentes apunta a {causa} como origen: "
+                        f"Brand Asset {ba:.0f}/100 y BAV Pulse {pulse:.0f}/100. "
+                        f"Elevar BX no es una sola palanca — es un trabajo simultáneo "
+                        f"de construcción de equity y visibilidad digital.")
+            elif min_f == "cx" and loyalty is not None and cx_kpi is not None:
+                causa = ("la base de usuarios fieles es pequeña" if loyalty < 35
+                         else "los usuarios no perciben una experiencia significativamente mejor que las expectativas previas" if cx_kpi < 40
+                         else "la experiencia no está siendo comunicada de forma que amplifique la preferencia")
+                return (f"{nombre} tiene {frente_names[max_f]} sólida ({max_v:.0f}/100) "
+                        f"pero la experiencia del cliente ({min_v:.0f}/100) limita el potencial de retención. "
+                        f"La causa raíz: {causa} "
+                        f"(lealtad {loyalty:.0f}/100 · CX Strategy {cx_kpi:.0f}/100). "
+                        f"La inversión en CX debe atacar ese componente específico, "
+                        f"no el frente de experiencia en general.")
+            elif min_f == "co":
+                return (f"{nombre} tiene {frente_names[max_f]} en {max_v:.0f}/100 "
+                        f"pero su conversión comercial ({min_v:.0f}/100) limita la captura de valor. "
+                        f"La eficiencia comercial — medida como retorno de ingresos sobre activos — "
+                        f"está por debajo de lo que el perfil de marca justificaría. "
+                        f"La pregunta estratégica no es 'qué comunicar' sino 'cómo convertir' "
+                        f"el capital de marca existente en volumen de negocio.")
+
+        # Perfil equilibrado sin brecha dominante: análisis de nivel absoluto
+        avg_score = sum(v for _, v in scores_disp) / len(scores_disp)
+        if avg_score > 60:
+            return (f"{nombre} muestra un perfil equilibrado y por encima de la media "
+                    f"(BX {bx:.0f if bx else '—'} · CO {co:.0f if co else '—'} · CX {cx:.0f if cx else '—'}/100). "
+                    f"Sin una brecha dominante, la palanca de crecimiento está en "
+                    f"profundizar el sub-indicador con mayor potencial según el contexto competitivo: "
+                    f"{'presencia digital (' + str(int(pulse)) + '/100 en BAV Pulse) si la prioridad es captación' if pulse and pulse < 55 else 'lealtad (' + str(int(loyalty)) + '/100) si la prioridad es retención' if loyalty and loyalty < 55 else 'diferenciación de la propuesta de valor para sostener la posición de liderazgo'}.")
+        else:
+            return (f"{nombre} tiene un perfil consistente pero con oportunidad de crecimiento en los tres frentes "
+                    f"(BX {bx:.0f if bx else '—'} · CO {co:.0f if co else '—'} · CX {cx:.0f if cx else '—'}/100). "
+                    f"La estrategia más efectiva en este perfil no es atacar el frente más bajo "
+                    f"sino identificar cuál de los tres tiene mayor elasticidad al esfuerzo "
+                    f"en el contexto competitivo de {sector}.")
+
+    # ── PATRONES BX BAJO CON DIAGNÓSTICO DE SUB-INDICADORES ──────────────
+    # Se evalúan al final para no bloquear patrones relativos (ej: CO alto + BX bajo)
+
+    # BX bajo por invisibilidad digital (Brand Asset OK pero sin presencia digital)
+    if bx_gap_origen == "digital_invisible" and bx is not None and bx < 50:
+        return (f"{nombre} tiene un activo de marca sólido en percepción (Brand Asset {ba:.0f}/100) — "
+                f"el mercado la reconoce y la estima — pero su presencia digital es baja ({pulse:.0f}/100 en BAV Pulse). "
+                f"Esto significa que la marca existe en la mente del consumidor pero no donde "
+                f"el consumidor busca: Google Trends, Wikipedia y redes sociales muestran "
+                f"una presencia insuficiente para el tamaño de su reputación. "
+                f"El riesgo: una marca que no existe digitalmente cede espacio a competidores "
+                f"más pequeños pero más visibles en el momento de la búsqueda.")
+
+    # BX bajo por falta de sustancia (alta presencia digital sin equity real)
+    if bx_gap_origen == "digital_sin_sustancia" and bx is not None and bx < 50:
+        return (f"{nombre} tiene presencia digital razonable ({pulse:.0f}/100 en BAV Pulse) "
+                f"pero el Brand Asset ({ba:.0f}/100) muestra que esa visibilidad no se convierte "
+                f"en percepción de valor. "
+                f"El mercado ve la marca pero no la diferencia ni la prefiere. "
+                f"El problema no es el volumen de comunicación sino su contenido: "
+                f"la marca comunica pero no posiciona. La prioridad es construir "
+                f"diferenciación real antes de invertir más en medios.")
+
+    # BX doble debilidad (bajo en brand asset Y en digital)
+    if bx_gap_origen == "bx_doble_debilidad" and bx is not None and bx < 40:
+        return (f"{nombre} registra debilidad en los dos componentes del BX: "
+                f"Brand Asset {ba:.0f}/100 (percepción de valor) y BAV Pulse {pulse:.0f}/100 (presencia digital). "
+                f"No hay una base desde la cual palancarse: la marca no está construida "
+                f"ni está siendo buscada. "
+                f"El punto de partida es la identidad — qué hace diferente a {nombre} "
+                f"y por qué debería importarle al consumidor — antes de cualquier inversión en medios.")
+
+    # BX muy bajo sin datos de sub-indicadores
+    if bx is not None and bx < 25:
+        return (f"Con BX {bx:.0f}/100, {nombre} aún no ha construido la presencia "
+                f"que le permita competir de igual a igual en {sector}. "
+                f"Sin reconocimiento ni diferenciación clara, cualquier inversión en conversión "
+                f"o experiencia opera sobre una base inestable.")
+
+    return (f"{nombre} presenta un perfil en construcción en {sector}. "
+            f"El primer paso es establecer cuál de los tres frentes — marca, ventas o experiencia — "
+            f"tiene la mayor palanca de crecimiento dado el contexto competitivo actual.")
 
 def generate_bx_analysis(b: dict, avg: dict) -> str:
     nombre = b["marca"]
@@ -707,8 +880,10 @@ def generate_comparative_insight(b: dict, avg: dict, gaps: dict) -> str:
                 f"queda {abs(worst_v):.0f} pts por debajo. La tensión entre fortaleza y debilidad define la "
                 f"estrategia: capitalizar lo que funciona mientras se corrige lo que frena el crecimiento.")
     elif worst_v < -15:
+        ws_txt = f"{worst_score:.0f}" if worst_score is not None else "—"
+        wa_txt = f"{worst_avg:.0f}" if worst_avg is not None else "—"
         return (f"La brecha más urgente de {nombre} está en {fn.get(worst_f,'el indicador clave')}: "
-                f"{worst_score:.0f if worst_score else '—'}/100 contra {worst_avg:.0f if worst_avg else '—'}/100 del sector ({worst_v:.0f} pts). "
+                f"{ws_txt}/100 contra {wa_txt}/100 del sector ({worst_v:.0f} pts). "
                 f"Es el indicador con mayor potencial de impacto si se prioriza en los próximos 12 meses.")
     elif best_v > 15:
         return (f"{fn.get(best_f,'El mejor indicador').capitalize()} es la ventaja competitiva de {nombre} "
