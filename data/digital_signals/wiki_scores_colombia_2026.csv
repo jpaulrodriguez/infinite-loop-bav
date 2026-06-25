@@ -1,0 +1,88 @@
+marca,wiki_article,wiki_views_monthly,wiki_score,wiki_exists,fuente
+Aguila,,0,0.0,False,wiki_scores.json
+Alkosto,Alkosto,21963,1.1,True,wiki_missing.json
+American Airlines,,0,0.0,False,wiki_scores.json
+Andina (beer),Central_Cervecera_de_Colombia,0,0.0,False,wiki_missing.json
+Ara,,0,0.0,False,wiki_scores.json
+Arturo Calle,,0,0.0,False,wiki_scores.json
+Avianca,,0,0.0,False,wiki_scores.json
+BMW,BMW,294076,14.7,True,wiki_missing.json
+Bavaria,Bavaria_S.A.,1109,0.1,True,wiki_missing.json
+Biomax,,327,35.0,True,wiki_scores.json
+Budweiser,Budweiser,6437,0.3,True,wiki_missing.json
+Carulla,Carulla,31792,1.6,True,wiki_missing.json
+Cencosud,,0,0.0,False,wiki_scores.json
+Cerveza BBC,Bogotá_Beer_Company,0,0.0,False,wiki_missing.json
+Chevignon,Chevignon,0,0.0,False,wiki_missing.json
+Chevrolet,,0,0.0,False,wiki_scores.json
+Claro,Claro_(empresa),0,0.0,False,wiki_missing.json
+Club Colombia,,0,0.0,False,wiki_scores.json
+Coca-Cola,,0,0.0,False,wiki_scores.json
+Colombiana Postobón,Colombiana_(bebida),0,0.0,False,wiki_missing.json
+Colpatria,,0,0.0,False,wiki_scores.json
+Copa Airlines,Copa_Airlines,0,0.0,False,wiki_missing.json
+Corona,,0,0.0,False,wiki_scores.json
+Corona (beer),Corona_(cerveza),142526,7.1,True,wiki_missing.json
+Cruz Verde,,0,0.0,False,wiki_scores.json
+D1,,0,0.0,False,wiki_scores.json
+Decameron,,0,0.0,False,wiki_scores.json
+Droguerías Olímpica,Olímpica_(cadena_colombiana),0,0.0,False,wiki_missing.json
+ETB,ETB_(Colombia),78,0.0,True,wiki_missing.json
+Easy Fly,EasyFly,0,0.0,False,wiki_missing.json
+El Corral,El_Corral_(restaurante),0,0.0,False,wiki_missing.json
+Esso,Esso,0,0.0,False,wiki_missing.json
+Exito,,9877,35.0,True,wiki_scores.json
+Falabella,,0,0.0,False,wiki_scores.json
+Farmacia Pasteur,Farmacias_Pasteur,0,0.0,False,wiki_missing.json
+Farmatodo,,0,30.0,True,wiki_scores.json
+Ford,Ford_Motor_Company,324698,16.2,True,wiki_missing.json
+Frisby,,0,0.0,False,wiki_scores.json
+Grupo Aval,,0,0.0,False,wiki_scores.json
+H&M,,0,0.0,False,wiki_scores.json
+Hatsu,Hatsu_(bebida),0,0.0,False,wiki_missing.json
+Heineken,Heineken,125561,6.3,True,wiki_missing.json
+Honda,Honda,0,0.0,False,wiki_missing.json
+Hyundai,,0,0.0,False,wiki_scores.json
+JetSmart,JetSmart,4648,0.2,True,wiki_missing.json
+Jumbo,Jumbo_(supermercado),978,0.0,True,wiki_missing.json
+KFC,KFC,0,0.0,False,wiki_missing.json
+Kia,Kia,2254,0.1,True,wiki_missing.json
+Koaj,Koaj,0,0.0,False,wiki_missing.json
+Makro,,0,0.0,False,wiki_scores.json
+Manzana Postobón,,0,0.0,False,wiki_missing.json
+Mazda,,0,0.0,False,wiki_scores.json
+McDonald's,,0,0.0,False,wiki_scores.json
+Mercado Libre,Mercado_Libre,1278472,63.9,True,wiki_missing.json
+Mercado Zapatoca,Mercado_Zapatoca,0,0.0,False,wiki_missing.json
+Metro,Metro_(supermercado_colombiano),0,0.0,False,wiki_missing.json
+Movistar,,0,0.0,False,wiki_scores.json
+Nissan,,0,0.0,False,wiki_scores.json
+OXXO,,0,0.0,False,wiki_scores.json
+Olímpica,,0,0.0,False,wiki_scores.json
+Petrobras,,0,0.0,False,wiki_scores.json
+Poker,,0,0.0,False,wiki_scores.json
+Poker (beer),Cerveza_Póker,5303,0.3,True,wiki_missing.json
+Postobón,,0,0.0,False,wiki_scores.json
+Primax,,0,0.0,False,wiki_scores.json
+Quatro,,0,0.0,False,wiki_missing.json
+Rappi,,0,0.0,False,wiki_scores.json
+Renault,,0,0.0,False,wiki_scores.json
+Satena,Satena,4615,0.2,True,wiki_missing.json
+Seguros Bolivar,,0,0.0,False,wiki_scores.json
+Stella Artois,Stella_Artois,112778,5.6,True,wiki_missing.json
+Sura,,0,0.0,False,wiki_scores.json
+Suzuki,,0,0.0,False,wiki_scores.json
+Telefónica,Telefónica,0,0.0,False,wiki_missing.json
+Tennis,,0,0.0,False,wiki_scores.json
+Tennis (clothing),Tennis_(tienda),0,0.0,False,wiki_missing.json
+Terpel,,38546,45.0,True,wiki_scores.json
+Texaco,Texaco,0,0.0,False,wiki_missing.json
+Tiendas Isimo,,0,0.0,False,wiki_missing.json
+Tigo,,0,0.0,False,wiki_scores.json
+Tigo UNE,,0,0.0,False,wiki_scores.json
+Totto,Totto_(empresa),0,0.0,False,wiki_missing.json
+Toyota,,0,0.0,False,wiki_scores.json
+United Airlines,,0,0.0,False,wiki_scores.json
+WOM,,0,0.0,False,wiki_scores.json
+Wingo,Wingo_(aerolínea),0,0.0,False,wiki_missing.json
+Zapatoca,,0,0.0,False,wiki_scores.json
