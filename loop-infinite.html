@@ -75,6 +75,22 @@ html,body{
   font-size:11px;font-weight:600;letter-spacing:.09em;
   text-transform:uppercase;color:var(--text-3);
 }
+#category-select{
+  background:var(--surface-2);
+  border:1px solid var(--border-hover);
+  border-radius:var(--radius-sm);
+  color:var(--text-2);
+  font-size:13px;font-weight:500;
+  padding:6px 32px 6px 12px;
+  appearance:none;cursor:pointer;outline:none;
+  min-width:175px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='rgba(255,255,255,.4)' d='M5 7L1 3h8z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 10px center;
+  transition:border-color .15s,background .15s;
+}
+#category-select:hover{border-color:rgba(255,255,255,.3);background-color:#152040;}
+#category-select option{background:#0d1428;}
+.selector-divider{width:1px;height:20px;background:var(--border);margin:0 2px;}
 #brand-select{
   background:var(--surface-2);
   border:1px solid var(--border-hover);
@@ -365,6 +381,69 @@ html,body{
   font-size:10px;color:var(--text-2);line-height:1.35;
 }
 
+/* ── CATEGORY PANEL ──────────────────────────────────────── */
+#category-panel{
+  width:100%;max-width:920px;
+  margin-top:var(--sp-3);margin-left:auto;margin-right:auto;
+  background:rgba(18,26,47,.50);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:var(--radius-md);
+  padding:var(--sp-4) var(--sp-5);
+  display:none;flex-direction:column;gap:var(--sp-4);
+  box-shadow:0 4px 24px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.06);
+}
+#category-panel.visible{display:flex;}
+.cat-header{display:flex;align-items:center;gap:var(--sp-3);flex-wrap:wrap;}
+.cat-tag{
+  font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:#60a5fa;background:rgba(96,165,250,.1);border-radius:4px;padding:2px 7px;
+}
+.cat-name{font-size:14px;font-weight:700;color:var(--text-1);letter-spacing:.02em;}
+.cat-count{font-size:10px;color:var(--text-3);font-weight:500;}
+.cat-scores{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--sp-3);width:100%;}
+.cat-score-card{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
+  border-radius:10px;padding:var(--sp-3) var(--sp-3);
+  display:flex;flex-direction:column;gap:6px;
+}
+.cat-score-label{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3);}
+.cat-score-value{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1;}
+.cat-score-value.bx-color{color:var(--bx);}
+.cat-score-value.co-color{color:var(--co);}
+.cat-score-value.cx-color{color:var(--cx);}
+.cat-score-sub{display:flex;gap:var(--sp-3);margin-top:2px;}
+.cat-score-sub-item{display:flex;flex-direction:column;gap:1px;}
+.cat-score-sub-label{font-size:8px;color:var(--text-3);font-weight:500;}
+.cat-score-sub-val{font-size:10px;font-weight:600;color:var(--text-2);}
+.cat-extremes{display:flex;gap:6px;margin-top:4px;}
+.cat-extreme{font-size:9px;color:var(--text-3);display:flex;align-items:center;gap:3px;}
+.cat-extreme-badge{
+  font-size:8px;font-weight:700;border-radius:3px;padding:1px 4px;
+}
+.cat-extreme-badge.top{background:rgba(0,210,106,.12);color:#00d26a;}
+.cat-extreme-badge.bot{background:rgba(255,60,60,.1);color:#f87171;}
+.cat-insight-box{
+  background:rgba(96,165,250,.05);border:1px solid rgba(96,165,250,.12);
+  border-left:2px solid #60a5fa;
+  border-radius:8px;padding:var(--sp-3) var(--sp-4);
+}
+.cat-insight-tag{
+  font-size:8px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:#60a5fa;margin-bottom:6px;
+}
+.cat-insight-text{font-size:11.5px;font-weight:500;color:var(--text-1);line-height:1.6;}
+.cat-brands-list{
+  display:flex;flex-wrap:wrap;gap:6px;
+  padding-top:var(--sp-2);border-top:1px solid rgba(255,255,255,.06);
+}
+.cat-brand-chip{
+  font-size:10px;font-weight:600;color:var(--text-2);
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+  border-radius:4px;padding:2px 8px;cursor:pointer;transition:background .15s,color .15s;
+}
+.cat-brand-chip:hover{background:rgba(255,107,0,.15);color:var(--accent);border-color:rgba(255,107,0,.3);}
+
 /* ── LEGEND ───────────────────────────────────────────────── */
 #legend-bar{
   display:flex;align-items:center;gap:var(--sp-5);
@@ -412,6 +491,24 @@ html,body{
       <div class="header-brand-name"><span>Capital Intangible</span> · Brand Intelligence Loop</div>
     </div>
     <div class="selector-wrap">
+      <span class="selector-label">Categoría</span>
+      <select id="category-select">
+        <option value="">— Todas —</option>
+        <option value="Retail Gran Superficie">Retail Gran Superficie</option>
+        <option value="Retail Especializado y Moda">Retail Especializado y Moda</option>
+        <option value="Aerolíneas">Aerolíneas</option>
+        <option value="Telecomunicaciones">Telecomunicaciones</option>
+        <option value="Automotriz">Automotriz</option>
+        <option value="Cervezas y Bebidas Alcohólicas">Cervezas y Bebidas Alcohólicas</option>
+        <option value="Bebidas No Alcohólicas">Bebidas No Alcohólicas</option>
+        <option value="Comidas Rápidas">Comidas Rápidas</option>
+        <option value="Farmacias y Salud">Farmacias y Salud</option>
+        <option value="Combustibles y Estaciones">Combustibles y Estaciones</option>
+        <option value="Finanzas y Seguros">Finanzas y Seguros</option>
+        <option value="E-commerce y Delivery">E-commerce y Delivery</option>
+        <option value="Turismo y Hotelería">Turismo y Hotelería</option>
+      </select>
+      <div class="selector-divider"></div>
       <span class="selector-label">Marca</span>
       <select id="brand-select"><option value="">— Selecciona —</option></select>
       <button id="btn-download-ppt" title="Descargar presentación PPT de esta marca" disabled>
@@ -523,6 +620,72 @@ html,body{
   </section>
 
   <!-- ── INSIGHT PANEL ── -->
+  <!-- ── CATEGORY PANEL ── -->
+  <div id="category-panel">
+    <div class="cat-header">
+      <span class="cat-tag">Análisis de Categoría</span>
+      <span class="cat-name" id="cat-name"></span>
+      <span class="cat-count" id="cat-count"></span>
+    </div>
+    <div class="cat-scores">
+      <div class="cat-score-card">
+        <div class="cat-score-label">BX · Brand Experience</div>
+        <div class="cat-score-value bx-color" id="cat-bx">—</div>
+        <div class="cat-score-sub">
+          <div class="cat-score-sub-item">
+            <div class="cat-score-sub-label">Brand Asset</div>
+            <div class="cat-score-sub-val" id="cat-ba">—</div>
+          </div>
+          <div class="cat-score-sub-item">
+            <div class="cat-score-sub-label">BAV Pulse</div>
+            <div class="cat-score-sub-val" id="cat-bp">—</div>
+          </div>
+        </div>
+        <div class="cat-extremes">
+          <div class="cat-extreme"><span class="cat-extreme-badge top" id="cat-bx-top"></span></div>
+          <div class="cat-extreme"><span class="cat-extreme-badge bot" id="cat-bx-bot"></span></div>
+        </div>
+      </div>
+      <div class="cat-score-card">
+        <div class="cat-score-label">CO · Commerce</div>
+        <div class="cat-score-value co-color" id="cat-co">—</div>
+        <div class="cat-score-sub">
+          <div class="cat-score-sub-item">
+            <div class="cat-score-sub-label">Eficiencia Ing./Activos</div>
+            <div class="cat-score-sub-val" id="cat-cm">—</div>
+          </div>
+        </div>
+        <div class="cat-extremes">
+          <div class="cat-extreme"><span class="cat-extreme-badge top" id="cat-co-top"></span></div>
+          <div class="cat-extreme"><span class="cat-extreme-badge bot" id="cat-co-bot"></span></div>
+        </div>
+      </div>
+      <div class="cat-score-card">
+        <div class="cat-score-label">CX · Customer Experience</div>
+        <div class="cat-score-value cx-color" id="cat-cx">—</div>
+        <div class="cat-score-sub">
+          <div class="cat-score-sub-item">
+            <div class="cat-score-sub-label">CX Strategy</div>
+            <div class="cat-score-sub-val" id="cat-cxk">—</div>
+          </div>
+          <div class="cat-score-sub-item">
+            <div class="cat-score-sub-label">Lealtad</div>
+            <div class="cat-score-sub-val" id="cat-ly">—</div>
+          </div>
+        </div>
+        <div class="cat-extremes">
+          <div class="cat-extreme"><span class="cat-extreme-badge top" id="cat-cx-top"></span></div>
+          <div class="cat-extreme"><span class="cat-extreme-badge bot" id="cat-cx-bot"></span></div>
+        </div>
+      </div>
+    </div>
+    <div class="cat-insight-box">
+      <div class="cat-insight-tag">Diagnóstico de Categoría</div>
+      <div class="cat-insight-text" id="cat-insight"></div>
+    </div>
+    <div class="cat-brands-list" id="cat-brands-list"></div>
+  </div>
+
   <div id="insight-panel">
     <div class="insight-header">
       <span class="insight-tag">Idea Dominante</span>
@@ -682,6 +845,212 @@ const SEMA = {
 };
 
 // ── EPIC: Motor de análisis real por marca ────────────────
+// ── CATEGORIES DATA ──────────────────────────────────────────
+const CATEGORIES_DATA = {"Retail Gran Superficie": {"marcas": ["Makro", "D1", "Jumbo", "Exito", "Carulla", "Olímpica", "Metro", "Alkosto", "Cencosud", "Mercado Zapatoca", "Tiendas Isimo"], "n": 11, "bx": 45.8, "co": 52.6, "cx": 36.6, "brand_asset": 52.3, "bav_pulse": 39.2, "cx_kpi": 39.1, "loyalty": 40.0, "bx_top": ["D1", 70.1], "bx_bot": ["Tiendas Isimo", 10.6], "co_top": ["D1", 88.9], "co_bot": ["Metro", 27.2], "cx_top": ["Exito", 86.8], "cx_bot": ["Carulla", 9.5]}, "Retail Especializado y Moda": {"marcas": ["Falabella", "Arturo Calle", "Chevignon", "H&M", "Koaj", "Tennis (clothing)", "Totto"], "n": 7, "bx": 52.3, "co": 55.4, "cx": 50.9, "brand_asset": 61.9, "bav_pulse": 45.2, "cx_kpi": 39.4, "loyalty": 55.7, "bx_top": ["Falabella", 85.9], "bx_bot": ["Tennis (clothing)", 35.8], "co_top": ["Koaj", 82.7], "co_bot": ["Tennis (clothing)", 24.7], "cx_top": ["Falabella", 88.7], "cx_bot": ["Tennis (clothing)", 32.1]}, "Aerolíneas": {"marcas": ["Avianca", "American Airlines", "Copa Airlines", "JetSmart", "Wingo", "Satena", "Easy Fly", "United Airlines"], "n": 8, "bx": 35.4, "co": 64.4, "cx": 40.1, "brand_asset": 27.2, "bav_pulse": 43.4, "cx_kpi": 45.6, "loyalty": 32.6, "bx_top": ["Avianca", 60.1], "bx_bot": ["Easy Fly", 18.6], "co_top": ["United Airlines", 100.0], "co_bot": ["Avianca", 23.5], "cx_top": ["Avianca", 71.1], "cx_bot": ["United Airlines", 24.4]}, "Telecomunicaciones": {"marcas": ["Claro", "Movistar", "Tigo", "Tigo UNE", "ETB", "WOM", "Telefónica"], "n": 7, "bx": 34.7, "co": 9.7, "cx": 33.8, "brand_asset": 25.3, "bav_pulse": 44.1, "cx_kpi": 39.7, "loyalty": 37.3, "bx_top": ["Movistar", 43.5], "bx_bot": ["ETB", 24.2], "co_top": ["Claro", 13.6], "co_bot": ["WOM", 6.2], "cx_top": ["Tigo", 68.7], "cx_bot": ["WOM", 13.2]}, "Automotriz": {"marcas": ["BMW", "Chevrolet", "Ford", "Honda", "Hyundai", "Kia", "Mazda", "Nissan", "Renault", "Suzuki", "Toyota"], "n": 11, "bx": 76.4, "co": 67.3, "cx": 65.2, "brand_asset": 74.6, "bav_pulse": 78.3, "cx_kpi": 66.8, "loyalty": 72.3, "bx_top": ["Toyota", 92.2], "bx_bot": ["Hyundai", 64.1], "co_top": ["Toyota", 95.1], "co_bot": ["Honda", 39.5], "cx_top": ["Toyota", 94.3], "cx_bot": ["Honda", 30.3]}, "Cervezas y Bebidas Alcohólicas": {"marcas": ["Aguila", "Andina (beer)", "Bavaria", "Budweiser", "Cerveza BBC", "Club Colombia", "Corona (beer)", "Heineken", "Poker (beer)", "Stella Artois"], "n": 10, "bx": 51.9, "co": 25.6, "cx": 55.2, "brand_asset": 48.3, "bav_pulse": 56.1, "cx_kpi": 56.3, "loyalty": 47.8, "bx_top": ["Corona (beer)", 81.2], "bx_bot": ["Andina (beer)", 14.0], "co_top": ["Andina (beer)", 56.8], "co_bot": ["Stella Artois", 14.8], "cx_top": ["Bavaria", 91.2], "cx_bot": ["Stella Artois", 35.1]}, "Bebidas No Alcohólicas": {"marcas": ["Coca-Cola", "Colombiana Postobón", "Hatsu", "Manzana Postobón", "Postobón", "Quatro"], "n": 6, "bx": 56.2, "co": 39.3, "cx": 50.7, "brand_asset": 70.5, "bav_pulse": 41.8, "cx_kpi": 47.0, "loyalty": 50.2, "bx_top": ["Coca-Cola", 86.2], "bx_bot": ["Quatro", 35.6], "co_top": ["Coca-Cola", 75.3], "co_bot": ["Quatro", 32.1], "cx_top": ["Coca-Cola", 86.1], "cx_bot": ["Manzana Postobón", 24.0]}, "Comidas Rápidas": {"marcas": ["McDonald's", "KFC", "Frisby", "El Corral"], "n": 4, "bx": 67.6, "co": 65.8, "cx": 58.6, "brand_asset": 73.9, "bav_pulse": 64.7, "cx_kpi": 50.4, "loyalty": 66.7, "bx_top": ["McDonald's", 82.2], "bx_bot": ["El Corral", 53.6], "co_top": ["El Corral", 72.8], "co_bot": ["KFC", 55.6], "cx_top": ["Frisby", 80.6], "cx_bot": ["El Corral", 36.1]}, "Farmacias y Salud": {"marcas": ["Cruz Verde", "Droguerías Olímpica", "Farmacia Pasteur", "Farmatodo"], "n": 4, "bx": 38.9, "co": 66.7, "cx": 53.6, "brand_asset": 46.2, "bav_pulse": 31.6, "cx_kpi": 52.5, "loyalty": 44.6, "bx_top": ["Farmatodo", 58.1], "bx_bot": ["Farmacia Pasteur", 18.6], "co_top": ["Farmacia Pasteur", 81.5], "co_bot": ["Droguerías Olímpica", 51.9], "cx_top": ["Cruz Verde", 71.0], "cx_bot": ["Farmacia Pasteur", 26.9]}, "Combustibles y Estaciones": {"marcas": ["Biomax", "Esso", "Petrobras", "Primax", "Terpel", "Texaco"], "n": 6, "bx": 30.4, "co": 92.4, "cx": 65.6, "brand_asset": 17.3, "bav_pulse": 43.6, "cx_kpi": 72.9, "loyalty": 58.4, "bx_top": ["Terpel", 66.3], "bx_bot": ["Biomax", 18.4], "co_top": ["Petrobras", 98.8], "co_bot": ["Biomax", 84.0], "cx_top": ["Texaco", 98.1], "cx_bot": ["Primax", 42.3]}, "Finanzas y Seguros": {"marcas": ["Colpatria", "Grupo Aval", "Sura", "Seguros Bolivar"], "n": 4, "bx": 36.9, "co": 1.9, "cx": 39.5, "brand_asset": 32.0, "bav_pulse": 41.8, "cx_kpi": 45.8, "loyalty": 42.7, "bx_top": ["Sura", 70.0], "bx_bot": ["Colpatria", 17.8], "co_top": ["Colpatria", 3.7], "co_bot": ["Sura", 0.0], "cx_top": ["Sura", 54.2], "cx_bot": ["Grupo Aval", 18.1]}, "E-commerce y Delivery": {"marcas": ["Mercado Libre", "Rappi", "OXXO"], "n": 3, "bx": 77.0, "co": 56.8, "cx": 56.6, "brand_asset": 76.5, "bav_pulse": 77.6, "cx_kpi": 71.5, "loyalty": 51.5, "bx_top": ["Mercado Libre", 89.6], "bx_bot": ["OXXO", 62.0], "co_top": ["Mercado Libre", 86.4], "co_bot": ["Rappi", 40.7], "cx_top": ["Rappi", 69.0], "cx_bot": ["OXXO", 48.9]}, "Turismo y Hotelería": {"marcas": ["Decameron"], "n": 1, "bx": 60.2, "co": 4.9, "cx": 71.7, "brand_asset": 61.5, "bav_pulse": 59.0, "cx_kpi": 82.1, "loyalty": 67.1, "bx_top": ["Decameron", 60.2], "bx_bot": ["Decameron", 60.2], "co_top": ["Decameron", 4.9], "co_bot": ["Decameron", 4.9], "cx_top": ["Decameron", 71.7], "cx_bot": ["Decameron", 71.7]}};
+
+// ── CATEGORY INSIGHT ENGINE ───────────────────────────────────
+// Misma lógica de dos capas que brand_engine.py:
+// Capa 1 — diagnóstico de sub-indicadores (BA vs Pulse, CX_KPI vs Loyalty)
+// Capa 2 — patrones cruzados entre frentes con causa raíz específica del sector
+function getCategoryInsight(cat, d) {
+  const bx=d.bx, co=d.co, cx=d.cx;
+  const ba=d.brand_asset, bp=d.bav_pulse, cxk=d.cx_kpi, ly=d.loyalty;
+
+  // Sub-diagnóstico BX
+  let bxOrigen = null;
+  if (ba!==null && bp!==null) {
+    if (ba > 60 && bp < 38)        bxOrigen = 'digital_invisible';
+    else if (ba < 35 && bp > 52)   bxOrigen = 'digital_sin_sustancia';
+    else if (ba < 35 && bp < 40)   bxOrigen = 'bx_doble_debilidad';
+  }
+
+  // Sub-diagnóstico CX
+  let cxOrigen = null;
+  if (cxk!==null && ly!==null) {
+    if (ly > 60 && cxk < 38)       cxOrigen = 'conocido_no_elegido';
+    else if (ly < 32 && cxk > 58)  cxOrigen = 'fieles_pocos';
+    else if (ly < 32 && cxk < 40)  cxOrigen = 'cx_doble_debilidad';
+  }
+
+  const f = v => v !== null ? Math.round(v) : '—';
+
+  // ── PATRONES ESTRUCTURALES DE CATEGORÍA ──────────────────────
+
+  // Telecomunicaciones — CO sistémicamente bajo (modelo de ingresos vs activos regulado)
+  if (cat === 'Telecomunicaciones') {
+    if (co < 15) {
+      const cx_txt = cx > 45
+        ? `La experiencia (CX ${f(cx)}/100) es el único activo diferenciador real en un sector donde la señal y el precio convergen — quien la descuide primero cede cuota al que sí la trabaje.`
+        : `Con CX ${f(cx)}/100 y CO ${f(co)}/100, el sector opera sin palancas claras de retención ni conversión.`;
+      return `Telecomunicaciones registra el CO más bajo de todas las categorías del modelo (${f(co)}/100), consecuencia estructural de modelos de negocio intensivos en activos: la ratio ingresos/activos es inherentemente baja en infraestructura de red. La variable diferenciadora en este contexto no es el CO sino el BX (${f(bx)}/100) y el CX (${f(cx)}/100) — quien construya marca y retenga clientes en un mercado con bajo switching cost compite en dimensiones que el precio no puede resolver. ${cx_txt}`;
+    }
+  }
+
+  // Combustibles — CO muy alto con BX muy bajo
+  if (cat === 'Combustibles y Estaciones') {
+    if (co > 80 && bx < 40) {
+      const bx_causa = bxOrigen === 'digital_invisible'
+        ? `Brand Asset ${f(ba)}/100 indica equity de marca moderado en percepción, pero BAV Pulse ${f(bp)}/100 muestra invisibilidad digital — el consumidor no busca estas marcas online porque la decisión ocurre en la estación.`
+        : `Brand Asset ${f(ba)}/100 — las marcas de combustibles no diferencian en producto sino en conveniencia y precio.`;
+      return `Combustibles es la categoría con mayor CO del modelo (${f(co)}/100) y simultáneamente una de las más bajas en BX (${f(bx)}/100). La paradoja es estructural: el combustible es un commodity de alta frecuencia donde la marca no filtra la decisión de compra — la filtra la ubicación del punto de venta. ${bx_causa} La excepción es Terpel (BX ${d.bx_top[1]}/100), que ha logrado construir marca sobre un producto indiferenciable. CX ${f(cx)}/100 y lealtad ${f(ly)}/100 sugieren que la fidelización por conveniencia existe, pero no está vinculada a preferencia de marca.`;
+    }
+  }
+
+  // Finanzas y Seguros — CO estructuralmente bajo (holding + seguros)
+  if (cat === 'Finanzas y Seguros') {
+    if (co < 5) {
+      return `Finanzas y Seguros registra el CO más bajo del modelo (${f(co)}/100). En este sector, el Commerce Score —basado en ingresos netos sobre activos— refleja la estructura contable de holding e intermediación financiera, no la eficiencia comercial real. La palanca diferenciadora es BX (${f(bx)}/100): en seguros y finanzas, la confianza de marca antecede la decisión de compra más que en cualquier otra categoría. Sura (BX ${d.bx_top[1]}/100) demuestra que la inversión en marca genera ventaja competitiva sostenible incluso en un sector de bajo diferenciación de producto. CX Strategy ${f(cxk)}/100 y lealtad ${f(ly)}/100 apuntan a una base de clientes que renueva por inercia más que por preferencia activa.`;
+    }
+  }
+
+  // Aerolíneas — CO alto pero CX/BX bajos — commodity de precio
+  if (cat === 'Aerolíneas') {
+    if (co > 55 && bx < 42 && cx < 45) {
+      return `Aerolíneas convierte bien (CO ${f(co)}/100) pero con BX ${f(bx)}/100 y CX ${f(cx)}/100, el sector opera como commodity de precio: el pasajero elige por tarifa y disponibilidad, no por preferencia de marca. La dispersión es extrema — Avianca tiene BX ${d.bx_top[1]}/100 mientras Easy Fly llega a ${d.bx_bot[1]}/100. La lealtad sectorial de ${f(ly)}/100 confirma la hipótesis: quien compra, no necesariamente repite la misma aerolínea. La excepción estratégica es Avianca (CX ${d.cx_top[1]}/100), que ha construido una base de lealtad sobre el volumen de rutas. Para el resto, el CX Strategy de ${f(cxk)}/100 indica que los usuarios actuales no perciben una experiencia diferenciada — y eso mantiene el mercado en guerra de precios.`;
+    }
+  }
+
+  // Automotriz — el sector más maduro, liderazgo equilibrado
+  if (cat === 'Automotriz') {
+    if (bx > 70 && co > 60 && cx > 60) {
+      const honda_txt = d.cx_bot[1] < 35 ? ` Honda (CX ${d.cx_bot[1]}/100) es la excepción más llamativa: vende con marca sólida pero la experiencia post-venta no acompaña.` : '';
+      return `Automotriz es la categoría con el perfil más sólido y equilibrado del modelo: BX ${f(bx)}/100, CO ${f(co)}/100, CX ${f(cx)}/100. Toyota lidera los tres frentes (BX ${d.bx_top[1]} · CO ${d.co_top[1]} · CX ${d.cx_top[1]}/100), marcando el estándar al que el sector aspira. Con Brand Asset ${f(ba)}/100 y BAV Pulse ${f(bp)}/100, el sector también tiene la presencia digital más alta de todas las categorías — la búsqueda online es parte central del journey de compra automotriz. La tensión interna está en el CX Strategy (${f(cxk)}/100): los compradores actuales no perciben una experiencia tan superior a la expectativa como cabría esperar de un sector de ticket alto.${honda_txt}`;
+    }
+  }
+
+  // Cervezas — BX y CX altos, CO bajo (distribución mayorista, no venta directa)
+  if (cat === 'Cervezas y Bebidas Alcohólicas') {
+    if (co < 32 && cx > 50 && bx > 45) {
+      return `Cervezas es el sector del modelo con mayor desconexión entre valor de marca y conversión directa: BX ${f(bx)}/100 y CX ${f(cx)}/100 son sólidos, pero CO ${f(co)}/100 es estructuralmente bajo porque las cervezas no venden directo al consumidor — el Commerce Score refleja la eficiencia del modelo de distribución mayorista, no el volumen de consumo real. La palanca estratégica del sector es la experiencia: CX Strategy ${f(cxk)}/100 y lealtad ${f(ly)}/100 indican que el consumidor tiene preferencias de marca claras, pero esas preferencias se construyen en el punto de consumo (bar, restaurante, evento), no en la compra directa. Corona (BX ${d.bx_top[1]}/100) y Bavaria (CX ${d.cx_top[1]}/100) lideran en dimensiones diferentes — marca aspiracional vs. experiencia de consumo — lo que refleja dos estrategias válidas en el mismo sector.`;
+    }
+  }
+
+  // Retail Gran Superficie — CO promedio, CX muy bajo, dispersión extrema
+  if (cat === 'Retail Gran Superficie') {
+    if (cx < 42) {
+      return `Retail Gran Superficie tiene el CX más bajo de todas las categorías del modelo (${f(cx)}/100), con una dispersión extrema: Éxito en ${d.cx_top[1]}/100 vs. Carulla en ${d.cx_bot[1]}/100. El sector convierte (CO ${f(co)}/100) pero no genera experiencias memorables — CX Strategy ${f(cxk)}/100 indica que los usuarios actuales no perciben diferencias significativas entre formatos. La hipótesis: el retail de gran superficie compite en precio y conveniencia de ubicación, no en experiencia de compra. D1 ilustra el riesgo: BX ${d.bx_top[1]}/100 y CO ${d.co_top[1]}/100 con CX Strategy de apenas 27/100 — vende bien pero quien no la usa no la desea menos que quien sí la usa. BAV Pulse ${f(bp)}/100 es el más bajo del modelo, señal de que este sector no está siendo buscado activamente en digital — el consumer journey empieza en el punto físico.`;
+    }
+  }
+
+  // Retail Moda — equilibrado pero CX Strategy bajo
+  if (cat === 'Retail Especializado y Moda') {
+    return `Retail Especializado y Moda tiene el perfil más equilibrado entre los sectores de consumo: BX ${f(bx)}/100 · CO ${f(co)}/100 · CX ${f(cx)}/100. Brand Asset ${f(ba)}/100 es el más alto del sector retail, lo que refleja que la moda construye identidad mejor que el retail de conveniencia. Sin embargo, CX Strategy ${f(cxk)}/100 revela una paradoja: las marcas de moda generan aspiración pero la experiencia real de sus clientes actuales no supera significativamente la expectativa de quienes no las compran. Falabella (BX ${d.bx_top[1]} · CX ${d.cx_top[1]}/100) lidera en ambas dimensiones con un modelo que integra experiencia física y digital. Tennis (clothing) en el extremo opuesto (BX ${d.bx_bot[1]} · CO ${d.co_bot[1]} · CX ${d.cx_bot[1]}/100) ilustra la brecha entre marcas que construyen y marcas que simplemente existen en el sector.`;
+  }
+
+  // E-commerce — BX muy alto, dispersión en CO y CX
+  if (cat === 'E-commerce y Delivery') {
+    return `E-commerce y Delivery es la categoría con mayor presencia digital del modelo (BAV Pulse ${f(bp)}/100) y BX ${f(bx)}/100 sólido, pero con una dispersión estratégica significativa: Mercado Libre lidera en BX (${d.bx_top[1]}/100) y CO (${d.co_top[1]}/100), mientras Rappi lidera en CX (${d.cx_top[1]}/100) con CO ${d.co_bot[1]}/100. La paradoja de Rappi es la más reveladora del modelo: CX Strategy ${f(cxk)}/100 confirma que sus usuarios la prefieren intensamente sobre quienes no la usan, pero esa experiencia superior no se traduce en eficiencia comercial — el modelo de delivery tiene costos de captación altos y lealtad basada en conveniencia, no en marca. OXXO compite en conveniencia física (${d.bx_bot[1]}/100 en BX) y está aprendiendo el lenguaje digital de las otras dos. El sector define la próxima frontera competitiva del consumo colombiano.`;
+  }
+
+  // Comidas Rápidas — el sector más homogéneo en calidad
+  if (cat === 'Comidas Rápidas') {
+    return `Comidas Rápidas es el sector más consistente del modelo en los tres frentes: BX ${f(bx)}/100 · CO ${f(co)}/100 · CX ${f(cx)}/100, con la dispersión más baja entre categorías. Frisby (CX ${d.cx_top[1]}/100) tiene el CX más alto del sector con un Brand Asset perfecto (100/100), lo que indica que su equity de marca es completamente percibido como diferencial por el consumidor colombiano. McDonald's lidera BX (${d.bx_top[1]}/100) gracias al BAV Pulse más alto (99.1/100 — máxima presencia digital del modelo), pero CX Strategy ${f(cxk)}/100 señala que la experiencia real no supera la expectativa para sus usuarios. La tensión del sector: las marcas globales dominan el reconocimiento digital, pero la marca local (Frisby) gana en la experiencia real de consumo — lealtad ${f(ly)}/100.`;
+  }
+
+  // Farmacias — CO alto, BX muy bajo
+  if (cat === 'Farmacias y Salud') {
+    return `Farmacias y Salud tiene el segundo CO más alto del modelo (${f(co)}/100) con el BX más bajo de los sectores de alto volumen (${f(bx)}/100). El patrón es idéntico al de combustibles: categoría de alta frecuencia donde la decisión de compra está dominada por la proximidad del punto de venta, no por la preferencia de marca. BAV Pulse ${f(bp)}/100 — el más bajo del modelo junto a Retail Gran Superficie — confirma que el consumer journey de salud no empieza en digital. La excepción estratégica es la experiencia: Cruz Verde lidera CX (${d.cx_top[1]}/100) mientras Farmacia Pasteur tiene el CO más alto (${d.co_top[1]}/100) con el CX más bajo (${d.cx_bot[1]}/100) — convierte por ubicación pero no construye ninguna razón para regresar. CX Strategy ${f(cxk)}/100 es el frente con mayor potencial de diferenciación en el sector.`;
+  }
+
+  // Bebidas No Alcohólicas — dominada por Coca-Cola
+  if (cat === 'Bebidas No Alcohólicas') {
+    return `Bebidas No Alcohólicas tiene el Brand Asset más alto del modelo (${f(ba)}/100), impulsado principalmente por Coca-Cola (BX ${d.bx_top[1]}/100 · CO ${d.co_top[1]}/100 · CX ${d.cx_top[1]}/100 — la única marca con liderazgo en los tres frentes del sector). El promedio de categoría (BX ${f(bx)} · CO ${f(co)} · CX ${f(cx)}/100) refleja la distancia enorme entre Coca-Cola y el resto: Postobón tiene Brand Asset alto (92.3/100) pero CO ${Math.round(d.co_bot[1])}/100 en el fondo del sector. La lectura estratégica: Postobón tiene el equity de marca para ser un competidor de primer nivel pero el modelo comercial directo al consumidor no captura ese valor. CX Strategy ${f(cxk)}/100 y lealtad ${f(ly)}/100 son moderados — en bebidas masivas, la lealtad se construye en la frecuencia de consumo, no en la intensidad de la relación con la marca.`;
+  }
+
+  // Turismo (solo Decameron — categoría de 1)
+  if (cat === 'Turismo y Hotelería') {
+    return `Turismo y Hotelería en el modelo está representado por Decameron: BX ${f(bx)}/100 · CO ${f(co)}/100 · CX ${f(cx)}/100. El perfil refleja la paradoja del turismo all-inclusive: BX ${f(bx)}/100 y CX ${f(cx)}/100 sólidos — la marca es reconocida y la experiencia dentro del resort es valorada (CX Strategy ${f(cxk)}/100) — pero CO ${f(co)}/100 estructuralmente bajo porque el modelo de negocio de hotel no genera eficiencia de ingresos sobre activos comparable con retail o combustibles. La lealtad de ${f(ly)}/100 sugiere que quienes van, repiten — pero la base de clientes que puede acceder al producto es limitada por ticket precio. El reto estratégico no es la experiencia sino la accesibilidad del producto.`;
+  }
+
+  // ── PATRONES GENÉRICOS CON SUB-INDICADORES ────────────────────
+
+  // CO muy alto + BX bajo — sector de conveniencia o commodity
+  if (co > 72 && bx < 42) {
+    const causa = bxOrigen === 'digital_invisible'
+      ? `Brand Asset ${f(ba)}/100 indica que hay reconocimiento de marca, pero BAV Pulse ${f(bp)}/100 confirma que el sector no existe en la búsqueda digital — la decisión de compra ocurre en el punto físico.`
+      : `Brand Asset ${f(ba)}/100 y BAV Pulse ${f(bp)}/100 señalan que las marcas del sector no están construyendo equity de largo plazo.`;
+    return `${cat} tiene CO ${f(co)}/100 con BX ${f(bx)}/100 — la combinación clásica de sector de conveniencia o commodity: las marcas convierten por accesibilidad, no por preferencia. ${causa} CX ${f(cx)}/100 con lealtad ${f(ly)}/100 sugiere fidelización por hábito, no por elección activa. La palanca de diferenciación no está en el producto sino en la experiencia del punto de contacto.`;
+  }
+
+  // BX alto + CX alto + CO bajo — marca fuerte sin conversión directa
+  if (bx > 60 && cx > 55 && co < 35) {
+    return `${cat} construye marca (BX ${f(bx)}/100) y genera experiencias valoradas (CX ${f(cx)}/100), pero el modelo comercial directo (CO ${f(co)}/100) no captura ese valor. El patrón es frecuente en sectores donde la distribución está intermediada: la marca construye demanda que convierte por canales que no controla directamente. CX Strategy ${f(cxk)}/100 y lealtad ${f(ly)}/100 confirman que los clientes actuales valoran la marca — el trabajo es construir los mecanismos para capturar ese valor en la transacción.`;
+  }
+
+  // BX alto + CO alto + CX bajo — sector de alto volumen sin relación
+  if (bx > 60 && co > 60 && cx < 45) {
+    return `${cat} opera con marca sólida (BX ${f(bx)}/100) y buena conversión (CO ${f(co)}/100), pero la experiencia del cliente (CX ${f(cx)}/100) es el frente más débil. CX Strategy ${f(cxk)}/100 indica que los usuarios actuales no perciben una experiencia significativamente mejor a la que imaginan quienes no consumen la categoría. En sectores de alto volumen, esto genera un techo de lealtad (${f(ly)}/100): el cliente vuelve por inercia, no por convicción. La oportunidad diferenciadora está en elevar la experiencia real por encima de la expectativa — el gap que define si un cliente activo se convierte en embajador o simplemente en recomprador.`;
+  }
+
+  // Perfil equilibrado
+  const scores = [bx, co, cx].filter(v=>v!==null);
+  const maxS = Math.max(...scores), minS = Math.min(...scores);
+  if (maxS - minS < 20) {
+    const weakSub = bp < 40 ? `BAV Pulse ${f(bp)}/100 señala que la presencia digital de la categoría es limitada.`
+      : ly < 35 ? `Lealtad ${f(ly)}/100 indica que el sector no está generando adhesión profunda.`
+      : `CX Strategy ${f(cxk)}/100 sugiere que los consumidores actuales no diferencian la experiencia real de la expectativa.`;
+    return `${cat} presenta un perfil equilibrado (BX ${f(bx)} · CO ${f(co)} · CX ${f(cx)}/100) sin una brecha dominante entre frentes. En sectores sin un frente ancla claro, la ventaja competitiva se construye en el sub-indicador con mayor potencial: ${weakSub} El riesgo del equilibrio en zona media es la invisibilidad — ningún jugador lidera claramente, y eso mantiene la categoría en competencia por precio.`;
+  }
+
+  // Fallback
+  const topF = bx>=co && bx>=cx ? `BX (${f(bx)}/100)` : co>=bx && co>=cx ? `CO (${f(co)}/100)` : `CX (${f(cx)}/100)`;
+  const botF = bx<=co && bx<=cx ? `BX (${f(bx)}/100)` : co<=bx && co<=cx ? `CO (${f(co)}/100)` : `CX (${f(cx)}/100)`;
+  return `${cat} tiene su mayor fortaleza en ${topF} y su mayor brecha en ${botF}. Brand Asset ${f(ba)}/100 y BAV Pulse ${f(bp)}/100 determinan la naturaleza de la tensión en BX; CX Strategy ${f(cxk)}/100 y lealtad ${f(ly)}/100 definen el techo de retención del sector.`;
+}
+
+// ── RENDER CATEGORY PANEL ─────────────────────────────────────
+function renderCategoryPanel(catName) {
+  const panel = document.getElementById('category-panel');
+  if (!catName) { panel.classList.remove('visible'); return; }
+
+  const d = CATEGORIES_DATA[catName];
+  if (!d) { panel.classList.remove('visible'); return; }
+
+  const f = v => v !== null ? Math.round(v) : '—';
+
+  document.getElementById('cat-name').textContent = catName;
+  document.getElementById('cat-count').textContent = `${d.n} marca${d.n>1?'s':''}`;
+
+  document.getElementById('cat-bx').textContent = f(d.bx);
+  document.getElementById('cat-co').textContent = f(d.co);
+  document.getElementById('cat-cx').textContent = f(d.cx);
+  document.getElementById('cat-ba').textContent = f(d.brand_asset);
+  document.getElementById('cat-bp').textContent = f(d.bav_pulse);
+  document.getElementById('cat-cm').textContent = f(d.co);
+  document.getElementById('cat-cxk').textContent = f(d.cx_kpi);
+  document.getElementById('cat-ly').textContent = f(d.loyalty);
+
+  const setExtreme = (id, pair, type) => {
+    const el = document.getElementById(id);
+    if (pair) { el.textContent = `${type==='top'?'↑':'↓'} ${pair[0]} ${Math.round(pair[1])}`; }
+    else { el.textContent = ''; }
+  };
+  setExtreme('cat-bx-top', d.bx_top, 'top');
+  setExtreme('cat-bx-bot', d.bx_bot, 'bot');
+  setExtreme('cat-co-top', d.co_top, 'top');
+  setExtreme('cat-co-bot', d.co_bot, 'bot');
+  setExtreme('cat-cx-top', d.cx_top, 'top');
+  setExtreme('cat-cx-bot', d.cx_bot, 'bot');
+
+  document.getElementById('cat-insight').textContent = getCategoryInsight(catName, d);
+
+  // Chips de marcas clicables
+  const list = document.getElementById('cat-brands-list');
+  list.innerHTML = d.marcas.map(m =>
+    `<span class="cat-brand-chip" onclick="selectBrandFromCategory('${m.replace(/'/g,"\\'")}')">
+      ${m}
+    </span>`
+  ).join('');
+
+  panel.classList.add('visible');
+}
+
+function selectBrandFromCategory(marca) {
+  const sel = document.getElementById('brand-select');
+  sel.value = marca;
+  sel.dispatchEvent(new Event('change'));
+}
+
 function getInsight(b) {
   const {marca} = b;
   const bx = b.bx, co = b.co, cx = b.cx;
@@ -991,6 +1360,18 @@ function resetAll(){
 
 const sel=document.getElementById('brand-select');
 BRANDS.forEach(b=>{const o=document.createElement('option');o.value=b.marca;o.textContent=b.marca;sel.appendChild(o);});
+
+// Category select handler
+document.getElementById('category-select').addEventListener('change', function() {
+  const cat = this.value;
+  renderCategoryPanel(cat);
+  if (cat) {
+    // Reset brand select when category is picked
+    sel.value = '';
+    document.getElementById('btn-download-ppt').disabled = true;
+    resetAll();
+  }
+});
 
 sel.addEventListener('change',()=>{
   const marca=sel.value;
