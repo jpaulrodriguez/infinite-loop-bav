@@ -1105,91 +1105,176 @@ def generate_cx_footer(b: dict, avg: dict, cx_ranking: list, gaps: dict) -> str:
                f"Identificar qué hace diferente su recorrido del cliente es el primer paso para cerrar la brecha.")
 
 
-def generate_next_steps(b: dict, avg: dict, movements: list) -> list:
+def _frente_root_cause(frente: str, b: dict) -> tuple:
+    """
+    Identifica el sub-indicador RAÍZ que explica la debilidad de un frente y
+    devuelve (etiqueta, score_sub, acción_concreta). Data-driven: la acción
+    cambia según cuál de los dos componentes del frente está arrastrando.
+    """
+    if frente == "cx":
+        cxk = safe_val(b.get("cx_kpi")); ly = safe_val(b.get("loyalty"))
+        if cxk is not None and ly is not None:
+            if cxk <= ly:   # la experiencia no supera la expectativa (Síndrome de París)
+                return ("experiencia (CX Strategy)", cxk,
+                        "auditar los 3 momentos de mayor fricción (atención, pago, post-venta) y rediseñar el de peor desempeño")
+            return ("lealtad/recompra", ly,
+                    "montar un programa de recompra y referidos sobre la base actual: la experiencia es buena pero no fideliza")
+        return ("experiencia del cliente", cxk if cxk is not None else ly,
+                "instrumentar medición de satisfacción y abandono en los puntos de contacto clave")
+    if frente == "bx":
+        ba = safe_val(b.get("brand_asset")); pulse = safe_val(b.get("bav_pulse"))
+        if ba is not None and pulse is not None:
+            if pulse < ba - 10:   # equity sin presencia digital
+                return ("presencia digital (BAV Pulse)", pulse,
+                        "activar búsqueda, Wikipedia y redes — el equity existe pero la marca no aparece donde se investiga la compra")
+            if ba < pulse - 10:   # visibilidad sin diferenciación
+                return ("diferenciación (Brand Asset)", ba,
+                        "definir y comunicar 2-3 atributos diferenciadores con consistencia: hay visibilidad, falta preferencia")
+            return ("Brand Asset y BAV Pulse", min(ba, pulse),
+                    "reconstruir la base de marca: propósito, un diferenciador claro y presencia constante")
+        return ("fuerza de marca", ba if ba is not None else pulse,
+                "establecer la identidad y el diferenciador de marca antes de invertir en medios")
+    # co
+    cm = safe_val(b.get("commerce"))
+    return ("conversión (Commerce)", cm,
+            "auditar el funnel y atacar el punto de mayor caída (disponibilidad, precio, pago o distribución)")
+
+def generate_next_steps(b: dict, avg: dict, movements: list, sector_brands: list = None) -> list:
+    """
+    Plan accionable de 5 pasos CENTRADO EN LA BRECHA MÁS GRANDE (donde la marca
+    es más débil vs los líderes). Cada paso sale de los datos reales: el frente
+    con mayor brecha, su sub-indicador raíz, el líder a alcanzar y una meta
+    cuantificada. Marcas que ya lideran reciben un plan de defensa/extensión.
+    """
     nombre = b["marca"]
+    fname = {"cx": "Experiencia (CX)", "co": "Conversión comercial (CO)", "bx": "Marca (BX)"}
+    resp  = {"cx": "Customer Experience + Operaciones",
+             "co": "Comercial + Trade Marketing",
+             "bx": "Marketing + Marca"}
+
+    # Gaps reales por frente vs líderes
+    gaps = []
+    for f in ["bx", "co", "cx"]:
+        v = safe_val(b.get(f)); a = avg.get(f)
+        if v is not None:
+            gaps.append((f, v, (round(v - a, 1) if a is not None else None), a))
+    if not gaps:
+        return [{"accion": f"Faltan datos de BX/CO/CX para construir el plan de {nombre}.",
+                 "resp": "Analítica", "cuando": "Inmediato", "urgencia": "amarillo"}]
+
+    # CO estructuralmente bajo (toda la categoría al piso) NO es accionable como brecha
+    def _structural_co(x):
+        f, v, g, a = x
+        return f == "co" and v is not None and v < 30 and g is not None and g >= -8
+    # Sin benchmark (marca única) → debilidad = menor score absoluto; con benchmark → menor gap
+    def _weak_key(x):
+        return x[2] if x[2] is not None else (x[1] - 100)
+
+    actionable = [x for x in gaps if not _structural_co(x)] or gaps
+    gaps_sorted = sorted(actionable, key=_weak_key)
+    worst_f, worst_v, worst_g, worst_a = gaps_sorted[0]
+    best_f, best_v, best_g, best_a     = sorted(gaps, key=_weak_key)[-1]
+    # Líder solo si es fuerte vs líderes Y no tiene ningún frente en piso absoluto
+    is_leader = worst_g is not None and worst_g > -5 and worst_v >= 50
+
+    # Líder del peor frente (a quién alcanzar)
+    lname = lval = None
+    if sector_brands:
+        _, _, lname, lval = _sector_rank(nombre, worst_f, sector_brands)
+    ref_txt = (f"a {abs(worst_g):.0f} pts de {lname} ({lval:.0f}/100)"
+               if (worst_g is not None and worst_g < 0 and lname and lval is not None)
+               else "")
+
+    sub_label, sub_score, sub_action = _frente_root_cause(worst_f, b)
     steps = []
 
-    # Frente crítico real + su score y gap vs sector
-    top_frente = movements[0]["frente"] if movements else "CX"
-    fmap = {"CX": "cx", "CO": "co", "BX": "bx"}
-    fname = {"CX": "Experiencia del Cliente", "CO": "Commerce", "BX": "Fuerza de Marca"}
-    field = fmap.get(top_frente, "cx")
-    score_crit = safe_val(b.get(field))
-    avg_crit = avg.get(field)
-    gap_crit = round(score_crit - avg_crit, 1) if (score_crit is not None and avg_crit is not None) else None
-    score_txt = f"{score_crit:.0f}/100" if score_crit is not None else "sin dato"
-    gap_txt = f" ({gap_crit:+.0f} vs líderes)" if gap_crit is not None else ""
+    if is_leader:
+        # ── Marca líder: defender y extender ──
+        steps.append({
+            "accion": (f"{nombre} lidera su sector; el riesgo es la inercia. Su punto más expuesto es "
+                       f"{fname[worst_f]} ({worst_v:.0f}/100): blindarlo antes de que un retador lo use como cuña."),
+            "resp": resp[worst_f], "cuando": "Este mes", "urgencia": "amarillo",
+        })
+        if sub_score is not None:
+            steps.append({
+                "accion": f"Reforzar {sub_label} ({sub_score:.0f}/100), lo menos sólido del perfil ganador: {sub_action}.",
+                "resp": resp[worst_f], "cuando": "Trimestre", "urgencia": "amarillo",
+            })
+        steps.append({
+            "accion": (f"Capitalizar el liderazgo de {fname[best_f]} ({best_v:.0f}/100) con extensiones, nuevos segmentos "
+                       f"o alianzas — monetizar el activo antes de que la categoría lo erosione."),
+            "resp": "Dirección General", "cuando": "Trimestre", "urgencia": "verde",
+        })
+        steps.append({
+            "accion": "Vigilancia competitiva trimestral: rastrear al retador que más rápido cierra brecha y anticipar su movimiento.",
+            "resp": "Estrategia + Inteligencia de Mercado", "cuando": "Trimestral", "urgencia": "verde",
+        })
+        steps.append({
+            "accion": (f"Meta 12 meses: sostener los 3 frentes sobre los líderes y subir {fname[worst_f]} "
+                       f"de {worst_v:.0f} a {min(int(worst_v + 8), 100)}/100. Revisión a 90 días."),
+            "resp": "Dirección General + Analítica", "cuando": "Revisión a 90 días", "urgencia": "verde",
+        })
+        return steps[:5]
 
-    # Paso 1: dueño del frente crítico — con la cifra que lo justifica
+    # ── Caso general: cerrar la brecha más grande ──
+    # Paso 1 — diagnóstico raíz de la mayor brecha (concreto, sin org-chart)
+    ref_par = f" ({ref_txt})" if ref_txt else ""
+    sub_txt = f" Raíz: {sub_label} ({sub_score:.0f}/100)." if sub_score is not None else ""
     steps.append({
-        "accion": (f"Asignar un líder con autoridad de decisión sobre {top_frente} "
-                   f"({fname.get(top_frente, top_frente)}: {score_txt}{gap_txt}) — "
-                   f"el frente con mayor potencial de impacto para {nombre}"),
-        "resp": "CEO / Dirección General",
-        "cuando": "Esta semana",
-        "urgencia": "rojo",
+        "accion": f"Mayor brecha — {fname[worst_f]} {worst_v:.0f}/100{ref_par}.{sub_txt} Arrancar: {sub_action}.",
+        "resp": resp[worst_f], "cuando": "Esta semana", "urgencia": "rojo",
     })
 
-    # Paso 2: basado en el movimiento 1 — con dato concreto
-    if movements:
-        m = movements[0]
-        frente = m["frente"]
-        if frente == "CX":
-            cxk = safe_val(b.get("cx_kpi")); ly = safe_val(b.get("loyalty"))
-            detalle = (f"CX Strategy {cxk:.0f} · lealtad {ly:.0f}/100 — empezar por el momento de mayor caída"
-                       if cxk is not None and ly is not None else "con datos de queja o abandono reales")
-            steps.append({
-                "accion": f"Mapear el recorrido del cliente e identificar los 3 momentos de mayor fricción ({detalle})",
-                "resp": "Customer Experience + Operaciones",
-                "cuando": "Próximas 3 semanas",
-                "urgencia": "rojo",
-            })
-        elif frente == "CO":
-            cm = safe_val(b.get("commerce"))
-            detalle = (f"Commerce en {cm:.0f}/100: revisar dónde se pierde la intención antes de la compra"
-                       if cm is not None else "identificar dónde se rompe el funnel")
-            steps.append({
-                "accion": f"Auditar el funnel de conversión desde el primer contacto hasta la transacción ({detalle})",
-                "resp": "Comercial + Marketing",
-                "cuando": "Próximas 3 semanas",
-                "urgencia": "rojo",
-            })
-        else:
-            ba = safe_val(b.get("brand_asset")); pulse = safe_val(b.get("bav_pulse"))
-            detalle = (f"Brand Asset {ba:.0f} · BAV Pulse {pulse:.0f}/100: atacar el componente más bajo primero"
-                       if ba is not None and pulse is not None else "consistencia en todos los canales")
-            steps.append({
-                "accion": f"Definir los 2-3 atributos de diferenciación de marca y comunicarlos de forma consistente ({detalle})",
-                "resp": "Marketing + Marca",
-                "cuando": "Próximas 3 semanas",
-                "urgencia": "rojo",
-            })
-
-    # Paso 3: basado en movimiento 2
-    if len(movements) > 1:
-        m2 = movements[1]
+    # Paso 2 — meta intermedia cuantificada sobre el sub-indicador raíz
+    if sub_score is not None:
+        sub_target = min(int(sub_score + 20), 70)
         steps.append({
-            "accion": f"Diseñar el plan de acción para el frente {m2['frente']}: objetivo, responsable y métricas de seguimiento mensual",
-            "resp": "Dirección Comercial / Marketing",
-            "cuando": "Próximas 2 semanas",
-            "urgencia": "amarillo",
+            "accion": (f"Meta 6 meses sobre {sub_label}: {sub_score:.0f} → {sub_target}/100, con un responsable único, "
+                       f"presupuesto asignado y revisión quincenal."),
+            "resp": resp[worst_f], "cuando": "Próximas 2 semanas", "urgencia": "rojo",
         })
 
-    # Paso 4: métricas
-    steps.append({
-        "accion": f"Establecer dashboard de seguimiento mensual con BX, CO y CX para {nombre} — incluir benchmarks del sector",
-        "resp": "Dirección General + Analítica",
-        "cuando": "Próximo mes",
-        "urgencia": "amarillo",
-    })
+    # Paso 3 — segunda brecha (si es material)
+    if len(gaps_sorted) > 1 and gaps_sorted[1][2] is not None and gaps_sorted[1][2] < -8:
+        f2, v2, g2, a2 = gaps_sorted[1]
+        l2name = None
+        if sector_brands:
+            _, _, l2name, l2val = _sector_rank(nombre, f2, sector_brands)
+        ref2 = f"a {abs(g2):.0f} pts de {l2name}" if l2name else f"{abs(g2):.0f} pts bajo los líderes"
+        _, _, act2 = _frente_root_cause(f2, b)
+        steps.append({
+            "accion": f"Segundo foco — {fname[f2]} {v2:.0f}/100 ({ref2}): {act2}.",
+            "resp": resp[f2], "cuando": "Próximos 60 días", "urgencia": "amarillo",
+        })
 
-    # Paso 5: revisión de resultados
-    steps.append({
-        "accion": "Programar revisión de resultados a 90 días con el equipo directivo para validar progreso y ajustar prioridades",
-        "resp": "Dirección General",
-        "cuando": "En 90 días",
-        "urgencia": "verde",
-    })
+    # Paso 4 — palanca: usar la fortaleza para financiar la brecha (o concentrar si no hay)
+    if best_g is not None and best_g > 5:
+        steps.append({
+            "accion": (f"Apalancar {fname[best_f]} ({best_v:.0f}/100, +{best_g:.0f} vs líderes) para financiar y dar "
+                       f"tracción a {fname[worst_f]}; no diluir esa fortaleza mientras se corrige la brecha."),
+            "resp": "Dirección General", "cuando": "Trimestre", "urgencia": "amarillo",
+        })
+    else:
+        steps.append({
+            "accion": (f"Concentrar presupuesto en {fname[worst_f]}: sin un frente fuerte que apalancar, una sola apuesta "
+                       f"bien ejecutada rinde más que tres a medias."),
+            "resp": "Dirección General", "cuando": "Trimestre", "urgencia": "amarillo",
+        })
+
+    # Paso 5 — meta global cuantificada vs el líder real + revisión
+    if worst_g is not None and worst_g < 0:
+        global_target = int(worst_v + abs(worst_g) * 0.4)
+        ref_leader = f" vs {lname}" if lname else ""
+        steps.append({
+            "accion": (f"Meta 12 meses: cerrar el 40% de la brecha en {fname[worst_f]} ({worst_v:.0f} → ~{global_target}/100). "
+                       f"Revisión a 90 días{ref_leader}, midiendo el sub-indicador raíz."),
+            "resp": "Dirección General + Analítica", "cuando": "Revisión a 90 días", "urgencia": "verde",
+        })
+    else:
+        steps.append({
+            "accion": "Definir 1 KPI raíz por frente y revisión a 90 días — medir contra los líderes del sector, no contra el histórico propio.",
+            "resp": "Dirección General + Analítica", "cuando": "Revisión a 90 días", "urgencia": "verde",
+        })
 
     return steps[:5]
 
@@ -1271,7 +1356,7 @@ def analyze_brand(nombre: str) -> dict:
     co_analysis      = generate_co_analysis(b, avg, sector_brands)
     cx_analysis      = generate_cx_analysis(b, avg, sector_brands)
     movements        = generate_movements(b, avg, sector_brands)
-    next_steps       = generate_next_steps(b, avg, movements)
+    next_steps       = generate_next_steps(b, avg, movements, sector_brands)
     frente_descs     = generate_frente_descriptions(b, avg, semaphores, sector, sector_brands)
     comparative_ins  = generate_comparative_insight(b, avg, gaps)
     co_footer        = generate_co_footer(b, avg, co_ranking, gaps)

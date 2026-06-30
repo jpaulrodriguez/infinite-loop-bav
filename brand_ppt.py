@@ -473,7 +473,7 @@ def generate_ppt(nombre: str) -> bytes:
         rect(sl,0.8,yi,11.7,0.88,bg_row)
         col_u = urg_col.get(step.get("urgencia","amarillo"),ORANGE)
         rect(sl,0.8,yi,0.055,0.88,col_u)
-        txt(sl,step["accion"],0.97,yi+0.1,5.1,0.7,size=9,color=WHITE)
+        txt(sl,_truncate(step["accion"],230),0.97,yi+0.1,5.2,0.72,size=8.7,color=WHITE)
         txt(sl,step["resp"],6.25,yi+0.18,2.85,0.55,size=8.5,color=GRAY_1)
         txt(sl,step["cuando"],9.38,yi+0.2,2.85,0.5,size=9,bold=True,color=col_u)
         rule(sl,0.8,yi+0.88,11.7,GRAY_3)
