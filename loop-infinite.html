@@ -1811,14 +1811,17 @@ function top3Avg(vals) {
   return clean.length ? Math.round(clean.reduce((a,b)=>a+b,0)/clean.length*10)/10 : null;
 }
 
-// Referencia del sector = promedio de los 3 líderes por indicador (excluye la marca)
+// Referencia del sector = promedio de los 3 LÍDERES por indicador, tomados sobre la
+// categoría COMPLETA (incluida la marca si lo es). Si la marca es única → sin referencia.
 function sectorAvg(marca) {
   const cat = SECTOR_OF[marca];
   if (!cat) return {};
-  const peers = BRANDS.filter(x => x.marca !== marca && SECTOR_OF[x.marca] === cat);
+  const members = BRANDS.filter(x => SECTOR_OF[x.marca] === cat);
+  const others = members.filter(x => x.marca !== marca);
   const fields = ['bx','co','cx','brand_asset','bav_pulse','commerce','cx_kpi','loyalty'];
   const avg = {};
-  for (const f of fields) avg[f] = top3Avg(peers.map(p => p[f]));
+  if (!others.length) { for (const f of fields) avg[f] = null; return avg; }
+  for (const f of fields) avg[f] = top3Avg(members.map(p => p[f]));
   return avg;
 }
 
