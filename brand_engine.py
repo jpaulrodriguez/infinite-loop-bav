@@ -1052,36 +1052,57 @@ def generate_next_steps(b: dict, avg: dict, movements: list) -> list:
     nombre = b["marca"]
     steps = []
 
-    # Paso 1: siempre — definir equipo responsable del frente más crítico
+    # Frente crítico real + su score y gap vs sector
     top_frente = movements[0]["frente"] if movements else "CX"
+    fmap = {"CX": "cx", "CO": "co", "BX": "bx"}
+    fname = {"CX": "Experiencia del Cliente", "CO": "Commerce", "BX": "Fuerza de Marca"}
+    field = fmap.get(top_frente, "cx")
+    score_crit = safe_val(b.get(field))
+    avg_crit = avg.get(field)
+    gap_crit = round(score_crit - avg_crit, 1) if (score_crit is not None and avg_crit is not None) else None
+    score_txt = f"{score_crit:.0f}/100" if score_crit is not None else "sin dato"
+    gap_txt = f" ({gap_crit:+.0f} vs sector)" if gap_crit is not None else ""
+
+    # Paso 1: dueño del frente crítico — con la cifra que lo justifica
     steps.append({
-        "accion": f"Definir el equipo responsable del frente {top_frente} y asignar un líder con autoridad de decisión",
+        "accion": (f"Asignar un líder con autoridad de decisión sobre {top_frente} "
+                   f"({fname.get(top_frente, top_frente)}: {score_txt}{gap_txt}) — "
+                   f"el frente con mayor potencial de impacto para {nombre}"),
         "resp": "CEO / Dirección General",
         "cuando": "Esta semana",
         "urgencia": "rojo",
     })
 
-    # Paso 2: basado en el movimiento 1
+    # Paso 2: basado en el movimiento 1 — con dato concreto
     if movements:
         m = movements[0]
         frente = m["frente"]
         if frente == "CX":
+            cxk = safe_val(b.get("cx_kpi")); ly = safe_val(b.get("loyalty"))
+            detalle = (f"CX Strategy {cxk:.0f} · lealtad {ly:.0f}/100 — empezar por el momento de mayor caída"
+                       if cxk is not None and ly is not None else "con datos de queja o abandono reales")
             steps.append({
-                "accion": "Mapear el recorrido del cliente e identificar los 3 momentos de mayor fricción con datos de queja o abandono reales",
+                "accion": f"Mapear el recorrido del cliente e identificar los 3 momentos de mayor fricción ({detalle})",
                 "resp": "Customer Experience + Operaciones",
                 "cuando": "Próximas 3 semanas",
                 "urgencia": "rojo",
             })
         elif frente == "CO":
+            cm = safe_val(b.get("commerce"))
+            detalle = (f"Commerce en {cm:.0f}/100: revisar dónde se pierde la intención antes de la compra"
+                       if cm is not None else "identificar dónde se rompe el funnel")
             steps.append({
-                "accion": "Auditar el funnel de conversión: desde el primer contacto hasta la transacción — identificar dónde se rompe",
+                "accion": f"Auditar el funnel de conversión desde el primer contacto hasta la transacción ({detalle})",
                 "resp": "Comercial + Marketing",
                 "cuando": "Próximas 3 semanas",
                 "urgencia": "rojo",
             })
         else:
+            ba = safe_val(b.get("brand_asset")); pulse = safe_val(b.get("bav_pulse"))
+            detalle = (f"Brand Asset {ba:.0f} · BAV Pulse {pulse:.0f}/100: atacar el componente más bajo primero"
+                       if ba is not None and pulse is not None else "consistencia en todos los canales")
             steps.append({
-                "accion": "Definir los 2-3 atributos de diferenciación de marca que se comunicarán de forma consistente en todos los canales",
+                "accion": f"Definir los 2-3 atributos de diferenciación de marca y comunicarlos de forma consistente ({detalle})",
                 "resp": "Marketing + Marca",
                 "cuando": "Próximas 3 semanas",
                 "urgencia": "rojo",

@@ -286,9 +286,9 @@ def generate_ppt(nombre: str) -> bytes:
     txt(sl,"”",10.5,2.5,1.0,1.0,size=80,color=ORANGE,bold=True)
     rule(sl,4.15,1.0,11.3,GRAY_3)
     pillars = [
-        ("BX\nMarca",    _truncate(data["bx_analysis"],165), f"BX · {score_str(s('bx'))} / 100", bx_col, 0.9),
-        ("CO\nVentas",   _truncate(data["co_analysis"],165),  f"CO · {score_str(s('co'))} / 100", co_col, 4.7),
-        ("CX\nExp.",     _truncate(data["cx_analysis"],165),  f"CX · {score_str(s('cx'))} / 100", cx_col, 8.5),
+        ("BX\nMarca",    _truncate(data["bx_analysis"],235), f"BX · {score_str(s('bx'))} / 100", bx_col, 0.9),
+        ("CO\nVentas",   _truncate(data["co_analysis"],235),  f"CO · {score_str(s('co'))} / 100", co_col, 4.7),
+        ("CX\nExp.",     _truncate(data["cx_analysis"],235),  f"CX · {score_str(s('cx'))} / 100", cx_col, 8.5),
     ]
     for head,body_t,kpi,col,xi in pillars:
         tx,ty = card(sl,xi,4.3,3.65,2.88,accent=col,g=0.09)
@@ -317,7 +317,7 @@ def generate_ppt(nombre: str) -> bytes:
         eyebrow(sl,frente,xi+0.2,ty+0.05,color=col)
         txt(sl,q,xi+0.2,ty+0.42,3.4,0.9,size=14,bold=True,color=WHITE)
         rule(sl,xi+0.2,ty+1.42,3.4,col)
-        txt(sl,_truncate(desc,220),xi+0.2,ty+1.58,3.4,1.5,size=8.5,color=GRAY_1)
+        txt(sl,_truncate(desc,290),xi+0.2,ty+1.58,3.4,1.5,size=8.5,color=GRAY_1)
         dot = sl.shapes.add_shape(9,Inches(xi+1.2),Inches(ty+3.15),Inches(1.55),Inches(1.15))
         dot.fill.solid(); dot.fill.fore_color.rgb = SURFACE
         dot.line.color.rgb = col; dot.line.width = Pt(1.5)
@@ -454,7 +454,7 @@ def generate_ppt(nombre: str) -> bytes:
         txt(sl,mov["timing"],xi+0.25,ty+0.97,1.1,0.32,size=6.5,bold=True,color=col,align=PP_ALIGN.CENTER)
         rule(sl,xi+0.18,ty+1.45,3.4,col)
         txt(sl,mov["title"],xi+0.18,ty+1.6,3.4,0.55,size=10.5,bold=True,color=WHITE)
-        txt(sl,mov["body"][:200],xi+0.18,ty+2.2,3.4,1.5,size=8.5,color=GRAY_1)
+        txt(sl,_truncate(mov["body"],255),xi+0.18,ty+2.2,3.4,1.5,size=8.5,color=GRAY_1)
         rule(sl,xi+0.18,ty+3.75,3.4,GRAY_3)
         txt(sl,mov["meta"],xi+0.18,ty+3.9,3.4,0.75,size=8,color=col,bold=True)
     add_logo(sl)
