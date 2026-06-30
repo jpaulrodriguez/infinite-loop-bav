@@ -238,7 +238,7 @@ html,body{
 }
 .kpi-card:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.1);}
 .kpi-card-hint{
-  font-size:8px;color:var(--text-3);letter-spacing:.06em;text-align:right;
+  font-size:9px;color:var(--text-3);letter-spacing:.06em;text-align:right;
   margin-top:2px;opacity:.6;
 }
 
@@ -308,7 +308,7 @@ html,body{
   border-radius:8px;
 }
 #kpi-modal-action-label{
-  font-size:8px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
   color:var(--modal-color,var(--text-3));margin-bottom:4px;
 }
 #kpi-modal-action-text{
@@ -402,7 +402,7 @@ html,body{
   display:flex;flex-direction:column;gap:2px;
 }
 .insight-bullet-label{
-  font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
   color:var(--text-3);
 }
 .insight-bullet-text{
@@ -442,12 +442,12 @@ html,body{
 .cat-score-value.cx-color{color:var(--cx);}
 .cat-score-sub{display:flex;gap:var(--sp-3);margin-top:2px;}
 .cat-score-sub-item{display:flex;flex-direction:column;gap:1px;}
-.cat-score-sub-label{font-size:8px;color:var(--text-3);font-weight:500;}
+.cat-score-sub-label{font-size:9px;color:var(--text-3);font-weight:500;}
 .cat-score-sub-val{font-size:10px;font-weight:600;color:var(--text-2);}
 .cat-extremes{display:flex;gap:6px;margin-top:4px;}
 .cat-extreme{font-size:9px;color:var(--text-3);display:flex;align-items:center;gap:3px;}
 .cat-extreme-badge{
-  font-size:8px;font-weight:700;border-radius:3px;padding:1px 4px;
+  font-size:9px;font-weight:700;border-radius:3px;padding:1px 4px;
 }
 .cat-extreme-badge.top{background:rgba(0,210,106,.12);color:#00d26a;}
 .cat-extreme-badge.bot{background:rgba(255,60,60,.1);color:#f87171;}
@@ -457,7 +457,7 @@ html,body{
   border-radius:8px;padding:var(--sp-3) var(--sp-4);
 }
 .cat-insight-tag{
-  font-size:8px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
   color:#60a5fa;margin-bottom:6px;
 }
 .cat-insight-text{font-size:11.5px;font-weight:500;color:var(--text-1);line-height:1.6;}
@@ -684,6 +684,77 @@ html,body{
 #arc-bx     {animation:gBX  3.5s ease-in-out infinite}
 #arc-cx     {animation:gCX  3.5s ease-in-out infinite 1.75s}
 #co-grp     {animation:gCO  2.5s ease-in-out infinite}
+
+/* ══════════════════════════════════════════════════════════
+   TIER 1 — ACCESIBILIDAD
+   ══════════════════════════════════════════════════════════ */
+/* Estados de foco visibles para navegación por teclado */
+#category-select:focus-visible,#brand-select:focus-visible,
+#btn-theme:focus-visible,#btn-download-ppt:focus-visible,
+.kpi-card:focus-visible,.cat-brand-chip:focus-visible,
+#kpi-modal-close:focus-visible{
+  outline:2px solid var(--accent);
+  outline-offset:2px;
+  border-radius:var(--radius-sm);
+}
+/* Contraste de texto terciario en modo claro (45%→70%) */
+[data-theme="light"]{ --text-3:rgba(74,80,104,.70); }
+
+/* Respetar preferencia de movimiento reducido — congela el loop sin cambiar su diseño */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{
+    animation-duration:.001ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;
+    scroll-behavior:auto !important;
+  }
+  .scan-line{display:none;}
+}
+
+/* ══════════════════════════════════════════════════════════
+   TIER 2 — ESTADOS Y FEEDBACK
+   ══════════════════════════════════════════════════════════ */
+#empty-hint{
+  width:100%;max-width:920px;margin:var(--sp-3) auto 0;
+  display:flex;align-items:center;justify-content:center;gap:var(--sp-2);
+  padding:var(--sp-3) var(--sp-4);
+  background:rgba(255,122,0,.06);
+  border:1px solid rgba(255,122,0,.18);
+  border-radius:var(--radius-md);
+  font-size:12px;font-weight:500;color:var(--text-2);
+  transition:opacity .25s;
+}
+#empty-hint svg{flex-shrink:0;color:var(--accent);}
+#empty-hint.hidden{display:none;}
+/* KPI inertes cuando no hay marca seleccionada */
+.kpi-card.inert{cursor:default;opacity:.72;}
+.kpi-card.inert .kpi-card-hint{opacity:0;}
+.kpi-card.inert:hover{transform:none;box-shadow:0 4px 20px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.07);}
+[data-theme="light"] .kpi-card.inert:hover{box-shadow:0 4px 20px rgba(0,0,0,.07),inset 0 1px 0 rgba(255,255,255,.9);}
+
+/* ══════════════════════════════════════════════════════════
+   TIER 3 — JERARQUÍA Y PULIDO
+   ══════════════════════════════════════════════════════════ */
+/* Cifras tabulares: no bailan al cambiar de marca */
+.area-val,.kpi-score-num,#kpi-modal-score,.cat-score-value,
+.kpi-pct,.cat-score-sub-val{font-variant-numeric:tabular-nums;}
+/* Feedback de presión */
+.kpi-card:active:not(.inert){transform:scale(.985);}
+.cat-brand-chip:active{transform:scale(.95);}
+#btn-theme:active{transform:scale(.92);}
+
+/* ══════════════════════════════════════════════════════════
+   TIER 4 — MICROINTERACCIONES
+   ══════════════════════════════════════════════════════════ */
+@keyframes panelIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+#insight-panel.visible,#category-panel.visible{animation:panelIn .3s cubic-bezier(.32,.72,0,1);}
+@keyframes kpiIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.kpi-card.kpi-enter{animation:kpiIn .35s cubic-bezier(.32,.72,0,1) both;}
+.kpi-card.kpi-enter:nth-child(1){animation-delay:0ms}
+.kpi-card.kpi-enter:nth-child(2){animation-delay:40ms}
+.kpi-card.kpi-enter:nth-child(3){animation-delay:80ms}
+.kpi-card.kpi-enter:nth-child(4){animation-delay:120ms}
+.kpi-card.kpi-enter:nth-child(5){animation-delay:160ms}
 </style>
 </head>
 <body>
@@ -825,6 +896,12 @@ html,body{
         <div class="area-name">Customer Experience</div>
         <div class="area-badge" id="abadge-cx">Sin selección</div>
       </div>
+    </div>
+
+    <!-- Empty state — guía cuando no hay marca seleccionada -->
+    <div id="empty-hint" role="status">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg>
+      <span>Selecciona una <strong>marca</strong> o una <strong>categoría</strong> arriba para ver su diagnóstico de Capital Intangible.</span>
     </div>
   </section>
 
@@ -1024,8 +1101,8 @@ html,body{
 
 <!-- KPI MODAL -->
 <div id="kpi-modal-backdrop">
-  <div id="kpi-modal">
-    <button id="kpi-modal-close">✕</button>
+  <div id="kpi-modal" role="dialog" aria-modal="true" aria-labelledby="kpi-modal-title">
+    <button id="kpi-modal-close" aria-label="Cerrar análisis">✕</button>
     <div id="kpi-modal-tag"></div>
     <div id="kpi-modal-title"></div>
     <div id="kpi-modal-score-row">
@@ -1210,10 +1287,10 @@ function getCategoryInsight(cat, d) {
 // ── RENDER CATEGORY PANEL ─────────────────────────────────────
 function renderCategoryPanel(catName) {
   const panel = document.getElementById('category-panel');
-  if (!catName) { panel.classList.remove('visible'); return; }
+  if (!catName) { panel.classList.remove('visible'); updateEmptyHint(); return; }
 
   const d = CATEGORIES_DATA[catName];
-  if (!d) { panel.classList.remove('visible'); return; }
+  if (!d) { panel.classList.remove('visible'); updateEmptyHint(); return; }
 
   const f = v => v !== null ? Math.round(v) : '—';
 
@@ -1252,12 +1329,16 @@ function renderCategoryPanel(catName) {
   ).join('');
 
   panel.classList.add('visible');
+  updateEmptyHint();
 }
 
 function selectBrandFromCategory(marca) {
   const sel = document.getElementById('brand-select');
   sel.value = marca;
   sel.dispatchEvent(new Event('change'));
+  // Ocultar el panel de categoría tras elegir una marca concreta
+  document.getElementById('category-select').value = '';
+  renderCategoryPanel('');
 }
 
 // ── Mapa marca → sector y promedio de sector (excluyendo la marca) ──────
@@ -1612,6 +1693,13 @@ function getKPIInsight(id, val, b) {
 // ── Modal de KPI ──────────────────────────────────────────
 const kpiInsightStore = {};
 
+let lastFocusedCard = null;
+
+function closeKPIModal() {
+  document.getElementById('kpi-modal-backdrop').classList.remove('open');
+  if (lastFocusedCard) { lastFocusedCard.focus(); lastFocusedCard = null; }
+}
+
 function openKPIModal(id) {
   const data = kpiInsightStore[id];
   if (!data || data.val === null) return;
@@ -1626,19 +1714,33 @@ function openKPIModal(id) {
   document.getElementById('kpi-modal-bar-fill').style.width = data.val + '%';
   document.getElementById('kpi-modal-text').textContent = data.insight.text;
   document.getElementById('kpi-modal-action-text').textContent = data.insight.action;
+  lastFocusedCard = document.getElementById('card-' + id);
   document.getElementById('kpi-modal-backdrop').classList.add('open');
+  // Mover el foco al botón de cierre para navegación por teclado
+  document.getElementById('kpi-modal-close').focus();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('kpi-modal-close').addEventListener('click', () =>
-    document.getElementById('kpi-modal-backdrop').classList.remove('open'));
+  document.getElementById('kpi-modal-close').addEventListener('click', closeKPIModal);
   document.getElementById('kpi-modal-backdrop').addEventListener('click', e => {
-    if (e.target === document.getElementById('kpi-modal-backdrop'))
-      document.getElementById('kpi-modal-backdrop').classList.remove('open');
+    if (e.target === document.getElementById('kpi-modal-backdrop')) closeKPIModal();
   });
+  // Cerrar modal con Escape
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && document.getElementById('kpi-modal-backdrop').classList.contains('open'))
+      closeKPIModal();
+  });
+  // KPI cards: operables por teclado (Enter / Space) + semántica
   Object.keys(KPI_META).forEach(id => {
     const card = document.getElementById('card-' + id);
-    if (card) card.addEventListener('click', () => openKPIModal(id));
+    if (!card) return;
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-label', `Ver análisis de ${KPI_META[id].name}`);
+    // tabindex lo gestiona setKPIInert() según haya marca seleccionada
+    card.addEventListener('click', () => openKPIModal(id));
+    card.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openKPIModal(id); }
+    });
   });
 });
 
@@ -1669,13 +1771,41 @@ function updateKPI(id, val, areaColor, b){
 }
 function updateInsight(b) {
   const panel = document.getElementById('insight-panel');
-  if (!b) { panel.classList.remove('visible'); return; }
+  if (!b) { panel.classList.remove('visible'); updateEmptyHint(); setKPIInert(true); return; }
   panel.classList.add('visible');
   document.getElementById('insight-dominant').textContent = getInsight(b);
   const bullets = getBullets(b);
   document.getElementById('insight-bx').textContent = bullets.bx;
   document.getElementById('insight-co').textContent = bullets.co;
   document.getElementById('insight-cx').textContent = bullets.cx;
+  updateEmptyHint();
+  setKPIInert(false);
+  staggerKPIs();
+}
+
+// Empty hint visible solo cuando NO hay marca NI categoría seleccionada
+function updateEmptyHint() {
+  const hint = document.getElementById('empty-hint');
+  const hasBrand = !!document.getElementById('brand-select').value;
+  const catVisible = document.getElementById('category-panel').classList.contains('visible');
+  hint.classList.toggle('hidden', hasBrand || catVisible);
+}
+
+// KPI cards inertes (sin afordancia de click) cuando no hay marca
+function setKPIInert(inert) {
+  ['brand-asset','bav-pulse','commerce','cx','loyalty'].forEach(id => {
+    const card = document.getElementById('card-' + id);
+    if (!card) return;
+    card.classList.toggle('inert', inert);
+    if (inert) { card.removeAttribute('tabindex'); }
+    else { card.setAttribute('tabindex', '0'); }
+  });
+}
+
+// Entrada escalonada de los KPIs al cambiar de marca
+function staggerKPIs() {
+  const cards = document.querySelectorAll('#kpi-row .kpi-card');
+  cards.forEach(c => { c.classList.remove('kpi-enter'); void c.offsetWidth; c.classList.add('kpi-enter'); });
 }
 
 function resetAll(){
