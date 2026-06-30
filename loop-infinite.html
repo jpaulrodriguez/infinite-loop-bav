@@ -545,6 +545,122 @@ html,body{
 [data-theme="light"] #header{border-bottom-color:rgba(0,0,0,.08);}
 [data-theme="light"] #btn-download-ppt:disabled{background:rgba(255,122,0,.15);color:rgba(13,18,72,.3);}
 
+/* ══════════════════════════════════════════════════════════
+   RESPONSIVE — Tablet ≤ 900px
+   ══════════════════════════════════════════════════════════ */
+@media(max-width:900px){
+  #app{padding:0 var(--sp-4);}
+
+  /* Header: stack brand on first line, selects wrap */
+  #header{
+    flex-wrap:wrap;
+    height:auto;
+    padding:10px 0;
+    gap:var(--sp-2);
+  }
+  .selector-wrap{flex-wrap:wrap;gap:6px;width:100%;}
+  #category-select,#brand-select{min-width:0;flex:1;}
+
+  /* KPI row: 3 cols */
+  #kpi-row{grid-template-columns:repeat(3,1fr);}
+
+  /* category scores: 2 cols */
+  .cat-scores{grid-template-columns:repeat(2,1fr);}
+}
+
+/* ══════════════════════════════════════════════════════════
+   RESPONSIVE — Mobile ≤ 600px
+   ══════════════════════════════════════════════════════════ */
+@media(max-width:600px){
+  #app{padding:0 var(--sp-3);grid-template-rows:auto auto auto auto;}
+
+  /* ── Header mobile ── */
+  #header{padding:10px 0 8px;gap:8px;}
+  .header-brand-name{font-size:10px;}
+  .selector-wrap{gap:6px;}
+
+  /* Stack selects full-width */
+  #category-select,#brand-select{
+    width:100%;min-width:0;
+    font-size:14px;padding:8px 32px 8px 12px;
+  }
+  .selector-label{display:none;}
+  .selector-divider{display:none;}
+
+  /* Theme + PPT buttons smaller */
+  #btn-theme{width:36px;height:36px;}
+  #btn-download-ppt{padding:7px 10px;font-size:11px;}
+  #btn-ppt-label{display:none;}
+
+  /* ── Loop SVG: reduce height, allow horizontal scroll ── */
+  #loop-section{padding:var(--sp-4) 0 0;overflow-x:auto;}
+  #loop-wrap{
+    min-width:340px;
+    max-width:100%;
+    overflow:visible;
+  }
+
+  /* ── Area score bridge: vertical stack ── */
+  #area-scores{
+    flex-direction:column;
+    margin-top:var(--sp-3);
+  }
+  .area-score-cell{
+    flex-direction:row;
+    align-items:center;
+    justify-content:space-between;
+    padding:var(--sp-3) var(--sp-4);
+    border-right:none;
+    border-bottom:1px solid var(--border);
+  }
+  .area-score-cell:last-child{border-bottom:none;}
+  .area-score-cell::before{
+    top:0;left:0;right:auto;bottom:0;
+    width:3px;height:auto;
+  }
+  .area-val{font-size:22px;}
+  .area-name{font-size:10px;}
+
+  /* ── KPI row: 2 columns ── */
+  #kpi-section{padding:var(--sp-3) 0 var(--sp-4);}
+  #kpi-row{grid-template-columns:repeat(2,1fr);gap:var(--sp-2);}
+  .kpi-card{padding:var(--sp-3);}
+  .kpi-score-badge{width:36px;height:36px;}
+  .kpi-score-num{font-size:16px;}
+
+  /* ── Insight panel ── */
+  #insight-panel{padding:var(--sp-3) var(--sp-3);}
+  .insight-bullets{grid-template-columns:1fr;gap:var(--sp-2);}
+  .insight-dominant{font-size:11px;}
+
+  /* ── Category panel ── */
+  #category-panel{padding:var(--sp-3);}
+  .cat-scores{grid-template-columns:1fr;}
+  .cat-insight-text{font-size:11px;}
+
+  /* ── Modal full-width on mobile ── */
+  #kpi-modal{
+    width:95%;
+    padding:20px 18px 18px;
+    border-radius:12px;
+    max-height:90dvh;
+    overflow-y:auto;
+  }
+  #kpi-modal-score{font-size:36px;}
+
+  /* ── Legend wrap ── */
+  #legend-bar{flex-wrap:wrap;gap:var(--sp-3);}
+}
+
+/* ══════════════════════════════════════════════════════════
+   RESPONSIVE — Very small ≤ 380px
+   ══════════════════════════════════════════════════════════ */
+@media(max-width:380px){
+  #kpi-row{grid-template-columns:1fr 1fr;}
+  .kpi-card-name{font-size:10px;}
+  .area-val{font-size:20px;}
+}
+
 /* ── SVG ANIMATIONS ───────────────────────────────────────── */
 @keyframes scan{0%{transform:translateY(-100%)}100%{transform:translateY(600%)}}
 @keyframes gOval{
