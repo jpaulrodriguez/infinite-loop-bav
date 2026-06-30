@@ -1443,7 +1443,7 @@ html,body{
         <div class="kpi-card-top">
           <div class="kpi-card-meta">
             <div class="kpi-area-tag"><span class="kpi-area-dot"></span>BX · Brand Strategy</div>
-            <div class="kpi-card-name">Brand Asset <button class="info-btn" data-concept="brand-asset" aria-label="¿Qué es Brand Asset?" onclick="event.stopPropagation()">i</button></div>
+            <div class="kpi-card-name">Brand Asset <button class="info-btn" data-concept="brand-asset" aria-label="¿Qué es Brand Asset?">i</button></div>
           </div>
           <div class="kpi-score-badge"><div class="kpi-score-num empty" id="score-brand-asset">—</div></div>
         </div>
@@ -1461,7 +1461,7 @@ html,body{
         <div class="kpi-card-top">
           <div class="kpi-card-meta">
             <div class="kpi-area-tag"><span class="kpi-area-dot"></span>BX · Comms</div>
-            <div class="kpi-card-name">BAV Pulse Digital <button class="info-btn" data-concept="bav-pulse" aria-label="¿Qué es BAV Pulse?" onclick="event.stopPropagation()">i</button></div>
+            <div class="kpi-card-name">BAV Pulse Digital <button class="info-btn" data-concept="bav-pulse" aria-label="¿Qué es BAV Pulse?">i</button></div>
           </div>
           <div class="kpi-score-badge"><div class="kpi-score-num empty" id="score-bav-pulse">—</div></div>
         </div>
@@ -1479,7 +1479,7 @@ html,body{
         <div class="kpi-card-top">
           <div class="kpi-card-meta">
             <div class="kpi-area-tag"><span class="kpi-area-dot"></span>CO · Commerce</div>
-            <div class="kpi-card-name">Commerce Score <button class="info-btn" data-concept="commerce" aria-label="¿Qué es Commerce Score?" onclick="event.stopPropagation()">i</button></div>
+            <div class="kpi-card-name">Commerce Score <button class="info-btn" data-concept="commerce" aria-label="¿Qué es Commerce Score?">i</button></div>
           </div>
           <div class="kpi-score-badge"><div class="kpi-score-num empty" id="score-commerce">—</div></div>
         </div>
@@ -1497,7 +1497,7 @@ html,body{
         <div class="kpi-card-top">
           <div class="kpi-card-meta">
             <div class="kpi-area-tag"><span class="kpi-area-dot"></span>CX · Síndrome París</div>
-            <div class="kpi-card-name">CX Score <button class="info-btn" data-concept="cx-score" aria-label="¿Qué es CX Score?" onclick="event.stopPropagation()">i</button></div>
+            <div class="kpi-card-name">CX Score <button class="info-btn" data-concept="cx-score" aria-label="¿Qué es CX Score?">i</button></div>
           </div>
           <div class="kpi-score-badge"><div class="kpi-score-num empty" id="score-cx">—</div></div>
         </div>
@@ -1515,7 +1515,7 @@ html,body{
         <div class="kpi-card-top">
           <div class="kpi-card-meta">
             <div class="kpi-area-tag"><span class="kpi-area-dot"></span>CX · Loyalty</div>
-            <div class="kpi-card-name">Loyalty / NPS <button class="info-btn" data-concept="loyalty" aria-label="¿Qué es Loyalty?" onclick="event.stopPropagation()">i</button></div>
+            <div class="kpi-card-name">Loyalty / NPS <button class="info-btn" data-concept="loyalty" aria-label="¿Qué es Loyalty?">i</button></div>
           </div>
           <div class="kpi-score-badge"><div class="kpi-score-num empty" id="score-loyalty">—</div></div>
         </div>
@@ -2191,7 +2191,7 @@ document.addEventListener('DOMContentLoaded', () => {
     card.setAttribute('role', 'button');
     card.setAttribute('aria-label', `Ver análisis de ${KPI_META[id].name}`);
     // tabindex lo gestiona setKPIInert() según haya marca seleccionada
-    card.addEventListener('click', () => openKPIModal(id));
+    card.addEventListener('click', e => { if (e.target.closest('.info-btn')) return; openKPIModal(id); });
     card.addEventListener('keydown', e => {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openKPIModal(id); }
     });
