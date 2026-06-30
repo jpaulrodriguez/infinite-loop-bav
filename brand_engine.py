@@ -500,15 +500,24 @@ def generate_dominant_idea(b: dict, avg: dict, sector: str) -> str:
 
         # Perfil equilibrado sin brecha dominante: análisis de nivel absoluto
         avg_score = sum(v for _, v in scores_disp) / len(scores_disp)
+        bx_s = f"{bx:.0f}" if bx is not None else "—"
+        co_s = f"{co:.0f}" if co is not None else "—"
+        cx_s = f"{cx:.0f}" if cx is not None else "—"
         if avg_score > 60:
+            if pulse is not None and pulse < 55:
+                palanca = f"presencia digital ({pulse:.0f}/100 en BAV Pulse) si la prioridad es captación"
+            elif loyalty is not None and loyalty < 55:
+                palanca = f"lealtad ({loyalty:.0f}/100) si la prioridad es retención"
+            else:
+                palanca = "diferenciación de la propuesta de valor para sostener la posición de liderazgo"
             return (f"{nombre} muestra un perfil equilibrado y por encima de la media "
-                    f"(BX {bx:.0f if bx else '—'} · CO {co:.0f if co else '—'} · CX {cx:.0f if cx else '—'}/100). "
+                    f"(BX {bx_s} · CO {co_s} · CX {cx_s}/100). "
                     f"Sin una brecha dominante, la palanca de crecimiento está en "
                     f"profundizar el sub-indicador con mayor potencial según el contexto competitivo: "
-                    f"{'presencia digital (' + str(int(pulse)) + '/100 en BAV Pulse) si la prioridad es captación' if pulse and pulse < 55 else 'lealtad (' + str(int(loyalty)) + '/100) si la prioridad es retención' if loyalty and loyalty < 55 else 'diferenciación de la propuesta de valor para sostener la posición de liderazgo'}.")
+                    f"{palanca}.")
         else:
             return (f"{nombre} tiene un perfil consistente pero con oportunidad de crecimiento en los tres frentes "
-                    f"(BX {bx:.0f if bx else '—'} · CO {co:.0f if co else '—'} · CX {cx:.0f if cx else '—'}/100). "
+                    f"(BX {bx_s} · CO {co_s} · CX {cx_s}/100). "
                     f"La estrategia más efectiva en este perfil no es atacar el frente más bajo "
                     f"sino identificar cuál de los tres tiene mayor elasticidad al esfuerzo "
                     f"en el contexto competitivo de {sector}.")
@@ -895,9 +904,10 @@ def generate_comparative_insight(b: dict, avg: dict, gaps: dict) -> str:
                 f"En mercados competitivos, equilibrio sin diferenciación es invisibilidad. "
                 f"El movimiento es elegir un frente donde ser el mejor del sector, no el promedio.")
     else:
+        ws_txt = f"{worst_score:.0f}" if worst_score is not None else "—"
         return (f"{nombre} muestra indicadores mixtos vs el sector. "
                 f"El foco debe ir en {fn.get(worst_f,'el indicador más débil')} "
-                f"({worst_score:.0f if worst_score else '—'}/100 · {worst_v:.0f} pts vs sector): "
+                f"({ws_txt}/100 · {worst_v:.0f} pts vs sector): "
                 f"es donde una mejora moderada generaría el mayor salto en el perfil competitivo.")
 
 
