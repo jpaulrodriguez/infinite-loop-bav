@@ -1354,6 +1354,7 @@ html,body{
       <span class="cat-tag">Análisis de Categoría</span>
       <span class="cat-name" id="cat-name"></span>
       <span class="cat-count" id="cat-count"></span>
+      <span class="cat-count" style="color:var(--accent)">· Nivel de los líderes (Top 3)</span>
     </div>
     <div class="cat-scores">
       <div class="cat-score-card">
@@ -1772,7 +1773,8 @@ function renderCategoryPanel(catName) {
   setExtreme('cat-cx-top', d.cx_top, 'top');
   setExtreme('cat-cx-bot', d.cx_bot, 'bot');
 
-  document.getElementById('cat-insight').textContent = getCategoryInsight(catName, d);
+  // Los ensayos estructurales se calculan sobre la MEDIA completa (no el nivel de líderes)
+  document.getElementById('cat-insight').textContent = getCategoryInsight(catName, CATEGORY_MEANS[catName] || d);
 
   // Chips de marcas clicables
   const list = document.getElementById('cat-brands-list');
@@ -1803,18 +1805,37 @@ const SECTOR_OF = (() => {
   return m;
 })();
 
+// Promedio de los 3 mejores valores → benchmark de LÍDERES (no media)
+function top3Avg(vals) {
+  const clean = vals.filter(v => v !== null && v !== undefined).sort((a,b)=>b-a).slice(0,3);
+  return clean.length ? Math.round(clean.reduce((a,b)=>a+b,0)/clean.length*10)/10 : null;
+}
+
+// Referencia del sector = promedio de los 3 líderes por indicador (excluye la marca)
 function sectorAvg(marca) {
   const cat = SECTOR_OF[marca];
   if (!cat) return {};
   const peers = BRANDS.filter(x => x.marca !== marca && SECTOR_OF[x.marca] === cat);
   const fields = ['bx','co','cx','brand_asset','bav_pulse','commerce','cx_kpi','loyalty'];
   const avg = {};
-  for (const f of fields) {
-    const vals = peers.map(p => p[f]).filter(v => v !== null && v !== undefined);
-    avg[f] = vals.length ? Math.round(vals.reduce((a,b)=>a+b,0)/vals.length*10)/10 : null;
-  }
+  for (const f of fields) avg[f] = top3Avg(peers.map(p => p[f]));
   return avg;
 }
+
+// Medias completas de categoría — base de los ensayos estructurales (getCategoryInsight).
+// Se conservan ANTES de sobreescribir los valores de panel con el nivel de líderes.
+const CATEGORY_MEANS = {};
+(function patchCategoryLeaders(){
+  const fields = ['bx','co','cx','brand_asset','bav_pulse','cx_kpi','loyalty'];
+  for (const [cat,d] of Object.entries(CATEGORIES_DATA)) {
+    CATEGORY_MEANS[cat] = {...d};                 // snapshot de medias + extremos
+    const members = BRANDS.filter(x => SECTOR_OF[x.marca] === cat);
+    for (const f of fields) {
+      const v = top3Avg(members.map(m => m[f]));   // nivel de los 3 líderes
+      if (v !== null) d[f] = v;
+    }
+  }
+})();
 
 // ── MOTOR DE IDEA DOMINANTE — 2 capas, paridad con brand_engine.py ──────
 // Capa 1: diagnóstico de sub-indicadores (por qué el score es así)
@@ -1899,20 +1920,20 @@ function getInsight(b) {
   // ── PATRONES RELATIVOS vs SECTOR ──
   if (g('bx') > 10 && g('co') < -10) {
     if (pulse !== null && pulse > 55)
-      return `${marca} tiene más presencia de marca que su sector (BX ${r(bx)} vs ${r(aBx)}/100, impulso digital ${r(pulse)}/100), pero ese capital no se traduce en conversión (CO ${r(co)} vs ${r(aCo)}/100). La demanda existe y la marca la genera — el cuello de botella está en la última milla: el proceso de compra tiene fricción que la inversión en marca no resuelve sola.`;
-    return `${marca} tiene más reconocimiento que su sector (BX ${r(bx)} vs ${r(aBx)}/100) pero menos conversión (CO ${r(co)} vs ${r(aCo)}/100). La marca llegó a la mente antes que a la transacción. El modelo de captación no está diseñado para aprovechar el volumen de intención que la marca genera.`;
+      return `${marca} tiene más presencia de marca que los líderes de su sector (BX ${r(bx)} vs ${r(aBx)}/100 de los líderes, impulso digital ${r(pulse)}/100), pero ese capital no se traduce en conversión (CO ${r(co)} vs ${r(aCo)}/100). La demanda existe y la marca la genera — el cuello de botella está en la última milla: el proceso de compra tiene fricción que la inversión en marca no resuelve sola.`;
+    return `${marca} supera en reconocimiento a los líderes de su sector (BX ${r(bx)} vs ${r(aBx)}/100 de los líderes) pero convierte por debajo de ellos (CO ${r(co)} vs ${r(aCo)}/100). La marca llegó a la mente antes que a la transacción. El modelo de captación no está diseñado para aprovechar el volumen de intención que la marca genera.`;
   }
   if (g('co') > 10 && g('bx') < -10) {
     const lt = (loyalty && loyalty < 40) ? ` Con lealtad de ${r(loyalty)}/100, el modelo funciona hoy — pero si el precio o la conveniencia cambian, la razón de compra desaparece.` : '';
-    return `${marca} convierte por encima del sector (CO ${r(co)} vs ${r(aCo)}/100) con una marca más débil que sus pares (BX ${r(bx)} vs ${r(aBx)}/100). Las ventas descansan sobre precio, distribución o conveniencia — no sobre preferencia de marca.${lt} El riesgo: cualquier competidor con mejor ejecución en esos factores erosiona el volumen sin que ${marca} tenga un activo de marca que lo defienda.`;
+    return `${marca} convierte al nivel de los líderes (CO ${r(co)} vs ${r(aCo)}/100 de los líderes) con una marca más débil que ellos (BX ${r(bx)} vs ${r(aBx)}/100). Las ventas descansan sobre precio, distribución o conveniencia — no sobre preferencia de marca.${lt} El riesgo: cualquier competidor con mejor ejecución en esos factores erosiona el volumen sin que ${marca} tenga un activo de marca que lo defienda.`;
   }
   if (g('cx') > 15 && g('co') < -5) {
     const causa = (cxk !== null && cxk > 60) ? ` El CX Strategy ${r(cxk)}/100 confirma que los usuarios la prefieren claramente sobre quienes no la usan — la experiencia diferencial existe pero no se monetiza.` : '';
-    return `${marca} genera experiencias superiores a su sector (CX ${r(cx)} vs ${r(aCx)}/100), pero su conversión queda por debajo (CO ${r(co)} vs ${r(aCo)}/100).${causa} La desconexión es estructural: entrega valor pero no construyó los mecanismos para capturarlo — pricing, distribución o activación de la demanda.`;
+    return `${marca} genera experiencias a la altura de los líderes de su sector (CX ${r(cx)} vs ${r(aCx)}/100 de los líderes), pero su conversión queda por debajo de ellos (CO ${r(co)} vs ${r(aCo)}/100).${causa} La desconexión es estructural: entrega valor pero no construyó los mecanismos para capturarlo — pricing, distribución o activación de la demanda.`;
   }
   if (g('co') > 15 && g('cx') < -5) {
     const sig = (loyalty && loyalty < 40) ? ` Con lealtad de ${r(loyalty)}/100, la señal de alerta ya es visible.` : ' A medida que los competidores mejoran la experiencia, la brecha de retención se amplía.';
-    return `${marca} convierte por encima del sector (CO ${r(co)} vs ${r(aCo)}/100), pero la experiencia queda por debajo (CX ${r(cx)} vs ${r(aCx)}/100). El modelo comercial funciona en el corto plazo — pero una experiencia bajo el estándar del sector acumula insatisfacción.${sig}`;
+    return `${marca} convierte al nivel de los líderes (CO ${r(co)} vs ${r(aCo)}/100 de los líderes), pero la experiencia queda por debajo de ellos (CX ${r(cx)} vs ${r(aCx)}/100). El modelo comercial funciona en el corto plazo — pero una experiencia bajo el estándar de los líderes acumula insatisfacción.${sig}`;
   }
 
   // ── PERFIL CON TENSIÓN INTERNA (sin gap relativo dominante) ──
@@ -1936,7 +1957,7 @@ function getInsight(b) {
     const prom = disp.reduce((a,x)=>a+x[1],0)/disp.length;
     if (prom > 60) {
       const palanca = (pulse !== null && pulse < 55) ? `presencia digital (${r(pulse)}/100 en BAV Pulse) si la prioridad es captación` : (loyalty !== null && loyalty < 55) ? `lealtad (${r(loyalty)}/100) si la prioridad es retención` : 'diferenciación de la propuesta de valor para sostener el liderazgo';
-      return `${marca} muestra un perfil equilibrado y por encima de la media (BX ${r(bx)} · CO ${r(co)} · CX ${r(cx)}/100). Sin una brecha dominante, la palanca de crecimiento está en profundizar el sub-indicador con mayor potencial: ${palanca}.`;
+      return `${marca} muestra un perfil equilibrado y sólido (BX ${r(bx)} · CO ${r(co)} · CX ${r(cx)}/100). Sin una brecha dominante, la palanca de crecimiento está en profundizar el sub-indicador con mayor potencial para acercarse a los líderes: ${palanca}.`;
     }
     return `${marca} tiene un perfil consistente pero con oportunidad de crecimiento en los tres frentes (BX ${r(bx)} · CO ${r(co)} · CX ${r(cx)}/100). La estrategia no es atacar el frente más bajo sino identificar cuál tiene mayor elasticidad al esfuerzo en el contexto competitivo de ${sector}.`;
   }
@@ -1959,12 +1980,12 @@ function getBullets(b) {
   const ba = b.brand_asset, bp = b.bav_pulse, cm = b.commerce, cxk = b.cx_kpi, ly = b.loyalty;
   const bxSt = scoreToState(b.bx), coSt = scoreToState(b.co), cxSt = scoreToState(b.cx);
   const avg = sectorAvg(b.marca);
-  // gap legible vs sector para un sub-indicador
+  // gap legible vs LÍDERES (top 3) para un sub-indicador
   const gapTxt = (val, field) => {
     if (val === null || avg[field] === null || avg[field] === undefined) return '';
     const d = Math.round(val - avg[field]);
-    if (Math.abs(d) < 4) return ' (en línea con el sector)';
-    return ` (${d > 0 ? '+' : ''}${d} vs sector)`;
+    if (Math.abs(d) < 4) return ' (al nivel de los líderes)';
+    return ` (${d > 0 ? '+' : ''}${d} vs líderes)`;
   };
 
   // ── BX bullet — distingue equity vs presencia digital con cifras ──

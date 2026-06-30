@@ -155,7 +155,7 @@ def chart_bars_h(sl, x, y, w, h, items, max_val=100):
         if mv: txt(sl,f"{int(mv)}",bx+mw+0.06,rcy+0.04,0.35,0.22,size=8.5,bold=True,color=col)
     ly = y+h+0.12
     rect(sl,x+lw+0.1,ly+0.03,0.28,0.09,GRAY_2)
-    txt(sl,"Promedio sector",x+lw+0.45,ly,1.8,0.22,size=7.5,color=GRAY_2)
+    txt(sl,"Líderes (Top 3)",x+lw+0.45,ly,1.8,0.22,size=7.5,color=GRAY_2)
     rect(sl,x+lw+2.4,ly+0.03,0.28,0.09,ORANGE)
     txt(sl,"Marca",x+lw+2.75,ly,1.0,0.22,size=7.5,bold=True,color=WHITE)
 
@@ -236,8 +236,8 @@ def generate_ppt(nombre: str) -> bytes:
 
     def gap_str(f):
         g = gaps.get(f)
-        if g is None: return "vs sector: sin dato"
-        return f"{g:+.1f} vs sector"
+        if g is None: return "vs líderes: sin dato"
+        return f"{g:+.1f} vs líderes"
 
     def score_str(v, default="—"):
         return f"{v:.0f}" if v is not None else default
@@ -310,7 +310,7 @@ def generate_ppt(nombre: str) -> bytes:
         ("CO · Ventas","¿Qué tanto\nvende?",                fd["co"], co_col,s("co"),sem.get("co","amarillo")),
         ("CX · Experiencia","¿Qué tan feliz\nqueda el cliente?", fd["cx"], cx_col,s("cx"),sem.get("cx","rojo")),
     ]
-    sem_labels = {"verde":"Arriba del sector","amarillo":"En la media del sector","rojo":"⚠ Alerta crítica","sin_dato":"Sin dato disponible"}
+    sem_labels = {"verde":"Nivel alto","amarillo":"Nivel medio","rojo":"⚠ Alerta crítica","sin_dato":"Sin dato disponible"}
     for i,(frente,q,desc,col,score,semaf) in enumerate(frentes):
         xi = 0.7+i*4.22
         tx,ty = card(sl,xi,2.35,3.95,4.82,accent=col,g=0.1)
@@ -367,7 +367,7 @@ def generate_ppt(nombre: str) -> bytes:
 
     for xi,val,label,col,sub in [
         (1.2, best_score, marca, best_col, f"{best_name} · {marca} · BAV 2026"),
-        (7.0, best_sector, "Promedio\ndel Sector", GRAY_1, f"{best_name} · Promedio sector"),
+        (7.0, best_sector, "Líderes\ndel Sector", GRAY_1, f"{best_name} · Líderes (Top 3)"),
     ]:
         tx,ty = card(sl,xi,2.2,4.5,3.5,accent=col)
         txt(sl,val,tx+0.1,ty+0.05,3.8,1.8,size=88,bold=True,color=col,align=PP_ALIGN.CENTER)
@@ -389,8 +389,8 @@ def generate_ppt(nombre: str) -> bytes:
     oval_orb(sl,-1,2,6,6,co_col,alpha=5)
     co_gap = gaps.get("co",0) or 0
     eyebrow(sl,f"Gap comercial · Commerce Score",1.0,0.35,color=co_col)
-    titulo_co = (f"Ventas: {abs(co_gap):.0f} puntos {'arriba' if co_gap>=0 else 'abajo'} del sector."
-                if co_gap != 0 else "Ventas: en la media del sector.")
+    titulo_co = (f"Ventas: {abs(co_gap):.0f} puntos {'arriba' if co_gap>=0 else 'abajo'} de los líderes."
+                if co_gap != 0 else "Ventas: al nivel de los líderes.")
     txt(sl,titulo_co,1.0,0.68,9,1.2,size=28,bold=True,color=WHITE)
     rule(sl,1.0,1.98,11.33)
     co_items = [(d["name"],d["val"]) for d in data["co_ranking"]]

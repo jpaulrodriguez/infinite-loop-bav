@@ -189,17 +189,23 @@ def get_sector_brands(nombre: str) -> list:
             result.append(b)
     return result
 
+def _top3_avg(values):
+    """Promedio de los 3 valores más altos → benchmark de LÍDERES (no media)."""
+    clean = sorted([v for v in values if v is not None], reverse=True)[:3]
+    return round(sum(clean) / len(clean), 1) if clean else None
+
 def compute_sector_avg(sector_brands: list, exclude: str) -> dict:
     """
-    Calcula promedios reales del sector excluyendo la marca analizada.
-    Solo promedia valores no-null.
+    Referencia del sector = promedio de los 3 LÍDERES por indicador (no la media),
+    excluyendo la marca analizada. La marca se mide contra los líderes, no el promedio.
+    Solo considera valores no-null.
     """
     peers = [b for b in sector_brands if b["marca"] != exclude]
     fields = ["bx","co","cx","brand_asset","bav_pulse","commerce","cx_kpi","loyalty"]
     avgs = {}
     for f in fields:
         vals = [safe_val(b.get(f)) for b in peers]
-        avgs[f] = _avg([v for v in vals if v is not None])
+        avgs[f] = _top3_avg([v for v in vals if v is not None])
     avgs["_n"] = len(peers)
     return avgs
 
@@ -232,12 +238,12 @@ def _gap_label(gap: float) -> str:
     abs_g = abs(gap)
     direction = "por encima" if gap > 0 else "por debajo"
     if abs_g < 5:
-        return f"prácticamente igual al promedio del sector"
+        return f"prácticamente al nivel de los líderes del sector"
     if abs_g < 15:
-        return f"{abs_g:.0f} puntos {direction} del sector"
+        return f"{abs_g:.0f} puntos {direction} de los líderes del sector"
     if abs_g < 30:
-        return f"{abs_g:.0f} puntos {direction} del sector — brecha significativa"
-    return f"{abs_g:.0f} puntos {direction} del sector — brecha crítica"
+        return f"{abs_g:.0f} puntos {direction} de los líderes — brecha significativa"
+    return f"{abs_g:.0f} puntos {direction} de los líderes — brecha crítica"
 
 def _score_label(v) -> str:
     if v is None: return "sin dato disponible"
@@ -415,15 +421,15 @@ def generate_dominant_idea(b: dict, avg: dict, sector: str) -> str:
     # BX fuerte + CO débil vs sector — con diagnóstico
     if gaps.get("bx", 0) > 10 and gaps.get("co", 0) < -10:
         if pulse is not None and pulse > 55:
-            return (f"{nombre} tiene más presencia de marca que su sector "
-                    f"(BX {bx:.0f}/100 vs {avg_bx:.0f}/100 promedio, impulso digital {pulse:.0f}/100), "
+            return (f"{nombre} tiene más presencia de marca que los líderes de su sector "
+                    f"(BX {bx:.0f}/100 vs {avg_bx:.0f}/100 de los líderes, impulso digital {pulse:.0f}/100), "
                     f"pero ese capital no se traduce en conversión comercial "
-                    f"(CO {co:.0f}/100 vs {avg_co:.0f}/100 del sector). "
+                    f"(CO {co:.0f}/100 vs {avg_co:.0f}/100 de los líderes). "
                     f"La demanda existe y la marca la genera — el cuello de botella "
                     f"está en la última milla: el proceso de compra tiene fricción "
                     f"que la inversión en marca no puede resolver sola.")
-        return (f"{nombre} tiene más reconocimiento que su sector (BX {bx:.0f} vs {avg_bx:.0f}/100) "
-                f"pero menos conversión (CO {co:.0f} vs {avg_co:.0f}/100). "
+        return (f"{nombre} supera en reconocimiento a los líderes de su sector (BX {bx:.0f} vs {avg_bx:.0f}/100 de los líderes) "
+                f"pero convierte por debajo de ellos (CO {co:.0f} vs {avg_co:.0f}/100). "
                 f"La marca llegó a la mente antes que a la transacción. "
                 f"La hipótesis: el modelo de captación no está diseñado para aprovechar "
                 f"el volumen de intención que la marca genera.")
@@ -433,8 +439,8 @@ def generate_dominant_idea(b: dict, avg: dict, sector: str) -> str:
         loyalty_txt = (f" Con lealtad de {loyalty:.0f}/100, el modelo funciona hoy — "
                        f"pero si el precio o la conveniencia cambian, la razón de compra desaparece."
                        if loyalty and loyalty < 40 else "")
-        return (f"{nombre} convierte por encima del sector (CO {co:.0f} vs {avg_co:.0f}/100) "
-                f"con una marca más débil que sus pares (BX {bx:.0f} vs {avg_bx:.0f}/100). "
+        return (f"{nombre} convierte al nivel de los líderes (CO {co:.0f} vs {avg_co:.0f}/100 de los líderes) "
+                f"con una marca más débil que ellos (BX {bx:.0f} vs {avg_bx:.0f}/100). "
                 f"Eso significa que las ventas actuales descansan sobre precio, distribución o conveniencia — "
                 f"no sobre preferencia de marca.{loyalty_txt} "
                 f"El riesgo: cualquier competidor con mejor ejecución en esos mismos factores "
@@ -447,17 +453,17 @@ def generate_dominant_idea(b: dict, avg: dict, sector: str) -> str:
             cx_causa = (f" El CX Strategy {cx_kpi:.0f}/100 confirma que los usuarios actuales "
                         f"la prefieren claramente sobre quienes no la usan — "
                         f"la experiencia diferencial existe pero no está siendo monetizada.")
-        return (f"{nombre} genera experiencias superiores a su sector (CX {cx:.0f} vs {avg_cx:.0f}/100), "
-                f"pero su conversión comercial queda por debajo (CO {co:.0f} vs {avg_co:.0f}/100).{cx_causa} "
+        return (f"{nombre} genera experiencias a la altura de los líderes de su sector (CX {cx:.0f} vs {avg_cx:.0f}/100 de los líderes), "
+                f"pero su conversión comercial queda por debajo de ellos (CO {co:.0f} vs {avg_co:.0f}/100).{cx_causa} "
                 f"La desconexión es estructural: la marca entrega valor pero no ha construido "
                 f"los mecanismos para capturarlo — ya sea en pricing, distribución o activación de la demanda.")
 
     # CO fuerte + CX débil vs sector — vende pero la experiencia erosiona la base
     if gaps.get("co", 0) > 15 and gaps.get("cx", 0) < -5:
-        return (f"{nombre} convierte por encima del sector (CO {co:.0f} vs {avg_co:.0f}/100), "
-                f"pero la experiencia del cliente queda por debajo (CX {cx:.0f} vs {avg_cx:.0f}/100). "
+        return (f"{nombre} convierte al nivel de los líderes (CO {co:.0f} vs {avg_co:.0f}/100 de los líderes), "
+                f"pero la experiencia del cliente queda por debajo de ellos (CX {cx:.0f} vs {avg_cx:.0f}/100). "
                 f"El modelo comercial funciona en el corto plazo — pero una experiencia "
-                f"por debajo del estándar del sector acumula insatisfacción. "
+                f"por debajo del estándar de los líderes acumula insatisfacción. "
                 f"{'Con lealtad de ' + str(int(loyalty)) + '/100, la señal de alerta ya es visible.' if loyalty and loyalty < 40 else 'A medida que los competidores mejoran la experiencia, la brecha de retención se amplía.'}")
 
     # ── PERFIL EQUILIBRADO: análisis de tensión interna con sub-indicadores ──
@@ -694,10 +700,10 @@ def generate_movements(b: dict, avg: dict, sector_brands: list) -> list:
                 body = (f"El sector promedia {a:.0f} en CX; {nombre} está en {v:.0f}. "
                         f"Identificar las prácticas de los 2-3 competidores mejor rankeados "
                         f"e implementar los cambios de mayor impacto en el corto plazo.")
-                meta = f"Meta: llegar al promedio del sector ({a:.0f}) en 18 meses"
+                meta = f"Meta: llegar al nivel de los líderes del sector ({a:.0f}) en 18 meses"
             else:
                 title = "Profundizar la ventaja de experiencia"
-                body = (f"Con CX por encima del sector ({gap:+.0f} pts), el movimiento es "
+                body = (f"Con CX por encima de los líderes ({gap:+.0f} pts), el movimiento es "
                         f"convertir esa experiencia en un diferenciador activo en la comunicación. "
                         f"Los clientes que viven buenas experiencias deben poder compartirlas.")
                 loyalty_str = f"{loyalty:.0f}" if loyalty is not None else "N/D"
@@ -715,7 +721,7 @@ def generate_movements(b: dict, avg: dict, sector_brands: list) -> list:
                 body = (f"El sector convierte a {a:.0f}/100; {nombre} a {v:.0f}/100. "
                         f"Analizar el funnel completo desde la intención hasta la transacción "
                         f"e identificar dónde se pierden más clientes potenciales.")
-                meta = f"Meta: alcanzar promedio del sector ({a:.0f}) en CO"
+                meta = f"Meta: alcanzar nivel de los líderes del sector ({a:.0f}) en CO"
             else:
                 title = "Capitalizar la fortaleza comercial en canales de mayor margen"
                 body = (f"Con CO {gap:+.0f} sobre el sector, el movimiento es redirigir "
@@ -782,7 +788,7 @@ def generate_frente_descriptions(b: dict, avg: dict, sem: dict, sector: str, sec
         bx_desc = f"No hay dato de Fuerza de Marca disponible para {nombre}."
     else:
         bx_rank_txt = f"posición {bx_rank} de {bx_tot}" if bx_rank else "sin ranking"
-        bx_gap_txt = f"{bx_gap:+.0f} vs el sector" if bx_gap is not None else "sin comparativa"
+        bx_gap_txt = f"{bx_gap:+.0f} vs los líderes" if bx_gap is not None else "sin comparativa"
         if sem.get("bx") == "verde":
             bx_desc = (f"{nombre} está en {bx}/100 en BX — {bx_rank_txt} en {sector} ({bx_gap_txt}). "
                       f"La marca es reconocida y diferenciada. "
@@ -801,7 +807,7 @@ def generate_frente_descriptions(b: dict, avg: dict, sem: dict, sector: str, sec
         co_desc = f"No hay dato de Commerce Score disponible para {nombre}."
     else:
         co_rank_txt = f"posición {co_rank} de {co_tot}" if co_rank else "sin ranking"
-        co_gap_txt = f"{co_gap:+.0f} vs el sector" if co_gap is not None else "sin comparativa"
+        co_gap_txt = f"{co_gap:+.0f} vs los líderes" if co_gap is not None else "sin comparativa"
         if sem.get("co") == "verde":
             co_desc = (f"{nombre} convierte bien: CO {co}/100 ({co_rank_txt} en {sector}, {co_gap_txt}). "
                       f"El mercado no solo conoce la marca — la compra. "
@@ -820,7 +826,7 @@ def generate_frente_descriptions(b: dict, avg: dict, sem: dict, sector: str, sec
         cx_desc = f"No hay dato de Experiencia del Cliente disponible para {nombre}."
     else:
         cx_rank_txt = f"posición {cx_rank} de {cx_tot}" if cx_rank else "sin ranking"
-        cx_gap_txt = f"{cx_gap:+.0f} vs el sector" if cx_gap is not None else "sin comparativa"
+        cx_gap_txt = f"{cx_gap:+.0f} vs los líderes" if cx_gap is not None else "sin comparativa"
         if sem.get("cx") == "verde":
             cx_desc = (f"{nombre} genera buena experiencia: CX {cx}/100 ({cx_rank_txt} en {sector}, {cx_gap_txt}). "
                       f"{'La lealtad de ' + str(loyalty) + '/100 confirma que los clientes no solo vienen — vuelven.' if loyalty and loyalty > 60 else 'El reto es convertir esa buena experiencia en lealtad activa y recomendación.'} "
@@ -882,9 +888,9 @@ def generate_comparative_insight(b: dict, avg: dict, gaps: dict) -> str:
     worst_score = score_actual.get(worst_f)
     worst_avg = avg.get(worst_f)
 
-    # Si hay un indicador claramente por encima del sector
+    # Si hay un indicador claramente por encima de los líderes
     if best_v > 8 and worst_v < -8:
-        return (f"{nombre} tiene un perfil asimétrico: {fn.get(best_f,'su mejor indicador')} supera al sector "
+        return (f"{nombre} tiene un perfil asimétrico: {fn.get(best_f,'su mejor indicador')} supera a los líderes "
                 f"({'+' + str(round(best_v)):>4} pts) mientras {fn.get(worst_f,'el indicador más débil')} "
                 f"queda {abs(worst_v):.0f} pts por debajo. La tensión entre fortaleza y debilidad define la "
                 f"estrategia: capitalizar lo que funciona mientras se corrige lo que frena el crecimiento.")
@@ -892,20 +898,20 @@ def generate_comparative_insight(b: dict, avg: dict, gaps: dict) -> str:
         ws_txt = f"{worst_score:.0f}" if worst_score is not None else "—"
         wa_txt = f"{worst_avg:.0f}" if worst_avg is not None else "—"
         return (f"La brecha más urgente de {nombre} está en {fn.get(worst_f,'el indicador clave')}: "
-                f"{ws_txt}/100 contra {wa_txt}/100 del sector ({worst_v:.0f} pts). "
+                f"{ws_txt}/100 contra {wa_txt}/100 de los líderes ({worst_v:.0f} pts). "
                 f"Es el indicador con mayor potencial de impacto si se prioriza en los próximos 12 meses.")
     elif best_v > 15:
         return (f"{fn.get(best_f,'El mejor indicador').capitalize()} es la ventaja competitiva de {nombre} "
-                f"vs el sector (+{best_v:.0f} pts). El trabajo es mantener esa ventaja mientras se "
+                f"vs los líderes (+{best_v:.0f} pts). El trabajo es mantener esa ventaja mientras se "
                 f"eleva el piso de los demás indicadores para que el perfil sea coherente.")
     elif all(v >= -8 for v in valid_gaps.values()):
         all_scores = [(fn.get(f,''), v) for f, v in valid_gaps.items()]
-        return (f"{nombre} tiene un perfil equilibrado vs el sector — sin brechas críticas ni ventajas dominantes. "
+        return (f"{nombre} tiene un perfil equilibrado vs los líderes — sin brechas críticas ni ventajas dominantes. "
                 f"En mercados competitivos, equilibrio sin diferenciación es invisibilidad. "
                 f"El movimiento es elegir un frente donde ser el mejor del sector, no el promedio.")
     else:
         ws_txt = f"{worst_score:.0f}" if worst_score is not None else "—"
-        return (f"{nombre} muestra indicadores mixtos vs el sector. "
+        return (f"{nombre} muestra indicadores mixtos vs los líderes. "
                 f"El foco debe ir en {fn.get(worst_f,'el indicador más débil')} "
                 f"({ws_txt}/100 · {worst_v:.0f} pts vs sector): "
                 f"es donde una mejora moderada generaría el mayor salto en el perfil competitivo.")
@@ -937,12 +943,12 @@ def generate_strength_insight(b: dict, avg: dict, best_field: str, best_gap: flo
 
     if best_gap > 15:
         if best_field == "bav_pulse":
-            return (f"{nombre} supera al sector en Presencia Digital (+{best_gap:.0f} pts). "
+            return (f"{nombre} supera a los líderes en Presencia Digital (+{best_gap:.0f} pts). "
                    f"Esa visibilidad en medios digitales existe pero no está siendo aprovechada suficientemente "
                    f"para impulsar conversión comercial y experiencia. "
                    f"El activo digital debe conectarse con el funnel de ventas — es el paso inmediato.")
         elif best_field == "brand_asset":
-            return (f"El Activo de Marca de {nombre} ({score_txt}) supera al sector en +{best_gap:.0f} pts. "
+            return (f"El Activo de Marca de {nombre} ({score_txt}) supera a los líderes en +{best_gap:.0f} pts. "
                    f"El mercado reconoce y diferencia la marca — eso es lo más difícil de construir y lo más fácil de no aprovechar. "
                    f"El reto inmediato es conectar ese capital de marca con resultados en ventas y experiencia.")
         elif best_field == "loyalty":
@@ -950,15 +956,15 @@ def generate_strength_insight(b: dict, avg: dict, best_field: str, best_gap: flo
                    f"Una base de clientes que vuelve es el activo más valioso — más barato que adquirir nuevos y más rentable que cualquier campaña. "
                    f"El movimiento es ampliar el embudo de captación sin diluir esa intensidad de relación.")
         else:
-            return (f"{nombre} supera al sector en {field_name} con +{best_gap:.0f} pts. "
-                   f"Esa ventaja existe pero sola no construye liderazgo — necesita traducirse en los frentes donde la marca está por debajo del sector. "
+            return (f"{nombre} supera a los líderes en {field_name} con +{best_gap:.0f} pts. "
+                   f"Esa ventaja existe pero sola no construye liderazgo — necesita traducirse en los frentes donde la marca está por debajo de los líderes. "
                    f"Una fortaleza sin palanca estratégica es una oportunidad desperdiciada.")
     elif best_gap > 0:
-        return (f"{field_name} es donde {nombre} tiene su menor brecha negativa vs el sector (+{best_gap:.0f} pts). "
+        return (f"{field_name} es donde {nombre} tiene su menor brecha negativa vs los líderes (+{best_gap:.0f} pts). "
                f"No es una ventaja dominante, pero es el punto de partida más sólido para construir. "
                f"Concentrar comunicación y recursos en este frente primero, antes de dispersar esfuerzo.")
     else:
-        return (f"{nombre} está por debajo del sector en todos los indicadores evaluados — la menor brecha es en {field_name} ({best_gap:.0f} pts). "
+        return (f"{nombre} está por debajo de los líderes en todos los indicadores evaluados — la menor brecha es en {field_name} ({best_gap:.0f} pts). "
                f"En este escenario, el primer movimiento es elegir UN frente y concentrar el 80% del esfuerzo allí. "
                f"Mejorar todo a la vez en estas condiciones equivale a no mejorar nada.")
 
@@ -994,16 +1000,16 @@ def generate_co_footer(b: dict, avg: dict, co_ranking: list, gaps: dict) -> str:
     if co_gap is not None and co_gap < -20:
         bx_context = f" Con BX en {bx:.0f}/100, la demanda existe — el problema está en la conversión, no en la marca." if bx and bx > 40 else ""
         leader_txt = f"{leader_scores} lideran la conversión en el sector. " if leader_scores else ""
-        return (f"{leader_txt}{nombre} está {abs(co_gap):.0f} pts por debajo del promedio ({avg_co_str}/100).{bx_context} "
+        return (f"{leader_txt}{nombre} está {abs(co_gap):.0f} pts por debajo de los líderes ({avg_co_str}/100).{bx_context} "
                f"La brecha es recuperable con una revisión del funnel de compra y los catalizadores de decisión en punto de venta.")
     elif co_gap is not None and co_gap > 10:
         bottom_txt = (f" Comparado con {bottom_co[0]['name']} ({bottom_co[0]['val']:.0f}/100 CO), la ventaja competitiva es real."
                      if bottom_co and bottom_co[0]["name"] != nombre else "")
-        return (f"{nombre} convierte por encima del promedio del sector (+{co_gap:.0f} pts sobre {avg_co_str}/100). "
+        return (f"{nombre} convierte por encima del nivel de los líderes del sector (+{co_gap:.0f} pts sobre {avg_co_str}/100). "
                f"El volumen está — el siguiente movimiento es redirigirlo hacia los productos o servicios de mayor margen.{bottom_txt}")
     else:
         leaders_txt = f"{leader_scores} demuestran que el sector puede llegar a niveles más altos. " if leader_scores else ""
-        return (f"{nombre} convierte a {co:.0f}/100 — cerca del promedio del sector ({avg_co_str}/100). "
+        return (f"{nombre} convierte a {co:.0f}/100 — cerca del nivel de los líderes del sector ({avg_co_str}/100). "
                f"{leaders_txt}La pregunta es qué hace diferente a esas marcas en el momento de la compra.")
 
 
@@ -1035,15 +1041,15 @@ def generate_cx_footer(b: dict, avg: dict, cx_ranking: list, gaps: dict) -> str:
                f"El benchmark más relevante es el promedio del mercado general.")
 
     if cx_gap is not None and cx_gap < -15:
-        return (f"El promedio del sector está en {avg_cx_str}/100 en CX; {nombre} registra {cx:.0f}/100 ({cx_gap:.0f} pts)."
+        return (f"El nivel de los líderes del sector está en {avg_cx_str}/100 en CX; {nombre} registra {cx:.0f}/100 ({cx_gap:.0f} pts)."
                f"{loyalty_txt} "
                f"{top_name} ({top_val:.0f}/100) demuestra que el sector puede generar experiencias significativamente mejores. "
                f"Identificar qué hace diferente ese recorrido del cliente es el primer paso para cerrar la brecha.")
     elif cx_gap is not None and cx_gap > 10:
-        return (f"{nombre} supera al sector en CX (+{cx_gap:.0f} pts sobre el promedio de {avg_cx_str}/100).{loyalty_txt} "
+        return (f"{nombre} supera a los líderes en CX (+{cx_gap:.0f} pts sobre el nivel de líderes de {avg_cx_str}/100).{loyalty_txt} "
                f"Esa ventaja experiencial debe comunicarse activamente — los clientes que viven buenas experiencias deben poder compartirlas.")
     else:
-        return (f"El promedio del sector en CX es {avg_cx_str}/100; {nombre} está en {cx:.0f}/100.{loyalty_txt} "
+        return (f"El nivel de los líderes del sector en CX es {avg_cx_str}/100; {nombre} está en {cx:.0f}/100.{loyalty_txt} "
                f"{top_name} ({top_val:.0f}/100) es el referente de experiencia del sector. "
                f"Identificar qué hace diferente su recorrido del cliente es el primer paso para cerrar la brecha.")
 
