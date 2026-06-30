@@ -28,6 +28,37 @@
   --radius-lg:16px;
   --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px;
   --sp-5:20px; --sp-6:24px; --sp-8:32px;
+  /* SVG stroke defaults (dark) */
+  --svg-outer-stroke:rgba(255,255,255,.92);
+  --svg-arc-stroke:rgba(255,255,255,.88);
+  --svg-band-stroke:rgba(160,168,195,.72);
+  --svg-scan-fill:rgba(130,215,255,.04);
+  --svg-grid-stroke:#80cfff;
+  --svg-node-fill:rgba(255,255,255,.18);
+  --svg-select-fill:rgba(0,0,0,.05);
+  --select-arrow:rgba(255,255,255,.4);
+}
+[data-theme="light"]{
+  --bg:#F0F2F8;
+  --surface:#FFFFFF;
+  --surface-2:#F7F8FC;
+  --border:rgba(0,0,0,.08);
+  --border-hover:rgba(0,0,0,.2);
+  --text-1:#0D1248;
+  --text-2:#4A5068;
+  --text-3:rgba(74,80,104,.45);
+  --red-glow:rgba(255,59,48,.12);
+  --yellow-glow:rgba(244,162,97,.12);
+  --green-glow:rgba(0,210,106,.12);
+  /* SVG stroke overrides (light) */
+  --svg-outer-stroke:rgba(13,18,72,.75);
+  --svg-arc-stroke:rgba(13,18,72,.65);
+  --svg-band-stroke:rgba(100,110,150,.55);
+  --svg-scan-fill:rgba(13,18,72,.03);
+  --svg-grid-stroke:#0d1248;
+  --svg-node-fill:rgba(13,18,72,.12);
+  --svg-select-fill:rgba(255,255,255,.9);
+  --select-arrow:rgba(0,0,0,.4);
 }
 html,body{
   width:100%;min-height:100vh;
@@ -40,6 +71,13 @@ html,body{
   font-family:-apple-system,'SF Pro Display',Helvetica Neue,sans-serif;
   font-size:14px;line-height:1.5;
   -webkit-font-smoothing:antialiased;
+  transition:background-color .35s,color .35s;
+}
+[data-theme="light"] body,[data-theme="light"]{
+  background-image:
+    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(255,122,0,.05) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 90%, rgba(0,210,106,.03) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 50% 50%, rgba(230,235,248,.8) 0%, transparent 100%);
 }
 
 /* ── LAYOUT SHELL ─────────────────────────────────────────── */
@@ -75,7 +113,7 @@ html,body{
   font-size:11px;font-weight:600;letter-spacing:.09em;
   text-transform:uppercase;color:var(--text-3);
 }
-#category-select{
+#category-select,#brand-select{
   background:var(--surface-2);
   border:1px solid var(--border-hover);
   border-radius:var(--radius-sm);
@@ -84,28 +122,18 @@ html,body{
   padding:6px 32px 6px 12px;
   appearance:none;cursor:pointer;outline:none;
   min-width:175px;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='rgba(255,255,255,.4)' d='M5 7L1 3h8z'/%3E%3C/svg%3E");
   background-repeat:no-repeat;background-position:right 10px center;
-  transition:border-color .15s,background .15s;
+  transition:border-color .25s,background .25s,color .25s;
 }
-#category-select:hover{border-color:rgba(255,255,255,.3);background-color:#152040;}
-#category-select option{background:#0d1428;}
-.selector-divider{width:1px;height:20px;background:var(--border);margin:0 2px;}
-#brand-select{
-  background:var(--surface-2);
-  border:1px solid var(--border-hover);
-  border-radius:var(--radius-sm);
-  color:var(--text-1);
-  font-size:13px;font-weight:600;
-  padding:6px 32px 6px 12px;
-  appearance:none;cursor:pointer;outline:none;
-  min-width:200px;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='rgba(255,255,255,.4)' d='M5 7L1 3h8z'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 10px center;
-  transition:border-color .15s,background .15s;
-}
-#brand-select:hover{border-color:rgba(255,255,255,.3);background-color:#152040;}
-#brand-select option{background:#0d1428;}
+#brand-select{color:var(--text-1);font-weight:600;min-width:200px;}
+#category-select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='rgba(255,255,255,.4)' d='M5 7L1 3h8z'/%3E%3C/svg%3E");}
+#brand-select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='rgba(255,255,255,.4)' d='M5 7L1 3h8z'/%3E%3C/svg%3E");}
+#category-select:hover,#brand-select:hover{border-color:var(--border-hover);background-color:var(--surface);}
+#category-select option,#brand-select option{background:var(--surface);}
+.selector-divider{width:1px;height:20px;background:var(--border);margin:0 2px;transition:background .25s;}
+/* Light mode: dark arrows on selects */
+[data-theme="light"] #category-select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='rgba(0,0,0,.4)' d='M5 7L1 3h8z'/%3E%3C/svg%3E");}
+[data-theme="light"] #brand-select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='rgba(0,0,0,.4)' d='M5 7L1 3h8z'/%3E%3C/svg%3E");}
 
 /* ── BOTÓN DESCARGAR PPT ─────────────────────────────────── */
 #btn-download-ppt{
@@ -456,6 +484,67 @@ html,body{
 .leg-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
 .leg-range{color:var(--text-3);font-size:10px;margin-left:2px;}
 
+/* ── THEME TOGGLE BUTTON ──────────────────────────────────── */
+#btn-theme{
+  display:flex;align-items:center;justify-content:center;
+  width:32px;height:32px;border-radius:var(--radius-sm);
+  background:var(--surface-2);border:1px solid var(--border-hover);
+  cursor:pointer;color:var(--text-2);
+  transition:background .25s,border-color .25s,color .25s,transform .15s;
+  flex-shrink:0;
+}
+#btn-theme:hover{background:var(--surface);border-color:var(--border-hover);transform:scale(1.06);}
+#btn-theme svg{transition:opacity .2s,transform .3s;}
+
+/* ── LIGHT MODE OVERRIDES ─────────────────────────────────── */
+[data-theme="light"] #area-scores{
+  background:rgba(255,255,255,.75);
+  border-color:rgba(0,0,0,.09);
+  box-shadow:0 4px 24px rgba(0,0,0,.08),inset 0 1px 0 rgba(255,255,255,.9);
+}
+[data-theme="light"] .area-score-cell{border-right-color:rgba(0,0,0,.07);}
+[data-theme="light"] .kpi-card{
+  background:rgba(255,255,255,.82);
+  border-color:rgba(0,0,0,.09);
+  box-shadow:0 4px 20px rgba(0,0,0,.07),inset 0 1px 0 rgba(255,255,255,.9);
+}
+[data-theme="light"] .kpi-card:hover{box-shadow:0 8px 32px rgba(0,0,0,.12),inset 0 1px 0 rgba(255,255,255,.9);}
+[data-theme="light"] .kpi-bar-track{background:rgba(0,0,0,.07);}
+[data-theme="light"] .kpi-score-badge{background:rgba(0,0,0,.04);}
+[data-theme="light"] .area-badge{background:rgba(0,0,0,.05);}
+[data-theme="light"] #insight-panel{
+  background:rgba(255,255,255,.78);
+  border-color:rgba(0,0,0,.09);
+  box-shadow:0 4px 24px rgba(0,0,0,.07),inset 0 1px 0 rgba(255,255,255,.9);
+}
+[data-theme="light"] .insight-tag{background:rgba(255,107,0,.12);}
+[data-theme="light"] #category-panel{
+  background:rgba(255,255,255,.78);
+  border-color:rgba(0,0,0,.09);
+  box-shadow:0 4px 24px rgba(0,0,0,.07),inset 0 1px 0 rgba(255,255,255,.9);
+}
+[data-theme="light"] .cat-score-card{background:rgba(0,0,0,.03);border-color:rgba(0,0,0,.08);}
+[data-theme="light"] .cat-brands-list{border-top-color:rgba(0,0,0,.07);}
+[data-theme="light"] .cat-brand-chip{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.09);color:var(--text-2);}
+[data-theme="light"] .cat-brand-chip:hover{background:rgba(255,107,0,.1);color:var(--accent);border-color:rgba(255,107,0,.3);}
+[data-theme="light"] .cat-insight-box{background:rgba(59,130,246,.05);border-color:rgba(59,130,246,.18);}
+[data-theme="light"] .cat-tag{background:rgba(59,130,246,.1);}
+[data-theme="light"] #kpi-modal-backdrop{background:rgba(220,225,240,.75);}
+[data-theme="light"] #kpi-modal{
+  background:rgba(255,255,255,.92);
+  border-color:rgba(0,0,0,.1);
+  box-shadow:0 32px 80px rgba(0,0,0,.15),inset 0 1px 0 rgba(255,255,255,.9);
+}
+[data-theme="light"] #kpi-modal-close{color:var(--text-3);}
+[data-theme="light"] #kpi-modal-close:hover{color:var(--text-1);}
+[data-theme="light"] #kpi-modal-bar-track{background:rgba(0,0,0,.07);}
+[data-theme="light"] #kpi-modal-divider{background:rgba(0,0,0,.07);}
+[data-theme="light"] #kpi-modal-action{background:rgba(0,0,0,.03);border-color:rgba(0,0,0,.08);}
+[data-theme="light"] #kpi-modal-badge{background:rgba(0,0,0,.05);}
+[data-theme="light"] #legend-bar{border-top-color:rgba(0,0,0,.08);}
+[data-theme="light"] #header{border-bottom-color:rgba(0,0,0,.08);}
+[data-theme="light"] #btn-download-ppt:disabled{background:rgba(255,122,0,.15);color:rgba(13,18,72,.3);}
+
 /* ── SVG ANIMATIONS ───────────────────────────────────────── */
 @keyframes scan{0%{transform:translateY(-100%)}100%{transform:translateY(600%)}}
 @keyframes gOval{
@@ -511,6 +600,10 @@ html,body{
       <div class="selector-divider"></div>
       <span class="selector-label">Marca</span>
       <select id="brand-select"><option value="">— Selecciona —</option></select>
+      <button id="btn-theme" title="Cambiar tema" aria-label="Cambiar a modo claro/oscuro">
+        <svg id="icon-dark" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg id="icon-light" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      </button>
       <button id="btn-download-ppt" title="Descargar presentación PPT de esta marca" disabled>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         <span id="btn-ppt-label">Descargar PPT</span>
@@ -1466,6 +1559,60 @@ function showPptError(msg) {
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 5000);
 }
+
+/* ── THEME TOGGLE ─────────────────────────────────────────── */
+const SVG_STROKES = {
+  dark: {
+    outer: 'rgba(255,255,255,.92)',
+    arc:   'rgba(255,255,255,.88)',
+    band:  'rgba(160,168,195,.72)',
+  },
+  light: {
+    outer: 'rgba(13,18,72,.70)',
+    arc:   'rgba(13,18,72,.60)',
+    band:  'rgba(100,110,150,.50)',
+  }
+};
+
+function applySVGTheme(mode) {
+  const s = SVG_STROKES[mode];
+  const outer = document.getElementById('shape-outer');
+  const arcBX = document.getElementById('arc-bx');
+  const arcCX = document.getElementById('arc-cx');
+  const bandA = document.getElementById('band-a');
+  const bandB = document.getElementById('band-b');
+  if (outer) outer.setAttribute('stroke', s.outer);
+  if (arcBX) arcBX.setAttribute('stroke', s.arc);
+  if (arcCX) arcCX.setAttribute('stroke', s.arc);
+  if (bandA) bandA.setAttribute('stroke', s.band);
+  if (bandB) bandB.setAttribute('stroke', s.band);
+  // Node circles fill
+  document.querySelectorAll('circle[filter="url(#fNd)"]').forEach(c => {
+    c.setAttribute('fill', mode === 'light' ? 'rgba(13,18,72,.12)' : 'rgba(255,255,255,.18)');
+  });
+}
+
+(function initTheme() {
+  const saved = localStorage.getItem('bav-theme') || 'dark';
+  if (saved === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.getElementById('icon-dark').style.display  = 'none';
+    document.getElementById('icon-light').style.display = '';
+    applySVGTheme('light');
+  } else {
+    applySVGTheme('dark');
+  }
+})();
+
+document.getElementById('btn-theme').addEventListener('click', () => {
+  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  const next = isLight ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', next);
+  document.getElementById('icon-dark').style.display  = next === 'light' ? 'none' : '';
+  document.getElementById('icon-light').style.display = next === 'light' ? '' : 'none';
+  applySVGTheme(next);
+  localStorage.setItem('bav-theme', next);
+});
 
 resetAll();
 </script>
