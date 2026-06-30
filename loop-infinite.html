@@ -1260,97 +1260,219 @@ function selectBrandFromCategory(marca) {
   sel.dispatchEvent(new Event('change'));
 }
 
+// ── Mapa marca → sector y promedio de sector (excluyendo la marca) ──────
+const SECTOR_OF = (() => {
+  const m = {};
+  for (const [cat, d] of Object.entries(CATEGORIES_DATA))
+    for (const marca of d.marcas) m[marca] = cat;
+  return m;
+})();
+
+function sectorAvg(marca) {
+  const cat = SECTOR_OF[marca];
+  if (!cat) return {};
+  const peers = BRANDS.filter(x => x.marca !== marca && SECTOR_OF[x.marca] === cat);
+  const fields = ['bx','co','cx','brand_asset','bav_pulse','commerce','cx_kpi','loyalty'];
+  const avg = {};
+  for (const f of fields) {
+    const vals = peers.map(p => p[f]).filter(v => v !== null && v !== undefined);
+    avg[f] = vals.length ? Math.round(vals.reduce((a,b)=>a+b,0)/vals.length*10)/10 : null;
+  }
+  return avg;
+}
+
+// ── MOTOR DE IDEA DOMINANTE — 2 capas, paridad con brand_engine.py ──────
+// Capa 1: diagnóstico de sub-indicadores (por qué el score es así)
+// Capa 2: cruce de tensiones entre frentes con explicación causal
 function getInsight(b) {
-  const {marca} = b;
+  const marca = b.marca;
+  const r = v => Math.round(v);
   const bx = b.bx, co = b.co, cx = b.cx;
-  const ba = b.brand_asset, bp = b.bav_pulse, cm = b.commerce, cxk = b.cx_kpi, ly = b.loyalty;
+  const ba = b.brand_asset, pulse = b.bav_pulse, loyalty = b.loyalty, cxk = b.cx_kpi;
+  const sector = SECTOR_OF[marca] || 'Mercado General';
+  const avg = sectorAvg(marca);
+  const aBx = avg.bx, aCo = avg.co, aCx = avg.cx;
 
-  const frentes = [
-    {id:'BX', val:bx}, {id:'CO', val:co}, {id:'CX', val:cx}
-  ].filter(f=>f.val!==null).sort((a,b)=>b.val-a.val);
+  const gaps = {};
+  if (bx !== null && aBx !== null) gaps.bx = Math.round((bx - aBx)*10)/10;
+  if (co !== null && aCo !== null) gaps.co = Math.round((co - aCo)*10)/10;
+  if (cx !== null && aCx !== null) gaps.cx = Math.round((cx - aCx)*10)/10;
+  const g = k => gaps[k] !== undefined ? gaps[k] : 0;
 
-  const top = frentes[0], bot = frentes[frentes.length-1];
-  const gap = top && bot ? top.val - bot.val : 0;
-
-  const allKPIs = [
-    {name:'Brand Asset', val:ba, frente:'BX'},
-    {name:'BAV Pulse', val:bp, frente:'BX'},
-    {name:'Commerce', val:cm, frente:'CO'},
-    {name:'CX Score', val:cxk, frente:'CX'},
-    {name:'Loyalty/NPS', val:ly, frente:'CX'},
-  ].filter(k=>k.val!==null).sort((a,b)=>a.val-b.val);
-
-  const weakestKPI = allKPIs[0];
-  const strongestKPI = [...allKPIs].sort((a,b)=>b.val-a.val)[0];
-
-  // Caso 1: gap amplio → tensión estratégica clara
-  if (gap >= 35 && top && bot) {
-    if (top.id==='BX' && bot.id==='CX')
-      return `La promesa de marca supera la experiencia real. Prioridad: cerrar CX antes de seguir invirtiendo en comunicación.`;
-
-    if (top.id==='CO' && bot.id==='BX')
-      return `El volumen comercial no tiene respaldo de marca. Sin diferenciación, el negocio compite solo por precio.`;
-
-    if (top.id==='CO' && bot.id==='CX')
-      return `Atrae pero no retiene. El mayor impacto está en mejorar la experiencia post-compra para no pagar siempre por adquirir.`;
-
-    if (top.id==='BX' && bot.id==='CO')
-      return `La marca tiene demanda latente que no se convierte. Prioridad: activar el canal comercial sobre el equity ya construido.`;
-
-    if (top.id==='CX' && bot.id==='BX')
-      return `La experiencia fideliza pero la marca no genera demanda nueva. Prioridad: visibilizar lo que ya funciona para atraer.`;
-
-    if (top.id==='CX' && bot.id==='CO')
-      return `Alta satisfacción que no escala en volumen. Usar la lealtad existente como motor de adquisición y distribución.`;
+  // ── CAPA 1: sub-indicadores ──
+  let bxOrigen = null;
+  if (bx !== null && ba !== null && pulse !== null) {
+    if (ba > 60 && pulse < 35) bxOrigen = 'digital_invisible';
+    else if (ba < 35 && pulse > 55) bxOrigen = 'digital_sin_sustancia';
+    else if (ba < 35 && pulse < 35) bxOrigen = 'bx_doble_debilidad';
+  }
+  let cxOrigen = null;
+  if (cx !== null && loyalty !== null && cxk !== null) {
+    if (loyalty > 65 && cxk < 35) cxOrigen = 'conocido_no_elegido';
+    else if (loyalty < 30 && cxk > 60) cxOrigen = 'fieles_poca_masa';
+    else if (loyalty < 30 && cxk < 35) cxOrigen = 'cx_doble_debilidad';
   }
 
-  // Caso 2: los 3 frentes en rojo
-  if (bx!==null && co!==null && cx!==null && bx<34 && co<34 && cx<34)
-    return `Perfil crítico en los tres frentes. Antes de activar, estabilizar: concentrar esfuerzos en ${top?.id} como punto de partida.`;
+  // ── CAPA 2: patrones cruzados (mismo orden que Python) ──
 
-  // Caso 3: los 3 frentes en verde
-  if (bx!==null && bx>=67 && co>=67 && cx>=67)
-    return `Liderazgo consolidado en los tres frentes. La prioridad es profundizar, no expandir: defender ${weakestKPI?.frente} para sostener el loop completo.`;
+  // Liderazgo absoluto
+  if (bx !== null && co !== null && cx !== null && bx >= 65 && co >= 65 && cx >= 65) {
+    if (pulse !== null && pulse < 50)
+      return `${marca} lidera en los tres frentes (BX ${r(bx)} · CO ${r(co)} · CX ${r(cx)}/100), pero su presencia digital (${r(pulse)}/100 en BAV Pulse) está por debajo de lo que su posición de mercado exige. Una marca de este calibre que no domina el espacio digital cede el momento donde se forma la primera intención de compra a competidores más visibles.`;
+    if (loyalty !== null && loyalty > 75)
+      return `${marca} opera en el cuadrante de liderazgo con una base que recompra (lealtad ${r(loyalty)}/100). El riesgo no viene de dentro sino de afuera: las marcas líderes pierden cuota por sobreestimar la inercia del consumidor, no por ejecutar mal. La agenda es anticipación competitiva, no optimización del status quo.`;
+    return `${marca} lidera en marca, ventas y experiencia. El reto no es construir sino defender: los líderes pierden posición cuando optimizan lo que ya funciona en lugar de anticipar el siguiente movimiento del mercado.`;
+  }
 
-  // Caso 4: gap moderado
-  if (gap >= 15 && weakestKPI)
-    return `El frente ${bot?.id} es el eslabón más débil del loop. Intervenir ahí tiene más impacto que reforzar donde ya se lidera.`;
+  // BX fuerte + CO fuerte + CX con causa raíz
+  if (bx !== null && co !== null && cx !== null && bx > 60 && co > 55 && cx < 50) {
+    if (cxOrigen === 'conocido_no_elegido')
+      return `${marca} convierte bien (CO ${r(co)}/100) y tiene marca reconocida (BX ${r(bx)}/100), pero el Síndrome de París revela la alerta: los No Usuarios valoran la marca casi igual que los Usuarios (CX Strategy ${r(cxk)}/100). La experiencia real no supera la expectativa — el consumidor llega con una imagen fuerte y sale sin una historia que contar. La palanca no es más marketing sino elevar el gap entre lo que promete y lo que entrega.`;
+    if (loyalty !== null && loyalty < 35)
+      return `${marca} vende (CO ${r(co)}/100) pero no retiene: lealtad en ${r(loyalty)}/100. Con BX ${r(bx)}/100 tiene el reconocimiento para atraer — el problema ocurre después de la primera compra. Cada cliente que no regresa es un costo de adquisición perdido. El cuello de botella está en la post-venta, no en el embudo de entrada.`;
+  }
 
-  // Caso 5: equilibrado en amarillo
-  return `Perfil en construcción sin un frente que lidere. Elegir uno y concentrar: la dispersión de esfuerzos en zona media no consolida ningún activo.`;
+  // CO muy bajo + BX alto
+  if (co !== null && co < 20 && bx !== null && bx > 50) {
+    if (cx !== null && cx > 60) {
+      const ext = loyalty && loyalty > 55 ? ` La lealtad de ${r(loyalty)}/100 confirma que quien llega vuelve — el problema es que llegan pocos.` : '';
+      return `${marca} tiene marca reconocida (BX ${r(bx)}/100) y clientes satisfechos (CX ${r(cx)}/100), pero un CO de ${r(co)}/100 señala que el modelo comercial no captura esa demanda. La marca genera deseo y la experiencia lo sostiene — lo que falla es la activación: los puntos donde el interés se vuelve transacción.${ext}`;
+    }
+    if (loyalty !== null && loyalty > 65)
+      return `${marca} tiene clientes leales (lealtad ${r(loyalty)}/100) y marca visible (BX ${r(bx)}/100), pero CO en ${r(co)}/100 indica que el embudo de adquisición es muy estrecho. La base actual es fiel pero pequeña: retiene bien a quien ya convirtió, pero no atrae suficientes clientes nuevos. La palanca es expansión de cobertura, no profundización de la relación existente.`;
+    return `Con BX ${r(bx)}/100, ${marca} ocupa espacio mental, pero CO ${r(co)}/100 indica que ese espacio no se traduce en transacciones. La hipótesis más probable: fricción entre la intención y la compra — distribución, precio o accesibilidad. El siguiente paso es mapear dónde se rompe el journey del consumidor.`;
+  }
+
+  // CO crítico + BX bajo
+  if (co !== null && co < 10 && bx !== null && bx < 35)
+    return `${marca} enfrenta un problema de base: CO ${r(co)}/100 y BX ${r(bx)}/100 indican que ni la marca ni el modelo comercial funcionan. No hay un frente ancla desde el que construir — activar ventas sin marca es costoso y frágil. La secuencia: primero reconocimiento y diferenciación, luego conversión sobre esa base.`;
+
+  // CX síndrome de París
+  if (cxOrigen === 'conocido_no_elegido' && cx !== null && cx < 45)
+    return `El Síndrome de París de ${marca} (${r(cxk)}/100) revela el problema de fondo: los No Usuarios valoran la marca casi igual que los Usuarios actuales. La experiencia real no genera ventaja perceptual sobre la expectativa. La marca atrae pero no sorprende — y sin esa sorpresa, la lealtad se construye sobre precio o conveniencia, no sobre el valor de la marca. Prioridad: elevar el gap experiencial.`;
+
+  // CX usuarios fieles poca masa
+  if (cxOrigen === 'fieles_poca_masa' && cx !== null && cx < 50) {
+    const coTxt = (co !== null && co < 45) ? ` CO ${r(co)}/100 confirma que el volumen no acompaña esa intensidad.` : '';
+    return `${marca} tiene usuarios que la valoran intensamente (CX Strategy ${r(cxk)}/100), pero la lealtad baja (${r(loyalty)}/100) indica que esa base es pequeña. El problema no es la calidad de la experiencia sino su alcance.${coTxt} La palanca es ampliar cobertura sin diluir lo que la hace especial.`;
+  }
+
+  // CX doble debilidad (solo si CO no es el frente dominante)
+  if (cxOrigen === 'cx_doble_debilidad' && cx !== null && cx < 40 && (co === null || co < 55))
+    return `${marca} enfrenta presión en los dos componentes de la experiencia: lealtad baja (${r(loyalty)}/100) y CX Strategy débil (${r(cxk)}/100). Poca masa de usuarios fieles y una experiencia que no diferencia a la marca. La reconstrucción de CX debe empezar por el momento del journey donde la experiencia pierde valor — no por añadir puntos de contacto.`;
+
+  // ── PATRONES RELATIVOS vs SECTOR ──
+  if (g('bx') > 10 && g('co') < -10) {
+    if (pulse !== null && pulse > 55)
+      return `${marca} tiene más presencia de marca que su sector (BX ${r(bx)} vs ${r(aBx)}/100, impulso digital ${r(pulse)}/100), pero ese capital no se traduce en conversión (CO ${r(co)} vs ${r(aCo)}/100). La demanda existe y la marca la genera — el cuello de botella está en la última milla: el proceso de compra tiene fricción que la inversión en marca no resuelve sola.`;
+    return `${marca} tiene más reconocimiento que su sector (BX ${r(bx)} vs ${r(aBx)}/100) pero menos conversión (CO ${r(co)} vs ${r(aCo)}/100). La marca llegó a la mente antes que a la transacción. El modelo de captación no está diseñado para aprovechar el volumen de intención que la marca genera.`;
+  }
+  if (g('co') > 10 && g('bx') < -10) {
+    const lt = (loyalty && loyalty < 40) ? ` Con lealtad de ${r(loyalty)}/100, el modelo funciona hoy — pero si el precio o la conveniencia cambian, la razón de compra desaparece.` : '';
+    return `${marca} convierte por encima del sector (CO ${r(co)} vs ${r(aCo)}/100) con una marca más débil que sus pares (BX ${r(bx)} vs ${r(aBx)}/100). Las ventas descansan sobre precio, distribución o conveniencia — no sobre preferencia de marca.${lt} El riesgo: cualquier competidor con mejor ejecución en esos factores erosiona el volumen sin que ${marca} tenga un activo de marca que lo defienda.`;
+  }
+  if (g('cx') > 15 && g('co') < -5) {
+    const causa = (cxk !== null && cxk > 60) ? ` El CX Strategy ${r(cxk)}/100 confirma que los usuarios la prefieren claramente sobre quienes no la usan — la experiencia diferencial existe pero no se monetiza.` : '';
+    return `${marca} genera experiencias superiores a su sector (CX ${r(cx)} vs ${r(aCx)}/100), pero su conversión queda por debajo (CO ${r(co)} vs ${r(aCo)}/100).${causa} La desconexión es estructural: entrega valor pero no construyó los mecanismos para capturarlo — pricing, distribución o activación de la demanda.`;
+  }
+  if (g('co') > 15 && g('cx') < -5) {
+    const sig = (loyalty && loyalty < 40) ? ` Con lealtad de ${r(loyalty)}/100, la señal de alerta ya es visible.` : ' A medida que los competidores mejoran la experiencia, la brecha de retención se amplía.';
+    return `${marca} convierte por encima del sector (CO ${r(co)} vs ${r(aCo)}/100), pero la experiencia queda por debajo (CX ${r(cx)} vs ${r(aCx)}/100). El modelo comercial funciona en el corto plazo — pero una experiencia bajo el estándar del sector acumula insatisfacción.${sig}`;
+  }
+
+  // ── PERFIL CON TENSIÓN INTERNA (sin gap relativo dominante) ──
+  const disp = [['bx',bx],['co',co],['cx',cx]].filter(x=>x[1]!==null);
+  if (disp.length) {
+    const sorted = [...disp].sort((a,b)=>a[1]-b[1]);
+    const [minF,minV] = sorted[0], [maxF,maxV] = sorted[sorted.length-1];
+    const fn = {bx:'fuerza de marca', co:'conversión comercial', cx:'experiencia del cliente'};
+    if (maxV - minV >= 20) {
+      if (minF === 'bx' && ba !== null && pulse !== null) {
+        const causa = pulse < ba - 15 ? 'la presencia digital insuficiente' : ba < 45 ? 'la percepción de valor no diferenciada' : 'señales mixtas entre activo y visibilidad';
+        return `${marca} muestra tensión entre ${fn[maxF]} (${r(maxV)}/100) y fuerza de marca (${r(minV)}/100). El análisis de componentes apunta a ${causa} como origen: Brand Asset ${r(ba)}/100 y BAV Pulse ${r(pulse)}/100. Elevar BX es un trabajo simultáneo de equity y visibilidad digital, no una sola palanca.`;
+      }
+      if (minF === 'cx' && loyalty !== null && cxk !== null) {
+        const causa = loyalty < 35 ? 'la base de usuarios fieles es pequeña' : cxk < 40 ? 'los usuarios no perciben una experiencia mejor que sus expectativas previas' : 'la experiencia no se comunica de forma que amplifique la preferencia';
+        return `${marca} tiene ${fn[maxF]} sólida (${r(maxV)}/100) pero la experiencia (${r(minV)}/100) limita la retención. La causa raíz: ${causa} (lealtad ${r(loyalty)}/100 · CX Strategy ${r(cxk)}/100). La inversión en CX debe atacar ese componente específico, no la experiencia en general.`;
+      }
+      if (minF === 'co')
+        return `${marca} tiene ${fn[maxF]} en ${r(maxV)}/100 pero su conversión (${r(minV)}/100) limita la captura de valor. La eficiencia comercial está por debajo de lo que el perfil de marca justificaría. La pregunta no es 'qué comunicar' sino 'cómo convertir' el capital de marca existente en volumen de negocio.`;
+    }
+    const prom = disp.reduce((a,x)=>a+x[1],0)/disp.length;
+    if (prom > 60) {
+      const palanca = (pulse !== null && pulse < 55) ? `presencia digital (${r(pulse)}/100 en BAV Pulse) si la prioridad es captación` : (loyalty !== null && loyalty < 55) ? `lealtad (${r(loyalty)}/100) si la prioridad es retención` : 'diferenciación de la propuesta de valor para sostener el liderazgo';
+      return `${marca} muestra un perfil equilibrado y por encima de la media (BX ${r(bx)} · CO ${r(co)} · CX ${r(cx)}/100). Sin una brecha dominante, la palanca de crecimiento está en profundizar el sub-indicador con mayor potencial: ${palanca}.`;
+    }
+    return `${marca} tiene un perfil consistente pero con oportunidad de crecimiento en los tres frentes (BX ${r(bx)} · CO ${r(co)} · CX ${r(cx)}/100). La estrategia no es atacar el frente más bajo sino identificar cuál tiene mayor elasticidad al esfuerzo en el contexto competitivo de ${sector}.`;
+  }
+
+  // ── PATRONES BX BAJO POR SUB-INDICADOR ──
+  if (bxOrigen === 'digital_invisible' && bx !== null && bx < 50)
+    return `${marca} tiene un activo de marca sólido en percepción (Brand Asset ${r(ba)}/100) — el mercado la reconoce — pero su presencia digital es baja (${r(pulse)}/100 en BAV Pulse). La marca existe en la mente del consumidor pero no donde el consumidor busca: Google Trends, Wikipedia y redes muestran presencia insuficiente para el tamaño de su reputación. Cede espacio a competidores más pequeños pero más visibles en el momento de la búsqueda.`;
+  if (bxOrigen === 'digital_sin_sustancia' && bx !== null && bx < 50)
+    return `${marca} tiene presencia digital razonable (${r(pulse)}/100 en BAV Pulse) pero el Brand Asset (${r(ba)}/100) muestra que esa visibilidad no se convierte en percepción de valor. El mercado ve la marca pero no la diferencia ni la prefiere. El problema no es el volumen de comunicación sino su contenido: comunica pero no posiciona. Prioridad: construir diferenciación real antes de invertir más en medios.`;
+  if (bxOrigen === 'bx_doble_debilidad' && bx !== null && bx < 40)
+    return `${marca} registra debilidad en los dos componentes del BX: Brand Asset ${r(ba)}/100 (percepción de valor) y BAV Pulse ${r(pulse)}/100 (presencia digital). No hay base desde la cual palancarse: la marca no está construida ni está siendo buscada. El punto de partida es la identidad — qué hace diferente a ${marca} — antes de cualquier inversión en medios.`;
+  if (bx !== null && bx < 25)
+    return `Con BX ${r(bx)}/100, ${marca} aún no ha construido la presencia para competir de igual a igual en ${sector}. Sin reconocimiento ni diferenciación clara, cualquier inversión en conversión o experiencia opera sobre una base inestable.`;
+
+  return `${marca} presenta un perfil en construcción en ${sector}. El primer paso es establecer cuál de los tres frentes — marca, ventas o experiencia — tiene la mayor palanca de crecimiento dado el contexto competitivo actual.`;
 }
 
 function getBullets(b) {
+  const r = v => Math.round(v);
   const ba = b.brand_asset, bp = b.bav_pulse, cm = b.commerce, cxk = b.cx_kpi, ly = b.loyalty;
   const bxSt = scoreToState(b.bx), coSt = scoreToState(b.co), cxSt = scoreToState(b.cx);
+  const avg = sectorAvg(b.marca);
+  // gap legible vs sector para un sub-indicador
+  const gapTxt = (val, field) => {
+    if (val === null || avg[field] === null || avg[field] === undefined) return '';
+    const d = Math.round(val - avg[field]);
+    if (Math.abs(d) < 4) return ' (en línea con el sector)';
+    return ` (${d > 0 ? '+' : ''}${d} vs sector)`;
+  };
 
-  // BX bullet
+  // ── BX bullet — distingue equity vs presencia digital con cifras ──
   let bxText = '—';
   if (ba!==null && bp!==null) {
-    if (ba>bp+20) bxText = `Equity de marca sin respaldo en comunicación digital. Activar comms para convertir el activo en presencia.`;
-    else if (bp>ba+20) bxText = `Alta presencia digital sin profundidad de marca. Riesgo de ruido sin conversión real.`;
-    else if (bxSt==='green') bxText = `Marca y presencia digital alineadas. Monetizar el equity antes de que la competencia lo erosione.`;
-    else if (bxSt==='red') bxText = `Señales débiles en marca y comunicación. Reconstruir desde propósito y diferenciación clara.`;
-    else bxText = `Potencial de marca sin consolidar. Fortalecer la narrativa para pasar de zona media a liderazgo.`;
-  } else if (bp!==null) bxText = `Solo disponible presencia digital. Completar con Brand Asset para diagnóstico completo.`;
+    if (ba > bp + 20)
+      bxText = `Brand Asset ${r(ba)}/100 sin respaldo digital (BAV Pulse ${r(bp)}/100): equity construido que no aparece donde el consumidor busca. Activar comms digital para convertir reputación en presencia.`;
+    else if (bp > ba + 20)
+      bxText = `BAV Pulse ${r(bp)}/100 supera al Brand Asset ${r(ba)}/100: visibilidad sin profundidad de marca. El mercado ve a ${b.marca} pero no la diferencia — riesgo de ruido sin preferencia.`;
+    else if (bxSt==='green')
+      bxText = `Brand Asset ${r(ba)}/100 y BAV Pulse ${r(bp)}/100 alineados${gapTxt(b.bx,'bx')}. Equity y presencia se sostienen — monetizar antes de que la competencia lo erosione.`;
+    else if (bxSt==='red')
+      bxText = `Brand Asset ${r(ba)}/100 y BAV Pulse ${r(bp)}/100 ambos débiles. Reconstruir desde propósito y diferenciación — no hay base de marca sobre la cual palancarse.`;
+    else
+      bxText = `Marca en zona media (Brand Asset ${r(ba)} · BAV Pulse ${r(bp)}/100${gapTxt(b.bx,'bx')}). Fortalecer la narrativa para pasar de reconocimiento a preferencia.`;
+  } else if (bp!==null) bxText = `Solo disponible presencia digital (BAV Pulse ${r(bp)}/100). Falta Brand Asset para el diagnóstico de equity.`;
 
-  // CO bullet
+  // ── CO bullet — eficiencia ingresos/activos con contexto sectorial ──
   let coText = '—';
   if (cm!==null) {
-    if (coSt==='green') coText = `Motor comercial activo. Defender posición y expandir canales antes de que la competencia reaccione.`;
-    else if (coSt==='red') coText = `El volumen no justifica los activos. Revisar el modelo de venta y priorizar los canales con mayor retorno.`;
-    else coText = `Tracción comercial en construcción. Identificar el canal más eficiente y concentrar ahí la inversión.`;
+    const ctx = gapTxt(b.co,'co');
+    if (coSt==='green')
+      coText = `Commerce ${r(cm)}/100${ctx}: motor comercial activo. Defender posición y migrar volumen a categorías de mayor margen.`;
+    else if (coSt==='red')
+      coText = `Commerce ${r(cm)}/100${ctx}: el volumen no justifica los activos. Auditar el funnel y concentrar en los canales de mayor retorno.`;
+    else
+      coText = `Commerce ${r(cm)}/100${ctx}: tracción en construcción. Identificar el canal más eficiente y concentrar la inversión ahí.`;
   }
 
-  // CX bullet
+  // ── CX bullet — experiencia vs lealtad con cifras ──
   let cxText = '—';
   if (cxk!==null && ly!==null) {
-    if (cxk>ly+20) cxText = `La experiencia no se convierte en lealtad declarada. Activar advocacy para cerrar esa brecha.`;
-    else if (ly>cxk+20) cxText = `El cliente perdona más de lo que la experiencia merece. Intervenir antes de que esa tolerancia se agote.`;
-    else if (cxSt==='green') cxText = `Experiencia y lealtad alineadas. Convertirlas en ventaja competitiva activa con programas de fidelización.`;
-    else if (cxSt==='red') cxText = `Alarma en retención. Intervenir en los momentos de verdad del journey con urgencia.`;
-    else cxText = `Experiencia en zona media con margen real de mejora. Mapear puntos de fricción y priorizar los de mayor impacto.`;
-  } else if (cxk!==null) cxText = `Sin dato de NPS disponible. Completar para diagnóstico completo de retención.`;
+    if (cxk > ly + 20)
+      cxText = `CX Strategy ${r(cxk)}/100 no se traduce en lealtad declarada (${r(ly)}/100): la buena experiencia no se está convirtiendo en recompra. Activar advocacy para cerrar esa brecha.`;
+    else if (ly > cxk + 20)
+      cxText = `Lealtad ${r(ly)}/100 supera a la experiencia real (CX Strategy ${r(cxk)}/100): el cliente perdona más de lo que la experiencia merece. Intervenir antes de que esa tolerancia se agote.`;
+    else if (cxSt==='green')
+      cxText = `CX Strategy ${r(cxk)}/100 y lealtad ${r(ly)}/100 alineados${gapTxt(b.cx,'cx')}. Convertir la experiencia en ventaja competitiva con fidelización.`;
+    else if (cxSt==='red')
+      cxText = `Alarma en retención (CX Strategy ${r(cxk)} · lealtad ${r(ly)}/100). Intervenir en los momentos de verdad del journey con urgencia.`;
+    else
+      cxText = `Experiencia en zona media (CX Strategy ${r(cxk)} · lealtad ${r(ly)}/100${gapTxt(b.cx,'cx')}). Mapear puntos de fricción y priorizar los de mayor impacto.`;
+  } else if (cxk!==null) cxText = `CX Strategy ${r(cxk)}/100 sin dato de lealtad. Completar para el diagnóstico de retención.`;
 
   return {bx: bxText, co: coText, cx: cxText};
 }
