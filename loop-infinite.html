@@ -756,6 +756,100 @@ html,body{
 .kpi-card.kpi-enter:nth-child(4){animation-delay:120ms}
 .kpi-card.kpi-enter:nth-child(5){animation-delay:160ms}
 
+/* ── CONCEPT INFO MODAL ────────────────────────────────────── */
+.info-btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:18px;height:18px;border-radius:50%;
+  border:1.5px solid rgba(255,255,255,.2);
+  background:transparent;
+  color:rgba(255,255,255,.35);
+  cursor:pointer;font-size:10px;font-weight:700;line-height:1;
+  transition:all .2s cubic-bezier(.32,.72,0,1);
+  flex-shrink:0;padding:0;
+  position:relative;z-index:2;
+}
+.info-btn:hover{
+  border-color:var(--accent);color:var(--accent);
+  background:rgba(255,122,0,.1);
+  transform:scale(1.15);
+}
+.info-btn:focus-visible{
+  outline:2px solid var(--accent);outline-offset:2px;
+}
+[data-theme="light"] .info-btn{
+  border-color:rgba(0,0,0,.18);color:rgba(0,0,0,.35);
+}
+[data-theme="light"] .info-btn:hover{
+  border-color:var(--accent);color:var(--accent);background:rgba(255,122,0,.08);
+}
+/* area-cell info btn */
+.area-score-cell .info-btn{
+  position:absolute;top:10px;right:10px;
+  border-color:var(--area-color,rgba(255,255,255,.2));
+  color:var(--area-color,rgba(255,255,255,.3));
+}
+.area-score-cell{position:relative;}
+/* Concept modal backdrop */
+#concept-backdrop{
+  display:none;position:fixed;inset:0;z-index:8000;
+  background:rgba(7,11,25,.7);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  align-items:center;justify-content:center;padding:24px;
+}
+#concept-backdrop.open{display:flex;}
+#concept-modal{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:28px;
+  max-width:440px;width:100%;
+  box-shadow:0 24px 64px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.07);
+  position:relative;
+  animation:cmIn .28s cubic-bezier(.32,.72,0,1);
+}
+@keyframes cmIn{from{opacity:0;transform:scale(.94) translateY(10px);}to{opacity:1;transform:none;}}
+[data-theme="light"] #concept-modal{
+  box-shadow:0 16px 48px rgba(0,0,0,.15),inset 0 1px 0 rgba(255,255,255,.9);
+}
+#concept-close{
+  position:absolute;top:16px;right:16px;
+  width:28px;height:28px;border-radius:50%;border:none;
+  background:rgba(255,255,255,.07);color:var(--text-3);
+  cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;
+  transition:all .15s;
+}
+#concept-close:hover{background:rgba(255,255,255,.13);color:var(--text-1);}
+#concept-close:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+#concept-tag{
+  font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:10px;
+}
+#concept-title{
+  font-size:20px;font-weight:800;letter-spacing:-.02em;
+  color:var(--text-1);margin-bottom:14px;line-height:1.15;
+}
+#concept-divider{
+  height:1px;background:var(--border);margin-bottom:16px;
+}
+#concept-body{
+  font-size:13.5px;color:var(--text-2);line-height:1.65;margin-bottom:18px;
+}
+#concept-body strong{color:var(--text-1);font-weight:600;}
+#concept-analogy{
+  background:rgba(255,122,0,.07);
+  border:1px solid rgba(255,122,0,.18);
+  border-radius:10px;padding:12px 14px;
+  font-size:12.5px;color:var(--text-2);line-height:1.55;
+  display:none;
+}
+#concept-analogy::before{
+  content:'💡 ';font-size:13px;
+}
+#concept-analogy.show{display:block;}
+[data-theme="light"] #concept-analogy{
+  background:rgba(255,122,0,.05);border-color:rgba(255,122,0,.2);
+}
+
 /* ── COVER SCREEN ─────────────────────────────────────────── */
 #cover{
   position:fixed;inset:0;z-index:9000;
@@ -1224,18 +1318,21 @@ html,body{
     <!-- Area Score Bridge -->
     <div id="area-scores">
       <div class="area-score-cell" id="cell-bx" style="--area-color:rgba(255,255,255,.2)">
+        <button class="info-btn" data-concept="bx" aria-label="¿Qué es BX?">i</button>
         <div class="area-label">Frente BX</div>
         <div class="area-val" id="aval-bx">—</div>
         <div class="area-name">Brand Experience</div>
         <div class="area-badge" id="abadge-bx">Sin selección</div>
       </div>
       <div class="area-score-cell" id="cell-co" style="--area-color:rgba(255,255,255,.2)">
+        <button class="info-btn" data-concept="co" aria-label="¿Qué es CO?">i</button>
         <div class="area-label">Frente CO</div>
         <div class="area-val" id="aval-co">—</div>
         <div class="area-name">Commerce</div>
         <div class="area-badge" id="abadge-co">Sin selección</div>
       </div>
       <div class="area-score-cell" id="cell-cx" style="--area-color:rgba(255,255,255,.2)">
+        <button class="info-btn" data-concept="cx" aria-label="¿Qué es CX?">i</button>
         <div class="area-label">Frente CX</div>
         <div class="area-val" id="aval-cx">—</div>
         <div class="area-name">Customer Experience</div>
@@ -1346,7 +1443,7 @@ html,body{
         <div class="kpi-card-top">
           <div class="kpi-card-meta">
             <div class="kpi-area-tag"><span class="kpi-area-dot"></span>BX · Brand Strategy</div>
-            <div class="kpi-card-name">Brand Asset</div>
+            <div class="kpi-card-name">Brand Asset <button class="info-btn" data-concept="brand-asset" aria-label="¿Qué es Brand Asset?" onclick="event.stopPropagation()">i</button></div>
           </div>
           <div class="kpi-score-badge"><div class="kpi-score-num empty" id="score-brand-asset">—</div></div>
         </div>
@@ -1364,7 +1461,7 @@ html,body{
         <div class="kpi-card-top">
           <div class="kpi-card-meta">
             <div class="kpi-area-tag"><span class="kpi-area-dot"></span>BX · Comms</div>
-            <div class="kpi-card-name">BAV Pulse Digital</div>
+            <div class="kpi-card-name">BAV Pulse Digital <button class="info-btn" data-concept="bav-pulse" aria-label="¿Qué es BAV Pulse?" onclick="event.stopPropagation()">i</button></div>
           </div>
           <div class="kpi-score-badge"><div class="kpi-score-num empty" id="score-bav-pulse">—</div></div>
         </div>
@@ -1382,7 +1479,7 @@ html,body{
         <div class="kpi-card-top">
           <div class="kpi-card-meta">
             <div class="kpi-area-tag"><span class="kpi-area-dot"></span>CO · Commerce</div>
-            <div class="kpi-card-name">Commerce Score</div>
+            <div class="kpi-card-name">Commerce Score <button class="info-btn" data-concept="commerce" aria-label="¿Qué es Commerce Score?" onclick="event.stopPropagation()">i</button></div>
           </div>
           <div class="kpi-score-badge"><div class="kpi-score-num empty" id="score-commerce">—</div></div>
         </div>
@@ -1400,7 +1497,7 @@ html,body{
         <div class="kpi-card-top">
           <div class="kpi-card-meta">
             <div class="kpi-area-tag"><span class="kpi-area-dot"></span>CX · Síndrome París</div>
-            <div class="kpi-card-name">CX Score</div>
+            <div class="kpi-card-name">CX Score <button class="info-btn" data-concept="cx-score" aria-label="¿Qué es CX Score?" onclick="event.stopPropagation()">i</button></div>
           </div>
           <div class="kpi-score-badge"><div class="kpi-score-num empty" id="score-cx">—</div></div>
         </div>
@@ -1418,7 +1515,7 @@ html,body{
         <div class="kpi-card-top">
           <div class="kpi-card-meta">
             <div class="kpi-area-tag"><span class="kpi-area-dot"></span>CX · Loyalty</div>
-            <div class="kpi-card-name">Loyalty / NPS</div>
+            <div class="kpi-card-name">Loyalty / NPS <button class="info-btn" data-concept="loyalty" aria-label="¿Qué es Loyalty?" onclick="event.stopPropagation()">i</button></div>
           </div>
           <div class="kpi-score-badge"><div class="kpi-score-num empty" id="score-loyalty">—</div></div>
         </div>
@@ -1445,6 +1542,18 @@ html,body{
 </div><!-- /app -->
 
 <!-- KPI MODAL -->
+<!-- ── CONCEPT DEFINITION MODAL ── -->
+<div id="concept-backdrop" role="dialog" aria-modal="true" aria-labelledby="concept-title">
+  <div id="concept-modal">
+    <button id="concept-close" aria-label="Cerrar definición">✕</button>
+    <div id="concept-tag"></div>
+    <div id="concept-title"></div>
+    <div id="concept-divider"></div>
+    <div id="concept-body"></div>
+    <div id="concept-analogy"></div>
+  </div>
+</div>
+
 <div id="kpi-modal-backdrop">
   <div id="kpi-modal" role="dialog" aria-modal="true" aria-labelledby="kpi-modal-title">
     <button id="kpi-modal-close" aria-label="Cerrar análisis">✕</button>
@@ -2521,6 +2630,100 @@ resetAll();
   revealStaged();
 
 })();
+
+/* ── CONCEPT DEFINITIONS ──────────────────────────────────── */
+const CONCEPTS = {
+  'bx': {
+    tag: 'Frente BX',
+    title: 'Brand Experience',
+    body: `Es la <strong>huella que deja la marca en la mente del consumidor</strong> — la suma de cómo la percibe y qué tan activa está en su radar.\n\nSe compone de dos piezas: el valor acumulado que tiene la marca (Brand Asset) y qué tan presente y relevante está hoy en conversaciones y medios digitales (BAV Pulse).`,
+    analogy: 'Si la marca fuera una persona: BX mide qué tan conocida es y qué tanta presencia tiene en la conversación del día a día.'
+  },
+  'co': {
+    tag: 'Frente CO',
+    title: 'Commerce',
+    body: `Mide qué tan bien convierte la marca su reputación en <strong>resultados financieros reales</strong> — ingresos y eficiencia de sus activos.\n\nUna marca con BX alto pero CO bajo tiene mucha fama pero poca conversión. CO revela si el amor del consumidor se traduce en compra.`,
+    analogy: 'Es la nota del examen real: la marca puede ser popular, pero CO dice si está ganando plata con esa popularidad.'
+  },
+  'cx': {
+    tag: 'Frente CX',
+    title: 'Customer Experience',
+    body: `Mide la <strong>calidad de la relación entre la marca y quienes ya la usan</strong> — qué tan bien vive la experiencia post-compra y qué tanta lealtad genera.\n\nSe compone del CX Score (brecha entre lo que promete y lo que entrega) y el Loyalty (qué tan probable es que los clientes repitan y recomienden).`,
+    analogy: 'Si BX es la vitrina, CX es la experiencia adentro de la tienda — lo que hace que alguien vuelva o no vuelva.'
+  },
+  'brand-asset': {
+    tag: 'BX · Brand Strategy',
+    title: 'Brand Asset',
+    body: `Es el <strong>valor acumulado de la marca a lo largo del tiempo</strong>: qué tan diferenciada, relevante, estimada y conocida es en la mente del consumidor colombiano.\n\nSe construye durante años con consistencia de mensaje, calidad de producto y experiencias positivas. Es difícil de crear y difícil de destruir.`,
+    analogy: 'Es el "prestigio" de la marca — como el crédito bancario: se construye despacio y se puede perder rápido si se descuida.'
+  },
+  'bav-pulse': {
+    tag: 'BX · Comms',
+    title: 'BAV Pulse Digital',
+    body: `Mide qué tan <strong>activa y presente está la marca hoy en el ecosistema digital</strong>: conversaciones, tendencias, menciones y relevancia en tiempo real.\n\nUna marca puede tener mucho Brand Asset histórico pero poco Pulse si ha dejado de comunicar. El Pulse captura el "momento presente" de la marca.`,
+    analogy: 'Como el pulso del corazón: mide si la marca está viva y activa en la conversación digital de hoy, no solo en el recuerdo.'
+  },
+  'commerce': {
+    tag: 'CO · Commerce',
+    title: 'Commerce Score',
+    body: `Evalúa la <strong>eficiencia financiera de la marca</strong> comparando sus ingresos y el rendimiento de sus activos frente a otras marcas de su categoría.\n\nNo mide si vende mucho en términos absolutos, sino si es eficiente con lo que tiene: ¿genera buenos resultados con los recursos que usa?`,
+    analogy: 'Como la nota de eficiencia de una empresa: no es solo cuánto factura, sino qué tan bien aprovecha lo que tiene para facturar.'
+  },
+  'cx-score': {
+    tag: 'CX · Síndrome de París',
+    title: 'CX Score — Síndrome de París',
+    body: `Mide la <strong>brecha entre lo que la marca promete y lo que realmente entrega</strong> a quienes la usan.\n\nEl nombre viene del "Síndrome de París" — turistas que llegan con expectativas altísimas y se decepcionan al no encontrar lo que imaginaban. Una marca con CX Score bajo promete más de lo que cumple.`,
+    analogy: 'Un restaurante con fotos increíbles en Instagram pero comida mediocre tiene CX Score bajo. La brecha entre la promesa y la realidad es el problema.'
+  },
+  'loyalty': {
+    tag: 'CX · Loyalty',
+    title: 'Loyalty / NPS',
+    body: `Mide la <strong>probabilidad de que un cliente vuelva a comprar y recomiende la marca</strong> a otras personas.\n\nUna lealtad alta significa que la marca no solo satisface, sino que genera fans activos. El NPS (Net Promoter Score) pregunta directamente: "¿recomendarías esta marca a alguien?"`,
+    analogy: 'Es la diferencia entre un cliente que te compra porque no hay otra opción y uno que habla bien de ti con sus amigos sin que nadie se lo pida.'
+  }
+};
+
+function openConceptModal(key) {
+  const c = CONCEPTS[key];
+  if (!c) return;
+  document.getElementById('concept-tag').textContent   = c.tag;
+  document.getElementById('concept-title').textContent = c.title;
+  // body with line breaks
+  document.getElementById('concept-body').innerHTML =
+    c.body.split('\n\n').map(p => `<p style="margin-bottom:10px">${p}</p>`).join('');
+  const analogy = document.getElementById('concept-analogy');
+  if (c.analogy) {
+    analogy.textContent = c.analogy;
+    analogy.classList.add('show');
+  } else {
+    analogy.classList.remove('show');
+  }
+  document.getElementById('concept-backdrop').classList.add('open');
+  document.getElementById('concept-close').focus();
+}
+
+function closeConceptModal() {
+  document.getElementById('concept-backdrop').classList.remove('open');
+}
+
+document.getElementById('concept-close').addEventListener('click', closeConceptModal);
+document.getElementById('concept-backdrop').addEventListener('click', e => {
+  if (e.target === document.getElementById('concept-backdrop')) closeConceptModal();
+});
+
+// Delegate all .info-btn clicks
+document.addEventListener('click', e => {
+  const btn = e.target.closest('.info-btn');
+  if (!btn) return;
+  e.stopPropagation();
+  openConceptModal(btn.dataset.concept);
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && document.getElementById('concept-backdrop').classList.contains('open')) {
+    closeConceptModal();
+  }
+});
 </script>
 </body>
 </html>
