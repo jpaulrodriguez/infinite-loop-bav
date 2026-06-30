@@ -1825,6 +1825,27 @@ function sectorAvg(marca) {
   return avg;
 }
 
+// Ranking real de una marca en su sector (paridad con _sector_rank de Python)
+function sectorRank(marca, field) {
+  const cat = SECTOR_OF[marca];
+  if (!cat) return null;
+  const valid = BRANDS.filter(x => SECTOR_OF[x.marca] === cat && x[field] !== null && x[field] !== undefined)
+    .map(x => ({m: x.marca, v: x[field]})).sort((a,b) => b.v - a.v);
+  if (valid.length < 2) return null;
+  const pos = valid.findIndex(x => x.m === marca) + 1;
+  if (!pos) return null;
+  return {pos, total: valid.length, lname: valid[0].m, lval: valid[0].v};
+}
+
+// Frase de ranking concreta (paridad con _rank_clause de Python)
+function rankClause(marca, field, score) {
+  const rk = sectorRank(marca, field);
+  if (!rk) return '';
+  if (rk.pos === 1) return ` · #1 de ${rk.total} del sector — referente a defender`;
+  const falta = (score !== null && score !== undefined) ? ` (a ${Math.round(rk.lval - score)} pts)` : '';
+  return ` · puesto ${rk.pos}/${rk.total}; lidera ${rk.lname} ${Math.round(rk.lval)}${falta}`;
+}
+
 // Medias completas de categoría — base de los ensayos estructurales (getCategoryInsight).
 // Se conservan ANTES de sobreescribir los valores de panel con el nivel de líderes.
 const CATEGORY_MEANS = {};
@@ -2005,17 +2026,23 @@ function getBullets(b) {
     else
       bxText = `Marca en zona media (Brand Asset ${r(ba)} · BAV Pulse ${r(bp)}/100${gapTxt(b.bx,'bx')}). Fortalecer la narrativa para pasar de reconocimiento a preferencia.`;
   } else if (bp!==null) bxText = `Solo disponible presencia digital (BAV Pulse ${r(bp)}/100). Falta Brand Asset para el diagnóstico de equity.`;
+  if (b.bx!==null) bxText += rankClause(b.marca, 'bx', b.bx);
 
   // ── CO bullet — eficiencia ingresos/activos con contexto sectorial ──
   let coText = '—';
   if (cm!==null) {
     const ctx = gapTxt(b.co,'co');
-    if (coSt==='green')
+    const gCo = (avg.co!==null && avg.co!==undefined) ? b.co - avg.co : null;
+    const nearLeaders = gCo !== null && gCo >= -8;     // a la altura de los mejores
+    if (coSt==='red' && nearLeaders && avg.co!==null)
+      coText = `Commerce ${r(cm)}/100${ctx}: el CO es bajo en toda la categoría — incluso los líderes están en ${r(avg.co)}. Es un techo estructural del sector, no una fuga de ${b.marca}.`;
+    else if (coSt==='green')
       coText = `Commerce ${r(cm)}/100${ctx}: motor comercial activo. Defender posición y migrar volumen a categorías de mayor margen.`;
     else if (coSt==='red')
       coText = `Commerce ${r(cm)}/100${ctx}: el volumen no justifica los activos. Auditar el funnel y concentrar en los canales de mayor retorno.`;
     else
       coText = `Commerce ${r(cm)}/100${ctx}: tracción en construcción. Identificar el canal más eficiente y concentrar la inversión ahí.`;
+    coText += rankClause(b.marca, 'co', b.co);
   }
 
   // ── CX bullet — experiencia vs lealtad con cifras ──
@@ -2032,6 +2059,7 @@ function getBullets(b) {
     else
       cxText = `Experiencia en zona media (CX Strategy ${r(cxk)} · lealtad ${r(ly)}/100${gapTxt(b.cx,'cx')}). Mapear puntos de fricción y priorizar los de mayor impacto.`;
   } else if (cxk!==null) cxText = `CX Strategy ${r(cxk)}/100 sin dato de lealtad. Completar para el diagnóstico de retención.`;
+  if (b.cx!==null) cxText += rankClause(b.marca, 'cx', b.cx);
 
   return {bx: bxText, co: coText, cx: cxText};
 }
