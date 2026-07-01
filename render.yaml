@@ -2,7 +2,7 @@ services:
   - type: web
     name: infinite-loop-bav
     runtime: python
-    buildCommand: pip install -r requirements.txt
+    buildCommand: pip install -r requirements.txt && python precache_ppts.py
     startCommand: gunicorn ppt_server:app --workers 2 --timeout 120 --bind 0.0.0.0:$PORT
     envVars:
       - key: PYTHON_VERSION

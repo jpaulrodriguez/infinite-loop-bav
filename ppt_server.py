@@ -4,9 +4,10 @@ Sirve loop-infinite.html en / y la API en /generate-ppt y /brands.
 """
 from flask import Flask, request, send_file, jsonify
 from flask_cors import CORS
-import io, traceback, os
-from brand_engine import analyze_brand, RAW_BRANDS
+import traceback, os
+from brand_engine import RAW_BRANDS
 from brand_ppt import generate_ppt
+from precache_ppts import cache_path, CACHE_DIR
 
 app = Flask(__name__, static_folder=".", static_url_path="")
 CORS(app)
@@ -59,20 +60,23 @@ def generate():
         }), 422
 
     try:
-        analysis = analyze_brand(nombre)
-        brand = analysis["brand"]
-        sector = brand["sector"]
-        n_sector = brand["n_sector"]
+        path = cache_path(nombre)
 
-        print(f"[PPT] Generando: {nombre} | Sector: {sector} | Peers: {n_sector}")
-        print(f"[PPT] Datos: BX={brand['bx']} CO={brand['co']} CX={brand['cx']}")
-        print(f"[PPT] Avg sector: BX={analysis['sector_avg'].get('bx')} CO={analysis['sector_avg'].get('co')} CX={analysis['sector_avg'].get('cx')}")
-
-        ppt_bytes = generate_ppt(nombre)
+        # Cache hit → servir el PPT pre-generado (instantáneo, sin CPU de generación)
+        if os.path.exists(path):
+            print(f"[PPT] Cache hit: {nombre}")
+        else:
+            # Fallback perezoso: el build no lo dejó listo → generar y cachear una vez
+            print(f"[PPT] Cache miss → generando on-demand: {nombre}")
+            os.makedirs(CACHE_DIR, exist_ok=True)
+            tmp = f"{path}.{os.getpid()}.tmp"   # único por worker → sin colisión
+            with open(tmp, "wb") as f:
+                f.write(generate_ppt(nombre))
+            os.replace(tmp, path)  # escritura atómica: nunca se sirve un archivo a medias
 
         filename = f"{nombre.replace(' ','_')}_Brand_Intelligence_2026.pptx"
         return send_file(
-            io.BytesIO(ppt_bytes),
+            path,
             mimetype="application/vnd.openxmlformats-officedocument.presentationml.presentation",
             as_attachment=True,
             download_name=filename
