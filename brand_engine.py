@@ -1139,6 +1139,35 @@ def _frente_root_cause(frente: str, b: dict) -> tuple:
     return ("conversión (Commerce)", cm,
             "auditar el funnel y atacar el punto de mayor caída (disponibilidad, precio, pago o distribución)")
 
+def _frente_gaps(b: dict, avg: dict) -> list:
+    """Lista (frente, score, gap_vs_líderes, avg_líderes) para bx/co/cx con dato."""
+    gaps = []
+    for f in ["bx", "co", "cx"]:
+        v = safe_val(b.get(f)); a = avg.get(f)
+        if v is not None:
+            gaps.append((f, v, (round(v - a, 1) if a is not None else None), a))
+    return gaps
+
+def _is_structural_co(x) -> bool:
+    """CO bajo en TODA la categoría (al piso) → no es brecha accionable de la marca."""
+    f, v, g, a = x
+    return f == "co" and v is not None and v < 30 and g is not None and g >= -8
+
+def _weak_key(x):
+    """Sin benchmark (marca única) → menor score absoluto; con benchmark → menor gap."""
+    return x[2] if x[2] is not None else (x[1] - 100)
+
+def pick_primary_frente(b: dict, avg: dict) -> str:
+    """
+    Frente = TEMA PRINCIPAL a trabajar: la mayor brecha accionable vs líderes
+    (excluye el CO estructuralmente bajo). Devuelve 'bx' | 'co' | 'cx' o None.
+    """
+    gaps = _frente_gaps(b, avg)
+    if not gaps:
+        return None
+    actionable = [x for x in gaps if not _is_structural_co(x)] or gaps
+    return sorted(actionable, key=_weak_key)[0][0]
+
 def generate_next_steps(b: dict, avg: dict, movements: list, sector_brands: list = None) -> list:
     """
     Plan accionable de 5 pasos CENTRADO EN LA BRECHA MÁS GRANDE (donde la marca
@@ -1152,25 +1181,12 @@ def generate_next_steps(b: dict, avg: dict, movements: list, sector_brands: list
              "co": "Comercial + Trade Marketing",
              "bx": "Marketing + Marca"}
 
-    # Gaps reales por frente vs líderes
-    gaps = []
-    for f in ["bx", "co", "cx"]:
-        v = safe_val(b.get(f)); a = avg.get(f)
-        if v is not None:
-            gaps.append((f, v, (round(v - a, 1) if a is not None else None), a))
+    gaps = _frente_gaps(b, avg)
     if not gaps:
         return [{"accion": f"Faltan datos de BX/CO/CX para construir el plan de {nombre}.",
                  "resp": "Analítica", "cuando": "Inmediato", "urgencia": "amarillo"}]
 
-    # CO estructuralmente bajo (toda la categoría al piso) NO es accionable como brecha
-    def _structural_co(x):
-        f, v, g, a = x
-        return f == "co" and v is not None and v < 30 and g is not None and g >= -8
-    # Sin benchmark (marca única) → debilidad = menor score absoluto; con benchmark → menor gap
-    def _weak_key(x):
-        return x[2] if x[2] is not None else (x[1] - 100)
-
-    actionable = [x for x in gaps if not _structural_co(x)] or gaps
+    actionable = [x for x in gaps if not _is_structural_co(x)] or gaps
     gaps_sorted = sorted(actionable, key=_weak_key)
     worst_f, worst_v, worst_g, worst_a = gaps_sorted[0]
     best_f, best_v, best_g, best_a     = sorted(gaps, key=_weak_key)[-1]
@@ -1336,19 +1352,14 @@ def analyze_brand(nombre: str) -> dict:
         if bx_s is not None and cx_s is not None:
             scatter.append({"name": sb["marca"], "bx": bx_s, "cx": cx_s})
 
-    co_ranking = []
-    for sb in sector_brands:
-        co_s = safe_val(sb.get("co"))
-        if co_s is not None:
-            co_ranking.append({"name": sb["marca"], "val": co_s})
-    co_ranking.sort(key=lambda x: x["val"])
-
-    cx_ranking = []
-    for sb in sector_brands:
-        cx_s = safe_val(sb.get("cx"))
-        if cx_s is not None:
-            cx_ranking.append({"name": sb["marca"], "val": cx_s})
-    cx_ranking.sort(key=lambda x: x["val"])
+    def _ranking(field):
+        r = [{"name": sb["marca"], "val": safe_val(sb.get(field))}
+             for sb in sector_brands if safe_val(sb.get(field)) is not None]
+        r.sort(key=lambda x: x["val"])
+        return r
+    bx_ranking = _ranking("bx")
+    co_ranking = _ranking("co")
+    cx_ranking = _ranking("cx")
 
     # 9. Narrativa EPIC personalizada
     dominant_idea    = generate_dominant_idea(b, avg, sector)
@@ -1388,7 +1399,9 @@ def analyze_brand(nombre: str) -> dict:
         "movements": movements,
         "next_steps": next_steps,
         "scatter": scatter,
+        "bx_ranking": bx_ranking,
         "co_ranking": co_ranking,
         "cx_ranking": cx_ranking,
+        "primary_frente": pick_primary_frente(b, avg),
         "sector_brands": [sb["marca"] for sb in sector_brands],
     }

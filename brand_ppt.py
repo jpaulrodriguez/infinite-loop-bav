@@ -210,6 +210,62 @@ def chart_scatter(sl, x, y, w, h, brands, highlight=None):
         txt(sl,nm,lbx,py-0.13,1.3,0.25,size=7 if not is_hl else 8.5,
             bold=is_hl,color=ORANGE if is_hl else GRAY_2)
 
+# ── CONTACTOS POR ESPECIALIDAD ────────────────────────────
+CONTACTS = {
+    "cx": ("José Ocampo",        "jose.ocampo@vml.com",        "Experiencia del Cliente (CX)"),
+    "bx": ("Paula Tejada",       "paula.tejada@vml.com",       "Fuerza de Marca (BX)"),
+    "co": ("Jonathan Rodríguez", "jonathan.rodriguez@vml.com", "Conversión Comercial (CO)"),
+}
+
+def slide_specialty(prs, marca, eyebrow_txt, headline, ranking, analysis, col, caption):
+    """Slide de una especialidad: ranking del sector (gráfica) + diagnóstico completo."""
+    sl = blank(prs); fill_bg(sl)
+    oval_orb(sl, 6, 0, 8, 8, col, alpha=6)
+    eyebrow(sl, eyebrow_txt, 1.0, 0.35, color=col)
+    txt(sl, headline, 1.0, 0.68, 11.5, 1.2, size=27, bold=True, color=WHITE)
+    rule(sl, 1.0, 1.98, 11.33)
+    items = [(d["name"], d["val"]) for d in ranking]
+    if items:
+        chart_bars_v(sl, 0.8, 2.15, 11.7, 3.35, items, highlight=marca)
+        txt(sl, caption, 0.8, 5.55, 11.7, 0.28, size=7.5, color=GRAY_2, align=PP_ALIGN.CENTER)
+    tx, ty = card(sl, 0.8, 5.85, 11.7, 1.45, accent=col, g=0.08)
+    eyebrow(sl, "Diagnóstico", tx, ty + 0.02, color=col)
+    txt(sl, _truncate(analysis, 440), tx, ty + 0.42, 11.2, 0.75, size=10, color=GRAY_1)
+    add_logo(sl)
+
+def slide_contact(prs, marca, primary_frente):
+    """Slide de cierre: la persona adecuada según el frente prioritario de la marca."""
+    sl = blank(prs); fill_bg(sl)
+    oval_orb(sl, 4, 1, 9, 8, ORANGE, alpha=6)
+    oval_orb(sl, -1.5, -1, 6, 6, RGBColor(0x00, 0x50, 0xFF), alpha=4)
+    pf = primary_frente if primary_frente in CONTACTS else "cx"
+    name, email, flabel = CONTACTS[pf]
+
+    eyebrow(sl, "El siguiente paso", 1.0, 0.5, color=ORANGE)
+    txt(sl, "Del diagnóstico\nal plan de acción.", 1.0, 0.95, 11, 1.7, size=42, bold=True, color=WHITE)
+    rule(sl, 1.0, 3.05, 11.33)
+    txt(sl, f"El frente prioritario para {marca} es {flabel}.\n"
+            f"Para profundizar en un plan de acción enfocado, comunícate con:",
+        1.0, 3.3, 11, 0.9, size=14, color=GRAY_1)
+
+    # Contacto principal (el del tema a trabajar) — protagonista
+    tx, ty = card(sl, 1.0, 4.5, 6.7, 2.05, accent=ORANGE, g=0.1)
+    txt(sl, name, tx, ty + 0.12, 6.3, 0.7, size=32, bold=True, color=WHITE)
+    txt(sl, email, tx, ty + 0.92, 6.3, 0.4, size=16, bold=True, color=ORANGE)
+    txt(sl, flabel, tx, ty + 1.42, 6.3, 0.3, size=10, color=GRAY_2)
+
+    # Otros frentes (referencia)
+    txt(sl, "¿El tema es otro frente?", 8.15, 4.6, 4.4, 0.3, size=10, bold=True, color=GRAY_1)
+    for i, f in enumerate([x for x in ["bx", "co", "cx"] if x != pf]):
+        n2, e2, l2 = CONTACTS[f]
+        yo = 5.05 + i * 0.72
+        txt(sl, l2, 8.15, yo, 4.6, 0.25, size=9.5, bold=True, color=GRAY_1)
+        txt(sl, f"{n2} · {e2}", 8.15, yo + 0.27, 4.6, 0.25, size=9, color=GRAY_2)
+
+    txt(sl, "Capital Intangible · Brand Intelligence Loop · WPP Colombia 2026",
+        1.0, 7.05, 9, 0.3, size=8, color=GRAY_2)
+    add_logo(sl)
+
 # ═══════════════════════════════════════════════════════════
 # GENERADOR PRINCIPAL
 # ═══════════════════════════════════════════════════════════
@@ -348,7 +404,27 @@ def generate_ppt(nombre: str) -> bytes:
     txt(sl,_truncate(data["comparative_insight"],280),tx,ty+0.04,11.1,0.4,size=9,color=GRAY_1)
     add_logo(sl)
 
-    # ── SLIDE 5: MAYOR FORTALEZA RELATIVA ────────────────
+    # ── SLIDES 5-7: LAS TRES ESPECIALIDADES (diagnóstico completo + ranking del sector) ──
+    def _rank_headline(nombre_frente, fkey):
+        rk = rnk.get(fkey, {})
+        pos = rk.get("pos"); tot = rk.get("total", n_sec)
+        return (f"{nombre_frente}: puesto {pos} de {tot} del sector."
+                if pos else f"{nombre_frente}: diagnóstico del frente.")
+
+    slide_specialty(prs, marca, "BX · Fuerza de Marca",
+        _rank_headline("Fuerza de marca", "bx"),
+        data["bx_ranking"], data["bx_analysis"], bx_col,
+        f"Marcas de {sector} ordenadas por Fuerza de Marca (BX) — de menor a mayor")
+    slide_specialty(prs, marca, "CO · Conversión Comercial",
+        _rank_headline("Conversión", "co"),
+        data["co_ranking"], data["co_analysis"], co_col,
+        f"Marcas de {sector} ordenadas por Commerce Score (CO) — de menor a mayor")
+    slide_specialty(prs, marca, "CX · Experiencia del Cliente",
+        _rank_headline("Experiencia", "cx"),
+        data["cx_ranking"], data["cx_analysis"], cx_col,
+        f"Marcas de {sector} ordenadas por Experiencia (CX) — de menor a mayor")
+
+    # ── SLIDE 8: MAYOR FORTALEZA RELATIVA ────────────────
     sl = blank(prs); fill_bg(sl)
     bf   = data["strength_field"]
     bg   = data["strength_gap"]
@@ -384,44 +460,7 @@ def generate_ppt(nombre: str) -> bytes:
     txt(sl,_truncate(data["strength_insight"],310),1.0,6.42,11.3,0.9,size=9.5,color=GRAY_1)
     add_logo(sl)
 
-    # ── SLIDE 6: CO — GAP COMERCIAL ───────────────────────
-    sl = blank(prs); fill_bg(sl)
-    oval_orb(sl,-1,2,6,6,co_col,alpha=5)
-    co_gap = gaps.get("co",0) or 0
-    eyebrow(sl,f"Gap comercial · Commerce Score",1.0,0.35,color=co_col)
-    titulo_co = (f"Ventas: {abs(co_gap):.0f} puntos {'arriba' if co_gap>=0 else 'abajo'} de los líderes."
-                if co_gap != 0 else "Ventas: al nivel de los líderes.")
-    txt(sl,titulo_co,1.0,0.68,9,1.2,size=28,bold=True,color=WHITE)
-    rule(sl,1.0,1.98,11.33)
-    co_items = [(d["name"],d["val"]) for d in data["co_ranking"]]
-    chart_bars_v(sl,0.8,2.1,11.7,4.3,co_items,highlight=marca)
-    txt(sl,f"Marcas del sector {sector} — ordenadas por Commerce Score (menor a mayor)",
-        0.8,6.48,11.7,0.3,size=7.5,color=GRAY_2,align=PP_ALIGN.CENTER)
-    tx,ty = card(sl,0.8,6.82,11.7,0.52,g=0.06)
-    txt(sl,_truncate(data["co_footer"],290),tx,ty+0.04,11.1,0.36,size=9,color=GRAY_1)
-    add_logo(sl)
-
-    # ── SLIDE 7: CX — RANKING ─────────────────────────────
-    sl = blank(prs); fill_bg(sl)
-    oval_orb(sl,6,0,8,8,cx_col,alpha=7)
-    cx_rank = rnk.get("cx",{})
-    cx_pos = cx_rank.get("pos"); cx_tot = cx_rank.get("total",n_sec)
-    eyebrow(sl,f"⚠  Experiencia del Cliente · CX Score",1.0,0.35,color=cx_col)
-    if cx_pos:
-        rank_txt = f"Posición {cx_pos} de {cx_tot} en el sector."
-    else:
-        rank_txt = "Datos de CX no disponibles."
-    txt(sl,rank_txt,1.0,0.68,10,1.2,size=28,bold=True,color=WHITE)
-    rule(sl,1.0,1.98,11.33)
-    cx_items = [(d["name"],d["val"]) for d in data["cx_ranking"]]
-    chart_bars_v(sl,0.8,2.1,11.7,4.3,cx_items,highlight=marca)
-    txt(sl,f"Marcas del sector ordenadas por Experiencia del Cliente — de menor a mayor",
-        0.8,6.48,11.7,0.3,size=7.5,color=GRAY_2,align=PP_ALIGN.CENTER)
-    tx,ty = card(sl,0.8,6.82,11.7,0.52,g=0.06)
-    txt(sl,_truncate(data["cx_footer"],290),tx,ty+0.04,11.1,0.36,size=9,color=GRAY_1)
-    add_logo(sl)
-
-    # ── SLIDE 8: MAPA DE POSICIONAMIENTO ──────────────────
+    # ── SLIDE 9: MAPA DE POSICIONAMIENTO ──────────────────
     sl = blank(prs); fill_bg(sl)
     eyebrow(sl,f"Mapa de posicionamiento · {sector}",1.0,0.35)
     txt(sl,"Fuerza de Marca\nvs. Experiencia del Cliente.",1.0,0.68,9,1.2,size=28,bold=True,color=WHITE)
@@ -459,28 +498,8 @@ def generate_ppt(nombre: str) -> bytes:
         txt(sl,mov["meta"],xi+0.18,ty+3.9,3.4,0.75,size=8,color=col,bold=True)
     add_logo(sl)
 
-    # ── SLIDE 10: PRÓXIMOS PASOS ──────────────────────────
-    sl = blank(prs); fill_bg(sl)
-    eyebrow(sl,"Próximos pasos · Lo que tiene que pasar esta semana",1.0,0.35)
-    txt(sl,"El primer paso no cuesta presupuesto.\nCuesta decisión.",1.0,0.68,10,1.2,size=28,bold=True,color=WHITE)
-    rule(sl,1.0,1.98,11.33)
-    tx,ty = card(sl,0.8,2.1,11.7,0.45,g=0.06)
-    for xi,w,label in [(0.92,5.2,"Acción"),(6.25,3.0,"Responsable"),(9.38,2.9,"Cuándo")]:
-        txt(sl,label,xi,ty+0.08,w,0.28,size=8.5,bold=True,color=ORANGE)
-    urg_col = {"rojo":RED,"amarillo":ORANGE,"verde":GREEN}
-    for i,step in enumerate(data["next_steps"]):
-        yi = 2.65+i*0.93; bg_row = SURFACE if i%2==0 else BG
-        rect(sl,0.8,yi,11.7,0.88,bg_row)
-        col_u = urg_col.get(step.get("urgencia","amarillo"),ORANGE)
-        rect(sl,0.8,yi,0.055,0.88,col_u)
-        txt(sl,_truncate(step["accion"],230),0.97,yi+0.1,5.2,0.72,size=8.7,color=WHITE)
-        txt(sl,step["resp"],6.25,yi+0.18,2.85,0.55,size=8.5,color=GRAY_1)
-        txt(sl,step["cuando"],9.38,yi+0.2,2.85,0.5,size=9,bold=True,color=col_u)
-        rule(sl,0.8,yi+0.88,11.7,GRAY_3)
-    tx,ty = card(sl,0.8,7.08,11.7,0.3,g=0.05)
-    txt(sl,f'"Sin seguimiento, el diagnóstico solo es papel."  —  Capital Intangible',
-        tx,ty+0.05,11.0,0.2,size=8,color=GRAY_2,italic=True,align=PP_ALIGN.CENTER)
-    add_logo(sl)
+    # ── SLIDE 11: CONTACTO — la persona adecuada para el tema principal ──
+    slide_contact(prs, marca, data["primary_frente"])
 
     # ── SERIALIZAR ────────────────────────────────────────
     buffer = io.BytesIO()
