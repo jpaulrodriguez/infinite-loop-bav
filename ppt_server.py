@@ -4,7 +4,7 @@ Sirve loop-infinite.html en / y la API en /generate-ppt y /brands.
 """
 from flask import Flask, request, send_file, jsonify, session, redirect
 from flask_cors import CORS
-import traceback, os, hmac, secrets
+import traceback, os, hmac, secrets, time
 from datetime import timedelta
 from brand_engine import RAW_BRANDS
 from brand_ppt import generate_ppt
@@ -21,7 +21,11 @@ ACCESS_PASSWORD = os.environ.get("ACCESS_PASSWORD", "").strip()
 # Clave para firmar la cookie de sesión. Fijar SECRET_KEY en Render para que las
 # sesiones sobrevivan a reinicios; si no, se usa una aleatoria por arranque.
 app.secret_key = os.environ.get("SECRET_KEY") or secrets.token_hex(32)
-app.permanent_session_lifetime = timedelta(days=7)
+# Cierre por INACTIVIDAD: la sesión expira tras N minutos sin actividad
+# (configurable con SESSION_IDLE_MINUTES; por defecto 30).
+IDLE_MINUTES = int(os.environ.get("SESSION_IDLE_MINUTES", "30"))
+IDLE_SECONDS = IDLE_MINUTES * 60
+app.permanent_session_lifetime = timedelta(minutes=IDLE_MINUTES)
 app.config.update(
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SAMESITE="Lax",
@@ -35,20 +39,45 @@ if not ACCESS_PASSWORD:
     print("⚠  ACCESS_PASSWORD no configurada — el sitio está ABIERTO. "
           "Configúrala en Render (Environment) antes de compartir el link.")
 
+def _reject(expired: bool = False):
+    """Navegación → redirige al login; llamadas API → 401 JSON."""
+    if request.method == "GET" and request.path == "/":
+        return redirect("/login?expired=1" if expired else "/login")
+    return jsonify({"error": "Sesión expirada por inactividad." if expired
+                    else "No autorizado. Inicia sesión en /login."}), 401
+
 @app.before_request
 def _require_login():
     if not ACCESS_PASSWORD:          # puerta desactivada
         return None
-    if request.path in OPEN_PATHS or session.get("authed"):
+    if request.path in OPEN_PATHS:
         return None
-    # No autenticado: navegación → login; llamadas API → 401
-    if request.method == "GET" and request.path == "/":
-        return redirect("/login")
-    return jsonify({"error": "No autorizado. Inicia sesión en /login."}), 401
+    if not session.get("authed"):
+        return _reject()
+    # Cierre por inactividad: si pasó el umbral desde la última actividad, expira
+    now = time.time()
+    last = session.get("last_active", now)
+    if now - last > IDLE_SECONDS:
+        session.clear()
+        return _reject(expired=True)
+    # Actividad válida → refrescar la ventana de inactividad
+    session["last_active"] = now
+    session.permanent = True
+    return None
 
-def _login_page(error: bool = False) -> str:
-    msg = ('<p class="err">Contraseña incorrecta. Intenta de nuevo.</p>'
-           if error else '')
+@app.route("/ping", methods=["POST"])
+def ping():
+    # Keep-alive del dashboard (client-side). El before_request ya validó sesión
+    # y refrescó last_active; aquí solo confirmamos.
+    return jsonify({"ok": True})
+
+def _login_page(error: bool = False, expired: bool = False) -> str:
+    if error:
+        msg = '<p class="err">Contraseña incorrecta. Intenta de nuevo.</p>'
+    elif expired:
+        msg = '<p class="note">Tu sesión se cerró por inactividad. Ingresa de nuevo.</p>'
+    else:
+        msg = ''
     return f"""<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Acceso · Capital Intangible</title>
@@ -80,6 +109,7 @@ button{{width:100%;margin-top:18px;background:linear-gradient(135deg,#FF7A00,#FF
 button:hover{{transform:translateY(-2px)}}
 button:active{{transform:translateY(0) scale(.98)}}
 .err{{color:#FF3B30;font-size:13px;font-weight:600;margin-top:14px;text-align:center}}
+.note{{color:#f4a261;font-size:12.5px;font-weight:500;margin-top:14px;text-align:center;line-height:1.4}}
 .foot{{margin-top:22px;font-size:10.5px;color:rgba(163,168,184,.35);text-align:center;letter-spacing:.04em}}
 </style></head><body>
 <form class="card" method="POST" action="/login" autocomplete="off">
@@ -102,11 +132,12 @@ def login():
         if hmac.compare_digest(entered, ACCESS_PASSWORD):
             session.permanent = True
             session["authed"] = True
+            session["last_active"] = time.time()
             return redirect("/")
         return _login_page(error=True), 401
     if session.get("authed"):
         return redirect("/")
-    return _login_page()
+    return _login_page(expired=request.args.get("expired") == "1")
 
 @app.route("/logout")
 def logout():

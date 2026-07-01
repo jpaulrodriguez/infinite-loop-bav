@@ -2390,6 +2390,7 @@ document.getElementById('btn-download-ppt').addEventListener('click', async () =
     // Solicitar el PPT
     const resp = await fetch(`${PPT_SERVER}/generate-ppt?brand=${encodeURIComponent(marca)}`);
 
+    if (resp.status === 401) { window.location.href = '/login?expired=1'; return; }
     if (!resp.ok) {
       const err = await resp.json().catch(() => ({error: 'Error desconocido'}));
       showPptError(err.error || 'Error generando el PPT');
@@ -2776,6 +2777,27 @@ document.addEventListener('keydown', e => {
     closeConceptModal();
   }
 });
+
+/* ── KEEP-ALIVE DE SESIÓN ──────────────────────────────────────────
+   El dashboard es casi todo client-side, así que sin esto el servidor
+   cerraría la sesión aunque el usuario esté explorando. Enviamos un ping
+   (máx. 1 cada 2 min) SOLO cuando hay interacción real: si el usuario deja
+   de usarlo, los pings paran y la sesión expira por inactividad en el server.
+   Si el server responde 401 (ya expiró), redirigimos al login. */
+(function sessionKeepAlive() {
+  let lastPing = 0;
+  const THROTTLE = 120000; // 2 min
+  function ping() {
+    const now = Date.now();
+    if (now - lastPing < THROTTLE) return;
+    lastPing = now;
+    fetch('/ping', { method: 'POST', keepalive: true })
+      .then(r => { if (r.status === 401) window.location.href = '/login?expired=1'; })
+      .catch(() => {}); // sin servidor Flask (preview estático) → ignorar
+  }
+  ['mousemove','keydown','click','scroll','touchstart'].forEach(ev =>
+    window.addEventListener(ev, ping, { passive: true }));
+})();
 </script>
 </body>
 </html>
