@@ -2243,9 +2243,9 @@ document.addEventListener('DOMContentLoaded', () => {
     card.setAttribute('role', 'button');
     card.setAttribute('aria-label', `Ver análisis de ${KPI_META[id].name}`);
     // tabindex lo gestiona setKPIInert() según haya marca seleccionada
-    card.addEventListener('click', e => { if (e.target.closest('.info-btn')) return; openKPIModal(id); });
+    card.addEventListener('click', e => { if (e.target.closest('.info-btn')) return; track('kpi_click', id); openKPIModal(id); });
     card.addEventListener('keydown', e => {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openKPIModal(id); }
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); track('kpi_click', id); openKPIModal(id); }
     });
   });
 });
@@ -2333,6 +2333,7 @@ document.getElementById('category-select').addEventListener('change', function()
   const cat = this.value;
   renderCategoryPanel(cat);
   if (cat) {
+    track('category_select', cat);
     // Reset brand select when category is picked
     sel.value = '';
     document.getElementById('btn-download-ppt').disabled = true;
@@ -2342,6 +2343,7 @@ document.getElementById('category-select').addEventListener('change', function()
 
 sel.addEventListener('change',()=>{
   const marca=sel.value;
+  if (marca) track('brand_select', marca);
   const btn=document.getElementById('btn-download-ppt');
   btn.disabled=!marca;
   if(!marca){resetAll();return;}
@@ -2509,6 +2511,7 @@ document.getElementById('btn-theme').addEventListener('click', () => {
   document.getElementById('icon-light').style.display = next === 'light' ? '' : 'none';
   applySVGTheme(next);
   localStorage.setItem('bav-theme', next);
+  track('theme_toggle', next);
 });
 
 resetAll();
@@ -2668,6 +2671,7 @@ resetAll();
   document.getElementById('btn-enter-dashboard').addEventListener('click', () => {
     const cover = document.getElementById('cover');
     const app   = document.getElementById('app');
+    track('pageview');
     // stop canvas RAF to free GPU
     cancelAnimationFrame(raf);
     cover.classList.add('hide');
@@ -2769,6 +2773,7 @@ document.addEventListener('click', e => {
   const btn = e.target.closest('.info-btn');
   if (!btn) return;
   e.stopPropagation();
+  track('concept_click', btn.dataset.concept);
   openConceptModal(btn.dataset.concept);
 });
 
@@ -2777,6 +2782,19 @@ document.addEventListener('keydown', e => {
     closeConceptModal();
   }
 });
+
+/* ── ANALYTICS (uso interno) ──────────────────────────────────────
+   Envía eventos ligeros al servidor (sesiones, clicks, selección de marca
+   o categoría, clicks en tarjetas y conceptos). Falla en silencio si no hay
+   servidor Flask detrás (ej. preview estático) — nunca bloquea la UI. */
+function track(event, label) {
+  fetch('/track', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({event, label}),
+    keepalive: true
+  }).catch(() => {});
+}
 
 /* ── KEEP-ALIVE DE SESIÓN ──────────────────────────────────────────
    El dashboard es casi todo client-side, así que sin esto el servidor
