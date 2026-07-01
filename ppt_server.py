@@ -289,6 +289,9 @@ def _analytics_page(period_days) -> str:
         f'class="pp{" active" if p == period_days else ""}">{lbl}</a>'
         for p, lbl in periods
     )
+    storage_note = ("almacenamiento persistente (Postgres) — los datos se conservan entre deploys."
+                     if an.BACKEND == "postgres" else
+                     "⚠ SQLite local sin DATABASE_URL configurada: los datos se pierden en cada redeploy.")
 
     return f"""<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
@@ -335,7 +338,7 @@ td{{padding:6px 8px;border-bottom:1px solid rgba(255,255,255,.04);color:rgba(163
     <a class="logout" href="/analytics/logout">Cerrar sesión de analytics</a>
   </div>
 </div>
-<p class="sub">Uso interno · datos en SQLite local (se reinician en cada redeploy de Render sin Persistent Disk).</p>
+<p class="sub">Uso interno · {storage_note}</p>
 
 <div class="grid">
   <div class="stat"><div class="n">{s['sessions']}</div><div class="l">Sesiones (logins únicos)</div></div>
