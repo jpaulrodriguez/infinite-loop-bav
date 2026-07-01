@@ -5,7 +5,7 @@ Sirve loop-infinite.html en / y la API en /generate-ppt y /brands.
 from flask import Flask, request, send_file, jsonify, session, redirect
 from flask_cors import CORS
 import traceback, os, hmac, secrets, time
-from datetime import timedelta
+from datetime import timedelta, datetime, timezone
 from brand_engine import RAW_BRANDS
 from brand_ppt import generate_ppt
 from precache_ppts import cache_path, CACHE_DIR
@@ -252,15 +252,104 @@ def _bars(items, color="#FF7A00"):
                  f'<span class="bval">{n}</span></div>')
     return rows
 
-def _daily_chart(series):
-    if not series:
+def _fmt_duration(seconds):
+    if seconds is None:
+        return "—"
+    seconds = int(round(seconds))
+    m, s = divmod(seconds, 60)
+    return f"{s}s" if m == 0 else f"{m}m {s}s"
+
+def _pad_daily(series, days=14):
+    """Rellena con 0 los días sin actividad — eje continuo, sin huecos."""
+    counts = dict(series)
+    today = datetime.now(timezone.utc).date()
+    out = []
+    for i in range(days - 1, -1, -1):
+        d = (today - timedelta(days=i)).isoformat()
+        out.append((d, counts.get(d, 0)))
+    return out
+
+def _svg_trend_chart(series, color="#FF7A00", height=150, width=900):
+    """Línea + área con degradado + grid + tooltips nativos — estilo GA."""
+    if not series or not any(n for _, n in series):
         return '<p class="empty">Sin datos todavía.</p>'
-    maxn = max(n for _, n in series) or 1
-    bars = ""
-    for d, n in series:
-        h = max(int((n / maxn) * 100), 6)
-        bars += f'<div class="dbar" style="height:{h}%" title="{d}: {n} sesiones"><span>{n}</span></div>'
-    return f'<div class="dchart">{bars}</div>'
+    n_pts = len(series)
+    maxv = max(v for _, v in series) or 1
+    pad_l, pad_r, pad_t, pad_b = 34, 10, 12, 22
+    plot_w = width - pad_l - pad_r
+    plot_h = height - pad_t - pad_b
+    step = plot_w / max(n_pts - 1, 1)
+
+    pts = []
+    for i, (label, v) in enumerate(series):
+        x = pad_l + i * step
+        y = pad_t + plot_h - (v / maxv) * plot_h
+        pts.append((x, y, label, v))
+
+    line_path = "M " + " L ".join(f"{x:.1f},{y:.1f}" for x, y, _, _ in pts)
+    area_path = (line_path + f" L {pts[-1][0]:.1f},{pad_t+plot_h:.1f} "
+                 f"L {pts[0][0]:.1f},{pad_t+plot_h:.1f} Z")
+
+    grid = ""
+    for frac in (0, 0.25, 0.5, 0.75, 1.0):
+        gy = pad_t + plot_h - frac * plot_h
+        gval = round(maxv * frac)
+        grid += (f'<line x1="{pad_l}" y1="{gy:.1f}" x2="{width-pad_r}" y2="{gy:.1f}" '
+                 f'stroke="rgba(255,255,255,.06)" stroke-width="1"/>'
+                 f'<text x="{pad_l-8}" y="{gy+3:.1f}" font-size="9" fill="rgba(163,168,184,.5)" '
+                 f'text-anchor="end">{gval}</text>')
+
+    dots = ""
+    for x, y, label, v in pts:
+        dots += (f'<circle cx="{x:.1f}" cy="{y:.1f}" r="3" fill="{color}" stroke="#0A0F1E" stroke-width="1.5">'
+                 f'<title>{label}: {v}</title></circle>')
+
+    label_every = max(1, n_pts // 7)
+    xlabels = ""
+    for i, (x, y, label, v) in enumerate(pts):
+        if i % label_every == 0 or i == n_pts - 1:
+            xlabels += (f'<text x="{x:.1f}" y="{height-6}" font-size="8.5" fill="rgba(163,168,184,.55)" '
+                        f'text-anchor="middle">{label[5:]}</text>')
+
+    gid = f"gr{abs(hash(color+str(width)))%99999}"
+    return f'''<svg viewBox="0 0 {width} {height}" width="100%" height="{height}" preserveAspectRatio="none" style="display:block;overflow:visible">
+      <defs><linearGradient id="{gid}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="{color}" stop-opacity="0.35"/>
+        <stop offset="100%" stop-color="{color}" stop-opacity="0"/>
+      </linearGradient></defs>
+      {grid}
+      <path d="{area_path}" fill="url(#{gid})" stroke="none"/>
+      <path d="{line_path}" fill="none" stroke="{color}" stroke-width="2.2"/>
+      {dots}
+      {xlabels}
+    </svg>'''
+
+def _svg_bar_chart(series, color="#7C8CFF", height=140, width=900, label_every=3):
+    """Barras verticales (ej. actividad por hora) con tooltips nativos."""
+    if not series or not any(n for _, n in series):
+        return '<p class="empty">Sin datos todavía.</p>'
+    n_pts = len(series)
+    maxv = max(v for _, v in series) or 1
+    pad_l, pad_r, pad_t, pad_b = 10, 10, 8, 20
+    plot_w = width - pad_l - pad_r
+    plot_h = height - pad_t - pad_b
+    gap = plot_w / n_pts
+    bw = gap * 0.6
+
+    bars, labels = "", ""
+    for i, (label, v) in enumerate(series):
+        bh = (v / maxv) * plot_h if maxv else 0
+        x = pad_l + i * gap + (gap - bw) / 2
+        y = pad_t + plot_h - bh
+        bars += (f'<rect x="{x:.1f}" y="{y:.1f}" width="{bw:.1f}" height="{max(bh,2):.1f}" rx="2" fill="{color}">'
+                 f'<title>{label}h: {v}</title></rect>')
+        if i % label_every == 0:
+            labels += (f'<text x="{x+bw/2:.1f}" y="{height-5}" font-size="7.5" fill="rgba(163,168,184,.5)" '
+                       f'text-anchor="middle">{label}</text>')
+    return f'''<svg viewBox="0 0 {width} {height}" width="100%" height="{height}" preserveAspectRatio="none" style="display:block">
+      <line x1="{pad_l}" y1="{pad_t+plot_h:.1f}" x2="{width-pad_r}" y2="{pad_t+plot_h:.1f}" stroke="rgba(255,255,255,.1)"/>
+      {bars}{labels}
+    </svg>'''
 
 def _recent_rows(events):
     if not events:
@@ -275,12 +364,14 @@ def _recent_rows(events):
 
 def _analytics_page(period_days) -> str:
     s = an.summary(days=period_days)
+    avg_dur        = an.avg_session_duration(days=period_days)
     top_brands     = an.top_labels("brand_select",   days=period_days, limit=8)
     top_categories = an.top_labels("category_select", days=period_days, limit=6)
     top_ppt        = an.top_labels("ppt_download",   days=period_days, limit=8)
     top_kpi        = an.top_labels("kpi_click",      days=period_days, limit=6)
     top_concepts   = an.top_labels("concept_click",  days=period_days, limit=8)
-    daily          = an.daily_sessions(days=14)
+    daily          = _pad_daily(an.daily_sessions(days=14), days=14)
+    hourly         = an.hourly_activity(days=period_days)
     recent         = an.recent_events(limit=60)
 
     periods = [(1, "Hoy"), (7, "7 días"), (30, "30 días"), (None, "Todo")]
@@ -308,28 +399,28 @@ h1{{font-size:24px;font-weight:800;letter-spacing:-.02em}}
   border-radius:100px;border:1px solid rgba(255,255,255,.08)}}
 .pp.active{{background:#FF7A00;color:#fff;border-color:#FF7A00}}
 .logout{{color:rgba(163,168,184,.5);text-decoration:none;font-size:11px}}
-.grid{{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:28px}}
+.grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:28px}}
 .stat{{background:rgba(18,26,47,.7);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:18px}}
 .stat .n{{font-size:30px;font-weight:800;color:#FF7A00;font-variant-numeric:tabular-nums}}
 .stat .l{{font-size:10.5px;color:rgba(163,168,184,.6);text-transform:uppercase;letter-spacing:.06em;margin-top:4px}}
 .cols{{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px}}
 .panel{{background:rgba(18,26,47,.7);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:20px}}
-.panel h2{{font-size:13px;font-weight:700;margin-bottom:14px;color:rgba(255,255,255,.9)}}
+.panel h2{{font-size:13px;font-weight:700;margin-bottom:2px;color:rgba(255,255,255,.9)}}
+.panel h2 .sub2{{font-weight:500;color:rgba(163,168,184,.55);font-size:11px;margin-left:6px}}
+.chart-wrap{{margin-top:12px}}
 .brow{{display:flex;align-items:center;gap:10px;margin-bottom:9px;font-size:12px}}
 .blabel{{width:150px;flex-shrink:0;color:rgba(163,168,184,.85);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
 .btrack{{flex:1;height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden}}
 .bfill{{height:100%;border-radius:4px}}
 .bval{{width:28px;text-align:right;color:#fff;font-weight:700;font-variant-numeric:tabular-nums}}
 .empty{{color:rgba(163,168,184,.4);font-size:12px;font-style:italic}}
-.dchart{{display:flex;align-items:flex-end;gap:5px;height:110px;margin-top:6px}}
-.dbar{{flex:1;background:linear-gradient(180deg,#FF9A00,#FF7A00);border-radius:3px 3px 0 0;position:relative;min-width:8px}}
-.dbar span{{position:absolute;top:-16px;left:0;right:0;text-align:center;font-size:9px;color:rgba(163,168,184,.7)}}
 table{{width:100%;border-collapse:collapse;font-size:11.5px}}
 th{{text-align:left;color:#FF7A00;font-weight:700;padding:6px 8px;border-bottom:1px solid rgba(255,255,255,.08)}}
 td{{padding:6px 8px;border-bottom:1px solid rgba(255,255,255,.04);color:rgba(163,168,184,.9)}}
 .mono{{font-family:ui-monospace,Menlo,monospace;font-size:10.5px;color:rgba(163,168,184,.55)}}
 .recent{{max-height:420px;overflow-y:auto}}
-@media(max-width:1100px){{.grid{{grid-template-columns:repeat(2,1fr)}}.cols{{grid-template-columns:1fr}}}}
+svg text{{font-family:-apple-system,'SF Pro Display',Helvetica Neue,sans-serif}}
+@media(max-width:1100px){{.cols{{grid-template-columns:1fr}}}}
 </style></head><body>
 <div class="top">
   <div><h1>Analytics · Capital Intangible</h1></div>
@@ -345,12 +436,18 @@ td{{padding:6px 8px;border-bottom:1px solid rgba(255,255,255,.04);color:rgba(163
   <div class="stat"><div class="n">{s['logins']}</div><div class="l">Inicios de sesión</div></div>
   <div class="stat"><div class="n">{s['pageviews']}</div><div class="l">Vistas de dashboard</div></div>
   <div class="stat"><div class="n">{s['downloads']}</div><div class="l">Descargas de PPT</div></div>
+  <div class="stat"><div class="n">{_fmt_duration(avg_dur)}</div><div class="l">Tiempo promedio en sesión</div></div>
   <div class="stat"><div class="n">{s['total']}</div><div class="l">Eventos totales</div></div>
 </div>
 
 <div class="panel" style="margin-bottom:24px">
-  <h2>Sesiones por día (14 días)</h2>
-  {_daily_chart(daily)}
+  <h2>Sesiones por día <span class="sub2">últimos 14 días</span></h2>
+  <div class="chart-wrap">{_svg_trend_chart(daily, "#FF7A00")}</div>
+</div>
+
+<div class="panel" style="margin-bottom:24px">
+  <h2>Actividad por hora del día <span class="sub2">UTC · picos de uso</span></h2>
+  <div class="chart-wrap">{_svg_bar_chart(hourly, "#7C8CFF")}</div>
 </div>
 
 <div class="cols">

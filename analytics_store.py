@@ -137,6 +137,33 @@ if BACKEND == "postgres":
                 out.append(d)
             return out
 
+    def avg_session_duration(days=None):
+        """Duración promedio de sesión en segundos: tiempo entre el primer y
+        el último evento de cada sesión, promediado. None si no hay datos."""
+        where, params = _since(days)
+        with _conn() as c, c.cursor() as cur:
+            cur.execute(f"""
+                SELECT AVG(duration) avgd FROM (
+                    SELECT session_id, EXTRACT(EPOCH FROM (MAX(ts) - MIN(ts))) duration
+                    FROM events WHERE {where} AND session_id IS NOT NULL
+                    GROUP BY session_id
+                ) t
+            """, params)
+            row = cur.fetchone()
+            return float(row["avgd"]) if row and row["avgd"] is not None else None
+
+    def hourly_activity(days=None):
+        """Eventos por hora del día (0-23, UTC) — para detectar picos de uso."""
+        where, params = _since(days)
+        with _conn() as c, c.cursor() as cur:
+            cur.execute(
+                f"SELECT EXTRACT(HOUR FROM ts AT TIME ZONE 'UTC')::int h, COUNT(*) n "
+                f"FROM events WHERE {where} GROUP BY h",
+                params,
+            )
+            counts = {int(r["h"]): r["n"] for r in cur.fetchall()}
+        return [(str(h).zfill(2), counts.get(h, 0)) for h in range(24)]
+
 
 # ═══════════════════════════════════════════════════════════
 # BACKEND SQLITE (fallback local / desarrollo) — efímero en Render
@@ -247,3 +274,29 @@ else:
                 (limit,),
             ).fetchall()
             return [dict(r) for r in rows]
+
+    def avg_session_duration(days=None):
+        """Duración promedio de sesión en segundos: tiempo entre el primer y
+        el último evento de cada sesión, promediado. None si no hay datos."""
+        where, params = _since(days)
+        with _conn() as c:
+            row = c.execute(f"""
+                SELECT AVG(duration) avgd FROM (
+                    SELECT session_id, (julianday(MAX(ts)) - julianday(MIN(ts))) * 86400 duration
+                    FROM events WHERE {where} AND session_id IS NOT NULL
+                    GROUP BY session_id
+                )
+            """, params).fetchone()
+            return row["avgd"] if row and row["avgd"] is not None else None
+
+    def hourly_activity(days=None):
+        """Eventos por hora del día (0-23, UTC) — para detectar picos de uso."""
+        where, params = _since(days)
+        with _conn() as c:
+            rows = c.execute(
+                f"SELECT CAST(strftime('%H', ts) AS INTEGER) h, COUNT(*) n "
+                f"FROM events WHERE {where} GROUP BY h",
+                params,
+            ).fetchall()
+            counts = {int(r["h"]): r["n"] for r in rows}
+        return [(str(h).zfill(2), counts.get(h, 0)) for h in range(24)]
